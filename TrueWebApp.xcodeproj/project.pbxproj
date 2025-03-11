@@ -38,29 +38,29 @@
 		85D91EE9D4AD7010BDC14894 /* Pods-TrueApp-TrueAppUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrueApp-TrueAppUITests.release.xcconfig"; path = "Target Support Files/Pods-TrueApp-TrueAppUITests/Pods-TrueApp-TrueAppUITests.release.xcconfig"; sourceTree = "<group>"; };
 		B5F2287917DC503FBE8DC1BE /* Pods_TrueApp_TrueAppUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TrueApp_TrueAppUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCD5E3C332DD08426CE4C9D9 /* Pods_TrueApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TrueApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		DFEBCA592D562D5B00FA3E24 /* TrueApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrueApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		DFEBCA6F2D562D6000FA3E24 /* TrueAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrueAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DFEBCA792D562D6000FA3E24 /* TrueAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrueAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DFEBCA592D562D5B00FA3E24 /* TrueWebApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrueWebApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DFEBCA6F2D562D6000FA3E24 /* TrueWebAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrueWebAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DFEBCA792D562D6000FA3E24 /* TrueWebAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrueWebAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC87D32AB5B58D617E72CEC4 /* Pods-TrueAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrueAppTests.release.xcconfig"; path = "Target Support Files/Pods-TrueAppTests/Pods-TrueAppTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		DFEBCA812D562D6000FA3E24 /* Exceptions for "TrueApp" folder in "TrueApp" target */ = {
+		DFEBCA812D562D6000FA3E24 /* Exceptions for "TrueWebApp" folder in "TrueWebApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Utils/Info.plist,
 			);
-			target = DFEBCA582D562D5B00FA3E24 /* TrueApp */;
+			target = DFEBCA582D562D5B00FA3E24 /* TrueWebApp */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		DFEBCA5B2D562D5B00FA3E24 /* TrueApp */ = {
+		DFEBCA5B2D562D5B00FA3E24 /* TrueWebApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				DFEBCA812D562D6000FA3E24 /* Exceptions for "TrueApp" folder in "TrueApp" target */,
+				DFEBCA812D562D6000FA3E24 /* Exceptions for "TrueWebApp" folder in "TrueWebApp" target */,
 			);
-			path = TrueApp;
+			path = TrueWebApp;
 			sourceTree = "<group>";
 		};
 		DFEBCA722D562D6000FA3E24 /* TrueAppTests */ = {
@@ -129,7 +129,7 @@
 		DFEBCA502D562D5A00FA3E24 = {
 			isa = PBXGroup;
 			children = (
-				DFEBCA5B2D562D5B00FA3E24 /* TrueApp */,
+				DFEBCA5B2D562D5B00FA3E24 /* TrueWebApp */,
 				DFEBCA722D562D6000FA3E24 /* TrueAppTests */,
 				DFEBCA7C2D562D6000FA3E24 /* TrueAppUITests */,
 				DFEBCA5A2D562D5B00FA3E24 /* Products */,
@@ -141,9 +141,9 @@
 		DFEBCA5A2D562D5B00FA3E24 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DFEBCA592D562D5B00FA3E24 /* TrueApp.app */,
-				DFEBCA6F2D562D6000FA3E24 /* TrueAppTests.xctest */,
-				DFEBCA792D562D6000FA3E24 /* TrueAppUITests.xctest */,
+				DFEBCA592D562D5B00FA3E24 /* TrueWebApp.app */,
+				DFEBCA6F2D562D6000FA3E24 /* TrueWebAppTests.xctest */,
+				DFEBCA792D562D6000FA3E24 /* TrueWebAppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -151,9 +151,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		DFEBCA582D562D5B00FA3E24 /* TrueApp */ = {
+		DFEBCA582D562D5B00FA3E24 /* TrueWebApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DFEBCA822D562D6000FA3E24 /* Build configuration list for PBXNativeTarget "TrueApp" */;
+			buildConfigurationList = DFEBCA822D562D6000FA3E24 /* Build configuration list for PBXNativeTarget "TrueWebApp" */;
 			buildPhases = (
 				291E09EF78DE06B88CC9121F /* [CP] Check Pods Manifest.lock */,
 				DFEBCA552D562D5B00FA3E24 /* Sources */,
@@ -165,16 +165,16 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				DFEBCA5B2D562D5B00FA3E24 /* TrueApp */,
+				DFEBCA5B2D562D5B00FA3E24 /* TrueWebApp */,
 			);
-			name = TrueApp;
+			name = TrueWebApp;
 			productName = TrueApp;
-			productReference = DFEBCA592D562D5B00FA3E24 /* TrueApp.app */;
+			productReference = DFEBCA592D562D5B00FA3E24 /* TrueWebApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		DFEBCA6E2D562D6000FA3E24 /* TrueAppTests */ = {
+		DFEBCA6E2D562D6000FA3E24 /* TrueWebAppTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DFEBCA872D562D6000FA3E24 /* Build configuration list for PBXNativeTarget "TrueAppTests" */;
+			buildConfigurationList = DFEBCA872D562D6000FA3E24 /* Build configuration list for PBXNativeTarget "TrueWebAppTests" */;
 			buildPhases = (
 				C208C4DEFAD5D348FA73DB86 /* [CP] Check Pods Manifest.lock */,
 				DFEBCA6B2D562D6000FA3E24 /* Sources */,
@@ -189,14 +189,14 @@
 			fileSystemSynchronizedGroups = (
 				DFEBCA722D562D6000FA3E24 /* TrueAppTests */,
 			);
-			name = TrueAppTests;
+			name = TrueWebAppTests;
 			productName = TrueAppTests;
-			productReference = DFEBCA6F2D562D6000FA3E24 /* TrueAppTests.xctest */;
+			productReference = DFEBCA6F2D562D6000FA3E24 /* TrueWebAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		DFEBCA782D562D6000FA3E24 /* TrueAppUITests */ = {
+		DFEBCA782D562D6000FA3E24 /* TrueWebAppUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DFEBCA8A2D562D6000FA3E24 /* Build configuration list for PBXNativeTarget "TrueAppUITests" */;
+			buildConfigurationList = DFEBCA8A2D562D6000FA3E24 /* Build configuration list for PBXNativeTarget "TrueWebAppUITests" */;
 			buildPhases = (
 				B807351D20E325F296B4D92D /* [CP] Check Pods Manifest.lock */,
 				DFEBCA752D562D6000FA3E24 /* Sources */,
@@ -211,9 +211,9 @@
 			fileSystemSynchronizedGroups = (
 				DFEBCA7C2D562D6000FA3E24 /* TrueAppUITests */,
 			);
-			name = TrueAppUITests;
+			name = TrueWebAppUITests;
 			productName = TrueAppUITests;
-			productReference = DFEBCA792D562D6000FA3E24 /* TrueAppUITests.xctest */;
+			productReference = DFEBCA792D562D6000FA3E24 /* TrueWebAppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -239,7 +239,7 @@
 					};
 				};
 			};
-			buildConfigurationList = DFEBCA542D562D5A00FA3E24 /* Build configuration list for PBXProject "TrueApp" */;
+			buildConfigurationList = DFEBCA542D562D5A00FA3E24 /* Build configuration list for PBXProject "TrueWebApp" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -253,9 +253,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				DFEBCA582D562D5B00FA3E24 /* TrueApp */,
-				DFEBCA6E2D562D6000FA3E24 /* TrueAppTests */,
-				DFEBCA782D562D6000FA3E24 /* TrueAppUITests */,
+				DFEBCA582D562D5B00FA3E24 /* TrueWebApp */,
+				DFEBCA6E2D562D6000FA3E24 /* TrueWebAppTests */,
+				DFEBCA782D562D6000FA3E24 /* TrueWebAppUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -380,12 +380,12 @@
 /* Begin PBXTargetDependency section */
 		DFEBCA712D562D6000FA3E24 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = DFEBCA582D562D5B00FA3E24 /* TrueApp */;
+			target = DFEBCA582D562D5B00FA3E24 /* TrueWebApp */;
 			targetProxy = DFEBCA702D562D6000FA3E24 /* PBXContainerItemProxy */;
 		};
 		DFEBCA7B2D562D6000FA3E24 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = DFEBCA582D562D5B00FA3E24 /* TrueApp */;
+			target = DFEBCA582D562D5B00FA3E24 /* TrueWebApp */;
 			targetProxy = DFEBCA7A2D562D6000FA3E24 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -401,7 +401,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = YQMY45P57M;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = TrueApp/Utils/Info.plist;
+				INFOPLIST_FILE = TrueWebApp/Utils/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -433,7 +433,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = YQMY45P57M;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = TrueApp/Utils/Info.plist;
+				INFOPLIST_FILE = TrueWebApp/Utils/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -589,7 +589,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TrueApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TrueApp";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TrueWebApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TrueWebApp";
 			};
 			name = Debug;
 		};
@@ -608,7 +608,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TrueApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TrueApp";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TrueWebApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TrueWebApp";
 			};
 			name = Release;
 		};
@@ -649,7 +649,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DFEBCA542D562D5A00FA3E24 /* Build configuration list for PBXProject "TrueApp" */ = {
+		DFEBCA542D562D5A00FA3E24 /* Build configuration list for PBXProject "TrueWebApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DFEBCA852D562D6000FA3E24 /* Debug */,
@@ -658,7 +658,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DFEBCA822D562D6000FA3E24 /* Build configuration list for PBXNativeTarget "TrueApp" */ = {
+		DFEBCA822D562D6000FA3E24 /* Build configuration list for PBXNativeTarget "TrueWebApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DFEBCA832D562D6000FA3E24 /* Debug */,
@@ -667,7 +667,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DFEBCA872D562D6000FA3E24 /* Build configuration list for PBXNativeTarget "TrueAppTests" */ = {
+		DFEBCA872D562D6000FA3E24 /* Build configuration list for PBXNativeTarget "TrueWebAppTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DFEBCA882D562D6000FA3E24 /* Debug */,
@@ -676,7 +676,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DFEBCA8A2D562D6000FA3E24 /* Build configuration list for PBXNativeTarget "TrueAppUITests" */ = {
+		DFEBCA8A2D562D6000FA3E24 /* Build configuration list for PBXNativeTarget "TrueWebAppUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DFEBCA8B2D562D6000FA3E24 /* Debug */,
