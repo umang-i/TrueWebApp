@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ListCompanyController" customModule="TrueApp" customModuleProvider="target">
+            <connections>
+                <outlet property="listTableView" destination="pqi-RE-92V" id="kUW-Nj-Esj"/>
+                <outlet property="newBranchButton" destination="FBP-we-Rn3" id="OEj-of-FLt"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Xt0-gr-UUi">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nr1-oH-sHq">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gif" translatesAutoresizingMaskIntoConstraints="NO" id="3mI-Fg-DuR">
+                                    <rect key="frame" x="0.0" y="60" width="393" height="120"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="120" id="iaU-Ko-eDj"/>
+                                    </constraints>
+                                </imageView>
+                                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="pqi-RE-92V">
+                                    <rect key="frame" x="0.0" y="270" width="393" height="572"/>
+                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                </tableView>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FBP-we-Rn3">
+                                    <rect key="frame" x="10" y="200" width="373" height="50"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="50" id="zOb-qm-GxQ"/>
+                                    </constraints>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="filled" title="New Branch" imagePadding="10">
+                                        <imageReference key="image" image="plus" catalog="system" symbolScale="large"/>
+                                        <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" weight="bold"/>
+                                        <fontDescription key="titleFontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="17"/>
+                                        <color key="baseBackgroundColor" red="0.73333333329999995" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    </buttonConfiguration>
+                                    <connections>
+                                        <action selector="newBranchButton:" destination="-1" eventType="touchUpInside" id="eVV-sO-xfQ"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            <constraints>
+                                <constraint firstItem="3mI-Fg-DuR" firstAttribute="leading" secondItem="nr1-oH-sHq" secondAttribute="leading" id="Oa7-sS-QLg"/>
+                                <constraint firstItem="pqi-RE-92V" firstAttribute="top" secondItem="FBP-we-Rn3" secondAttribute="bottom" constant="20" id="RcK-V7-BUT"/>
+                                <constraint firstItem="FBP-we-Rn3" firstAttribute="top" secondItem="3mI-Fg-DuR" secondAttribute="bottom" constant="20" id="Tnv-2c-L46"/>
+                                <constraint firstItem="FBP-we-Rn3" firstAttribute="leading" secondItem="nr1-oH-sHq" secondAttribute="leading" constant="10" id="cs2-0b-wdY"/>
+                                <constraint firstItem="pqi-RE-92V" firstAttribute="leading" secondItem="nr1-oH-sHq" secondAttribute="leading" id="dET-v8-c4Y"/>
+                                <constraint firstAttribute="trailing" secondItem="pqi-RE-92V" secondAttribute="trailing" id="fFx-4U-OK6"/>
+                                <constraint firstAttribute="trailing" secondItem="3mI-Fg-DuR" secondAttribute="trailing" id="gow-ki-686"/>
+                                <constraint firstItem="3mI-Fg-DuR" firstAttribute="top" secondItem="nr1-oH-sHq" secondAttribute="top" constant="60" id="ivo-TR-2JS"/>
+                                <constraint firstAttribute="bottom" secondItem="pqi-RE-92V" secondAttribute="bottom" constant="10" id="ixP-fG-n6a"/>
+                                <constraint firstAttribute="bottom" secondItem="pqi-RE-92V" secondAttribute="bottom" constant="10" id="wop-lm-xWe"/>
+                                <constraint firstAttribute="trailing" secondItem="FBP-we-Rn3" secondAttribute="trailing" constant="10" id="ylf-mI-cyY"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="nr1-oH-sHq" firstAttribute="top" secondItem="Xt0-gr-UUi" secondAttribute="top" id="Ipt-34-eTU"/>
+                        <constraint firstAttribute="bottom" secondItem="nr1-oH-sHq" secondAttribute="bottom" id="lHL-wS-Mn5"/>
+                        <constraint firstAttribute="trailing" secondItem="nr1-oH-sHq" secondAttribute="trailing" id="pBj-IR-IBR"/>
+                        <constraint firstItem="nr1-oH-sHq" firstAttribute="leading" secondItem="Xt0-gr-UUi" secondAttribute="leading" id="vPC-Vu-1oN"/>
+                    </constraints>
+                </scrollView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="Xt0-gr-UUi" secondAttribute="trailing" id="6TK-9b-7Av"/>
+                <constraint firstItem="nr1-oH-sHq" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" id="AcQ-vu-2ld"/>
+                <constraint firstAttribute="bottom" secondItem="Xt0-gr-UUi" secondAttribute="bottom" id="HIl-vD-7fR"/>
+                <constraint firstItem="Xt0-gr-UUi" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Pqd-m7-9yn"/>
+                <constraint firstItem="nr1-oH-sHq" firstAttribute="width" secondItem="i5M-Pr-FkT" secondAttribute="width" id="gJ5-bS-cbU"/>
+                <constraint firstItem="Xt0-gr-UUi" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="vvT-Mv-YBG"/>
+            </constraints>
+            <point key="canvasLocation" x="5.343511450381679" y="20.422535211267608"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="gif" width="3480" height="2000"/>
+        <image name="plus" catalog="system" width="128" height="113"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

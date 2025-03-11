@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RewardsController" customModule="TrueApp" customModuleProvider="target">
+            <connections>
+                <outlet property="rewardTableView" destination="apK-ae-4q5" id="CJW-9j-dgS"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="u1n-sx-Olo">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GEO-7a-3fk">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gif" translatesAutoresizingMaskIntoConstraints="NO" id="nqc-Ap-X8h">
+                                    <rect key="frame" x="0.0" y="80" width="393" height="120"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="120" id="G9R-Ot-d32"/>
+                                    </constraints>
+                                </imageView>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Rewards Points" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UFi-lf-BqM">
+                                    <rect key="frame" x="121" y="415.66666666666669" width="151" height="21"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="apK-ae-4q5">
+                                    <rect key="frame" x="0.0" y="200" width="393" height="652"/>
+                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                </tableView>
+                            </subviews>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            <constraints>
+                                <constraint firstAttribute="trailing" secondItem="nqc-Ap-X8h" secondAttribute="trailing" id="6Qx-ca-6k2"/>
+                                <constraint firstItem="nqc-Ap-X8h" firstAttribute="leading" secondItem="GEO-7a-3fk" secondAttribute="leading" id="CMN-AY-au2"/>
+                                <constraint firstItem="UFi-lf-BqM" firstAttribute="centerY" secondItem="GEO-7a-3fk" secondAttribute="centerY" id="Dkk-Wh-zhO"/>
+                                <constraint firstItem="nqc-Ap-X8h" firstAttribute="top" secondItem="GEO-7a-3fk" secondAttribute="top" constant="80" id="EVC-w5-p7p"/>
+                                <constraint firstItem="apK-ae-4q5" firstAttribute="leading" secondItem="GEO-7a-3fk" secondAttribute="leading" id="MJj-R3-6oO"/>
+                                <constraint firstItem="apK-ae-4q5" firstAttribute="top" secondItem="nqc-Ap-X8h" secondAttribute="bottom" id="NH5-xo-x1Y"/>
+                                <constraint firstItem="UFi-lf-BqM" firstAttribute="centerX" secondItem="GEO-7a-3fk" secondAttribute="centerX" id="X2J-L2-btC"/>
+                                <constraint firstAttribute="trailing" secondItem="apK-ae-4q5" secondAttribute="trailing" id="ZCJ-d1-iUs"/>
+                                <constraint firstAttribute="bottom" secondItem="apK-ae-4q5" secondAttribute="bottom" id="dvf-Qa-H6p"/>
+                            </constraints>
+                        </view>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="GEO-7a-3fk" firstAttribute="top" secondItem="u1n-sx-Olo" secondAttribute="top" id="a8N-Kc-BFy"/>
+                        <constraint firstItem="GEO-7a-3fk" firstAttribute="leading" secondItem="u1n-sx-Olo" secondAttribute="leading" id="beW-yc-cHM"/>
+                        <constraint firstAttribute="trailing" secondItem="GEO-7a-3fk" secondAttribute="trailing" id="dOi-Ul-Hs0"/>
+                        <constraint firstAttribute="bottom" secondItem="GEO-7a-3fk" secondAttribute="bottom" id="nHV-XK-uQv"/>
+                    </constraints>
+                </scrollView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="GEO-7a-3fk" firstAttribute="width" secondItem="i5M-Pr-FkT" secondAttribute="width" id="NzA-DE-Vff"/>
+                <constraint firstItem="GEO-7a-3fk" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" priority="250" id="ReC-rW-41z"/>
+                <constraint firstItem="u1n-sx-Olo" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="ZGi-mI-s4D"/>
+                <constraint firstItem="u1n-sx-Olo" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="vQh-ub-8OU"/>
+                <constraint firstAttribute="bottom" secondItem="u1n-sx-Olo" secondAttribute="bottom" id="wzt-Ez-Ew6"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="u1n-sx-Olo" secondAttribute="trailing" id="x8T-Zq-GfP"/>
+            </constraints>
+            <point key="canvasLocation" x="97" y="20"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="gif" width="3480" height="2000"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

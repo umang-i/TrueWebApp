@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="NotificationController" customModule="TrueApp" customModuleProvider="target">
+            <connections>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="STF-av-TQQ">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jSy-gg-Uql">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        </view>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="jSy-gg-Uql" firstAttribute="height" secondItem="STF-av-TQQ" secondAttribute="height" priority="250" id="2Vz-BF-gjn"/>
+                        <constraint firstAttribute="bottom" secondItem="jSy-gg-Uql" secondAttribute="bottom" id="O1k-Fp-tyQ"/>
+                        <constraint firstItem="jSy-gg-Uql" firstAttribute="top" secondItem="STF-av-TQQ" secondAttribute="top" id="OXZ-1D-QYr"/>
+                        <constraint firstAttribute="trailing" secondItem="jSy-gg-Uql" secondAttribute="trailing" id="Ohb-e0-Gvp"/>
+                        <constraint firstItem="jSy-gg-Uql" firstAttribute="width" secondItem="STF-av-TQQ" secondAttribute="width" id="eev-JC-Y3r"/>
+                        <constraint firstItem="jSy-gg-Uql" firstAttribute="leading" secondItem="STF-av-TQQ" secondAttribute="leading" id="qPJ-UM-QP4"/>
+                    </constraints>
+                </scrollView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="STF-av-TQQ" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="2dt-sc-FYP"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="STF-av-TQQ" secondAttribute="trailing" id="XVa-56-2Na"/>
+                <constraint firstAttribute="bottom" secondItem="STF-av-TQQ" secondAttribute="bottom" id="az7-ZV-nzg"/>
+                <constraint firstItem="STF-av-TQQ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="jG8-tb-PJc"/>
+            </constraints>
+            <point key="canvasLocation" x="139.69465648854961" y="19.718309859154932"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
