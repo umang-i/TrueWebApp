@@ -52,7 +52,7 @@ class DashboardController: UIViewController {
         creditLabel.font =  UIFont(name: "Roboto-Medium", size: 16)
         referTextLabel.font =  UIFont(name: "Roboto-Medium", size: 20)
         referLabel.font =  UIFont(name: "Roboto-Medium", size: 14)
-        recentNotifLabel.font = UIFont(name: "Roboto-Medium", size: 15)
+        recentNotifLabel.font = UIFont(name: "Roboto-Regular", size: 15)
         recentOrderLabel.font = UIFont(name: "Roboto-Medium", size: 15)
     }
     

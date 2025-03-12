@@ -58,7 +58,7 @@ class GridCell: UICollectionViewCell {
         
         label.attributedText = attributeString
         label.textColor = .gray  // Optional: Set color
-        label.font = UIFont(name: "Roboto-Regular", size: 12)  // Optional: Set font
+        label.font = UIFont(name: "Roboto-Regular", size: 11)  // Optional: Set font
         return label
     }()
     
@@ -82,7 +82,7 @@ class GridCell: UICollectionViewCell {
         let button = UIButton()
         button.setImage(UIImage(systemName: "star.fill"), for: .normal)
         button.tintColor = .gray
-        button.layer.cornerRadius = 20
+        button.layer.cornerRadius = 15
         button.layer.borderWidth = 2
         button.layer.borderColor = UIColor.lightGray.cgColor
         return button
@@ -93,7 +93,7 @@ class GridCell: UICollectionViewCell {
         button.setTitle("+", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .customRed
-        button.layer.cornerRadius = 20
+        button.layer.cornerRadius = 15
         button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         button.titleEdgeInsets = UIEdgeInsets(top: -2, left: 0, bottom: 0, right: 0)
         button.titleLabel?.textAlignment = .center
@@ -155,8 +155,8 @@ class GridCell: UICollectionViewCell {
             // Favourite Icon (Star)
             favouriteIcon.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
             favouriteIcon.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            favouriteIcon.widthAnchor.constraint(equalToConstant: 35),
-            favouriteIcon.heightAnchor.constraint(equalToConstant: 35),
+            favouriteIcon.widthAnchor.constraint(equalToConstant: 30),
+            favouriteIcon.heightAnchor.constraint(equalToConstant: 30),
             
             nameLabel.topAnchor.constraint(equalTo: gridImageView.bottomAnchor, constant: 10),
             nameLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
@@ -164,7 +164,7 @@ class GridCell: UICollectionViewCell {
             // Title Label
             titleLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 2),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            titleLabel.widthAnchor.constraint(equalToConstant: 200),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             
             // Price Label (Discounted & Original Price)
             priceLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
@@ -176,14 +176,15 @@ class GridCell: UICollectionViewCell {
             
             addButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
             addButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            addButton.widthAnchor.constraint(equalToConstant: 35),
-            addButton.heightAnchor.constraint(equalToConstant: 35),
+            addButton.widthAnchor.constraint(equalToConstant: 30),
+            addButton.heightAnchor.constraint(equalToConstant: 30),
             
             // Quantity Selector (Visible at the bottom)
-            quantitySelector.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
-            quantitySelector.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
-            quantitySelector.widthAnchor.constraint(equalToConstant: 80),
-            quantitySelector.heightAnchor.constraint(equalToConstant: 35)
+            quantitySelector.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
+            quantitySelector.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            quantitySelector.leadingAnchor.constraint(equalTo: priceLabel.trailingAnchor, constant: 10),
+           // quantitySelector.widthAnchor.constraint(equalToConstant: 80),
+            quantitySelector.heightAnchor.constraint(equalToConstant: 30)
         ])
         
         // Initially hide the quantity selector
@@ -194,15 +195,23 @@ class GridCell: UICollectionViewCell {
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
     
-    func configure(title: String, image: String, price: String, wallet: String , brand : String) {
+    func configure(title: String, image: String, price: String, wallet: String, brand: String) {
         nameLabel.text = brand
         titleLabel.text = title
         priceLabel.text = "\(price)"
         walletAmountLabel.text = "£\(wallet)"
         
-        if URL(string: image) != nil {
-            gridImageView.image = UIImage(named: "lays")
+        // Load image from URL
+        if let url = URL(string: image) {
+            DispatchQueue.global().async {
+                if let data = try? Data(contentsOf: url), let loadedImage = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        self.gridImageView.image = loadedImage
+                    }
+                }
+            }
         } else {
+            // Set a default placeholder image
             gridImageView.image = UIImage(named: "lays")
         }
     }
@@ -305,10 +314,10 @@ class QuantitySelectorView: UIView {
     }
     
     private func setupUI() {
-        backgroundColor = UIColor.clear
-        layer.cornerRadius = 15
-        layer.borderWidth = 1
-        layer.borderColor = UIColor.customBlue.cgColor
+        backgroundColor = UIColor.systemGray5
+        layer.cornerRadius = 4
+        //layer.borderWidth = 1
+        //layer.borderColor = UIColor.customBlue.cgColor
         clipsToBounds = true
         
         addSubview(minusButton)

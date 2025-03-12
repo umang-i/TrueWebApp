@@ -15,7 +15,7 @@ class NotificationCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        notificationTextLabel.font = UIFont(name: "Roboto-Medium", size: 14)
+        notificationTextLabel.font = UIFont(name: "Roboto-Regular", size: 14)
         arrowImage.tintColor = .customBlue
     }
 

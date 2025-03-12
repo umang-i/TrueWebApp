@@ -7,25 +7,35 @@
 
 import UIKit
 
-import UIKit
-
+// MARK: - Reward Model
 struct RewardModel {
     let tierImage: UIImage?  // Tier icon
     let tierName: String     // e.g., Bronze, Silver, Gold
     let entryLevel: String   // e.g., "ENTRY"
     let description: String  // Tier description
+    let progress: Float      // Progress bar percentage (0.0 - 1.0)
+    let progressText: String // Text below progress bar
     let bonusPoints: String  // Reward bonus points
     let freeShipping: String // Free shipping details
     let tierBonus: String    // Extra bonus points
 }
 
+// MARK: - Delegate Protocol for Claim Action
+protocol RewardCellDelegate: AnyObject {
+    func didTapClaimButton(for reward: RewardModel)
+}
 
+// MARK: - Reward Table View Cell
 class RewardCell: UITableViewCell {
     
+    // MARK: - Properties
+    weak var delegate: RewardCellDelegate?
+    private var rewardData: RewardModel?
+
     // MARK: - UI Elements
     private let containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.customBlue.withAlphaComponent(0.1)
+        view.backgroundColor = .white
         view.layer.cornerRadius = 12
         view.layer.masksToBounds = false
         view.layer.shadowColor = UIColor.black.cgColor
@@ -37,7 +47,9 @@ class RewardCell: UITableViewCell {
     
     private let tierIcon: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleToFill
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return imageView
     }()
     
@@ -47,15 +59,10 @@ class RewardCell: UITableViewCell {
         return label
     }()
     
-    private let entryLabel: PaddedLabel = {
-        let label = PaddedLabel()
-        label.font = UIFont(name: "Roboto-Medium", size: 16)
-        label.textColor = .black
-        label.textAlignment = .center
-        label.backgroundColor = .systemGray4
-        label.layer.cornerRadius = 10
-        label.clipsToBounds = true
-        label.text = "ENTRY"
+    private let entryLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "Roboto-Medium", size: 14)
+        label.textColor = .lightGray
         return label
     }()
     
@@ -66,35 +73,51 @@ class RewardCell: UITableViewCell {
         return label
     }()
     
+    private let progressBar: UIProgressView = {
+        let progressView = UIProgressView(progressViewStyle: .default)
+        progressView.trackTintColor = .lightGray
+        progressView.progressTintColor = .customBlue
+        progressView.heightAnchor.constraint(equalToConstant: 10).isActive = true
+        return progressView
+    }()
+    
+    private let progressTextLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "Roboto-Regular", size: 14)
+        label.textColor = .lightGray
+        return label
+    }()
+    
     private let rewardBonusLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Roboto-Medium", size: 14)
-        label.numberOfLines = 0
+        label.font = UIFont(name: "Roboto-Regular", size: 14)
+        label.numberOfLines = 2
         return label
     }()
     
     private let freeShippingLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Roboto-Medium", size: 16)
-        label.numberOfLines = 0
+        label.font = UIFont(name: "Roboto-Regular", size: 14)
+        label.numberOfLines = 2
         return label
     }()
     
     private let tierBonusLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Roboto-Medium", size: 16)
-        label.numberOfLines = 0
+        label.font = UIFont(name: "Roboto-Regular", size: 14)
+        label.numberOfLines = 2
         return label
     }()
     
-    private let claimButton : UIButton = {
+    private let claimButton: UIButton = {
         let button = UIButton()
         button.setTitle("CLAIM", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .customRed
         button.layer.cornerRadius = 4
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
         button.clipsToBounds = true
-        button.heightAnchor.constraint(equalToConstant: 45).isActive = true
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
@@ -108,103 +131,94 @@ class RewardCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Setup UI
     private func setupUI() {
         contentView.backgroundColor = .clear
         contentView.addSubview(containerView)
+        
         claimButton.addTarget(self, action: #selector(claimButtonTapped), for: .touchUpInside)
+        
+        let tierStack = UIStackView(arrangedSubviews: [tierLabel, entryLabel])
+        tierStack.axis = .vertical
+        tierStack.spacing = 2
+        tierStack.alignment = .leading
+        
+        let headStack = UIStackView(arrangedSubviews: [tierIcon, tierStack])
+        headStack.axis = .horizontal
+        headStack.spacing = 10
+        headStack.alignment = .center
 
-        // Set a fixed size for the icon
-        tierIcon.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            tierIcon.widthAnchor.constraint(equalToConstant: 50),  // Adjust as needed
-            tierIcon.heightAnchor.constraint(equalToConstant: 50)
-        ])
-
-        // Prevent labels from being compressed
-        tierLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        entryLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-
-        let mainStack = UIStackView(arrangedSubviews: [tierIcon, tierLabel, entryLabel])
-        mainStack.axis = .horizontal
-        mainStack.spacing = 10
-        mainStack.alignment = .center
-        mainStack.distribution = .fill
-        mainStack.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        let progressStack = UIStackView(arrangedSubviews: [progressBar, progressTextLabel])
+        progressStack.axis = .vertical
+        progressStack.spacing = 4
+        progressStack.alignment = .fill
 
         let detailsStack = UIStackView(arrangedSubviews: [rewardBonusLabel, freeShippingLabel, tierBonusLabel, claimButton])
         detailsStack.axis = .vertical
         detailsStack.spacing = 8
         detailsStack.alignment = .leading
-        detailsStack.distribution = .fillEqually
 
-        containerView.addSubview(mainStack)
+        containerView.addSubview(headStack)
         containerView.addSubview(descriptionLabel)
+        containerView.addSubview(progressStack)
         containerView.addSubview(detailsStack)
 
         containerView.translatesAutoresizingMaskIntoConstraints = false
-        mainStack.translatesAutoresizingMaskIntoConstraints = false
+        headStack.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        progressStack.translatesAutoresizingMaskIntoConstraints = false
         detailsStack.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
 
-            mainStack.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
-            mainStack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            mainStack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
-            
-            descriptionLabel.topAnchor.constraint(equalTo: mainStack.bottomAnchor, constant: 8),
-            descriptionLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            descriptionLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
+            headStack.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12),
+            headStack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
+            headStack.trailingAnchor.constraint(lessThanOrEqualTo: containerView.trailingAnchor, constant: -20),
 
-            detailsStack.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 8),
-            detailsStack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            detailsStack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
-            detailsStack.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20),
-            
-            claimButton.topAnchor.constraint(equalTo: detailsStack.bottomAnchor, constant: 20),
-            claimButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
-            claimButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -20),
-            claimButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -20),
-            claimButton.heightAnchor.constraint(equalToConstant: 50)
-            ])
+            tierIcon.widthAnchor.constraint(equalToConstant: 80), // Set a fixed size
+            tierIcon.heightAnchor.constraint(equalToConstant: 80), // Adjust as needed
+
+            descriptionLabel.topAnchor.constraint(equalTo: headStack.bottomAnchor, constant: 8),
+            descriptionLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
+            descriptionLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+
+            progressStack.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 10),
+            progressStack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
+            progressStack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10),
+
+            detailsStack.topAnchor.constraint(equalTo: progressStack.bottomAnchor, constant: 10),
+            detailsStack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
+            detailsStack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10),
+
+            claimButton.heightAnchor.constraint(equalToConstant: 50),
+            claimButton.widthAnchor.constraint(equalTo: detailsStack.widthAnchor),
+            claimButton.topAnchor.constraint(equalTo: detailsStack.bottomAnchor, constant: 10)
+        
+        ])
     }
+
+
     
+    // MARK: - Button Action
     @objc private func claimButtonTapped() {
-        print("Claim button tapped!")
-        // Perform action here (e.g., delegate callback, API request, etc.)
+        guard let reward = rewardData else { return }
+        delegate?.didTapClaimButton(for: reward)
     }
-
-
     
-    // MARK: - Configure Cell with Data
+    // MARK: - Configure Cell
     func configure(with reward: RewardModel) {
+        self.rewardData = reward
         tierIcon.image = reward.tierImage
         tierLabel.text = reward.tierName
         entryLabel.text = reward.entryLevel
         descriptionLabel.text = reward.description
+        progressBar.progress = reward.progress
+        progressTextLabel.text = reward.progressText
         rewardBonusLabel.text = reward.bonusPoints
         freeShippingLabel.text = reward.freeShipping
         tierBonusLabel.text = reward.tierBonus
-    }
-}
-
-
-class PaddedLabel: UILabel {
-    var textInsets = UIEdgeInsets(top: 4, left: 12, bottom: 4, right: 12) // Adjust padding as needed
-    
-    override func drawText(in rect: CGRect) {
-        let insetsRect = rect.inset(by: textInsets)
-        super.drawText(in: insetsRect)
-    }
-
-    override var intrinsicContentSize: CGSize {
-        let size = super.intrinsicContentSize
-        return CGSize(width: size.width + textInsets.left + textInsets.right,
-                      height: size.height + textInsets.top + textInsets.bottom)
     }
 }

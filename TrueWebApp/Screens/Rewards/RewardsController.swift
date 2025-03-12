@@ -10,36 +10,41 @@ import UIKit
 class RewardsController: UIViewController {
 
     @IBOutlet weak var rewardTableView: UITableView!
-    
     private let rewards: [RewardModel] = [
-           RewardModel(
-               tierImage: UIImage(named: "bronze"),
-               tierName: "Bronze",
-               entryLevel: "ENTRY",
-               description: "Earn 0 points to achieve this tier with exclusive rewards and benefits.",
-               bonusPoints: "Reward bonus point\n+50 points",
-               freeShipping: "Free shipping up to $30\nUse the code at checkout for free shipping.",
-               tierBonus: "Tier bonus points\nEarn 5.00% more points for “Place an order”."
-           ),
-           RewardModel(
-               tierImage: UIImage(named: "silver"),
-               tierName: "Silver",
-               entryLevel: "MID",
-               description: "Earn 500 points to achieve this tier with better rewards.",
-               bonusPoints: "Reward bonus point\n+100 points",
-               freeShipping: "Free shipping up to $50\nUse the code at checkout for free shipping.",
-               tierBonus: "Tier bonus points\nEarn 10.00% more points for “Place an order”."
-           ),
-           RewardModel(
-               tierImage: UIImage(named: "gold"),
-               tierName: "Gold",
-               entryLevel: "PREMIUM",
-               description: "Earn 1000 points to achieve this tier with maximum rewards.",
-               bonusPoints: "Reward bonus point\n+200 points",
-               freeShipping: "Free shipping up to $100\nUse the code at checkout for free shipping.",
-               tierBonus: "Tier bonus points\nEarn 20.00% more points for “Place an order”."
-           )
-       ]
+        RewardModel(
+            tierImage: UIImage(named: "bronze"),
+            tierName: "Bronze",
+            entryLevel: "ENTRY",
+            description: "Earn 0 points to achieve this tier with exclusive rewards and benefits.",
+            progress: 0.2,  // 20% progress
+            progressText: "Earn 1500 more points to reach Silver",
+            bonusPoints: "Reward bonus point\n+50 points",
+            freeShipping: "Free shipping up to $30\nUse the code at checkout for free shipping.",
+            tierBonus: "Tier bonus points\nEarn 5.00% more points for “Place an order”."
+        ),
+        RewardModel(
+            tierImage: UIImage(named: "silver"),
+            tierName: "Silver",
+            entryLevel: "MID",
+            description: "Earn 500 points to achieve this tier with better rewards.",
+            progress: 0.5,  // 50% progress
+            progressText: "Earn 1000 more points to reach Gold",
+            bonusPoints: "Reward bonus point\n+100 points",
+            freeShipping: "Free shipping up to $50\nUse the code at checkout for free shipping.",
+            tierBonus: "Tier bonus points\nEarn 10.00% more points for “Place an order”."
+        ),
+        RewardModel(
+            tierImage: UIImage(named: "gold"),
+            tierName: "Gold",
+            entryLevel: "PREMIUM",
+            description: "Earn 1000 points to achieve this tier with maximum rewards.",
+            progress: 1.0,  // 100% progress (Gold achieved)
+            progressText: "You are at the highest tier!",
+            bonusPoints: "Reward bonus point\n+200 points",
+            freeShipping: "Free shipping up to $100\nUse the code at checkout for free shipping.",
+            tierBonus: "Tier bonus points\nEarn 20.00% more points for “Place an order”."
+        )
+    ]
     
     override func viewDidLoad() {
         super.viewDidLoad()

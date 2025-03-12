@@ -283,8 +283,6 @@ import UIKit
 class FilterCell: UICollectionViewCell {
     static let identifier = "FilterCell"
     
-    
-    
     private let checkBox: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .selected)

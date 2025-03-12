@@ -15,81 +15,7 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
     private var filterView: FilterView?
 
     var tableView: UITableView!
-    var categories: [Category] = [
-        Category(title: "Taping", isExpanded: false, subcategories: [
-            Subcategory(title: "Flavors", isExpanded: false, gridItems: [
-                Product(brand: "Blackfriars", name: "India's Magic Masala [100gms] Magic Masala Magic Masala", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "India's Magic Masala [100gms] Magic Masala Magic Masala", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "India's Magic Masala [100gms] Magic Masala Magic Masala", price: "£1.25", imageUrl: "lays")
-            ]),
-            Subcategory(title: "Flavors", isExpanded: false, gridItems: [
-                Product(brand: "Lays", name: "India's Magic Masala [100gms]", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "India's Magic Masala [100gms]", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "India's Magic Masala [100gms]", price: "£1.25", imageUrl: "lays")
-            ]),
-            Subcategory(title: "Flavors", isExpanded: false, gridItems: [
-                Product(brand: "Lays", name: "India's Magic Masala [100gms]", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "India's Magic Masala [100gms]", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "India's Magic Masala [100gms]", price: "£1.25", imageUrl: "lays")
-            ]),
-        ]),
-        Category(title: "Flavors", isExpanded: false, subcategories: [
-            Subcategory(title: "Flavors", isExpanded: false, gridItems: [
-                Product(brand: "Lays", name: "India's Magic Masala [100gms]", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "India's Magic Masala [100gms]", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "India's Magic Masala [100gms]", price: "£1.25", imageUrl: "lays")
-            ])
-        ]),Category(title: "Mapping", isExpanded: false, subcategories: [
-            Subcategory(title: "Flavors", isExpanded: false, gridItems: [
-                Product(brand: "Lays", name: "Apple", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Mango", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Grape", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Grape", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Grape", price: "£1.25", imageUrl: "lays")
-            ])
-        ]),Category(title: "yap", isExpanded: false, subcategories: [
-            Subcategory(title: "Flavors", isExpanded: false, gridItems: [
-                Product(brand: "Lays", name: "Apple", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Mango", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Grape", price: "£1.25", imageUrl: "lays")
-            ])
-        ]),Category(title: "Taping", isExpanded: false, subcategories: [
-            Subcategory(title: "Flavors", isExpanded: false, gridItems: [
-                Product(brand: "Lays", name: "Apple", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Mango", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Grape", price: "£1.25", imageUrl: "lays")
-            ])
-        ]),Category(title: "Taping", isExpanded: false, subcategories: [
-            Subcategory(title: "Flavors", isExpanded: false, gridItems: [
-                Product(brand: "Lays", name: "Apple", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Mango", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Grape", price: "£1.25", imageUrl: "lays")
-            ])
-        ]),Category(title: "Taping", isExpanded: false, subcategories: [
-            Subcategory(title: "Flavors", isExpanded: false, gridItems: [
-                Product(brand: "Lays", name: "Apple", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Mango", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Grape", price: "£1.25", imageUrl: "lays")
-            ])
-        ]),Category(title: "Taping", isExpanded: false, subcategories: [
-            Subcategory(title: "Flavors", isExpanded: false, gridItems: [
-                Product(brand: "Lays", name: "Apple", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Mango", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Grape", price: "£1.25", imageUrl: "lays")
-            ])
-        ]),Category(title: "Taping", isExpanded: false, subcategories: [
-            Subcategory(title: "Flavors", isExpanded: false, gridItems: [
-                Product(brand: "Lays", name: "Apple", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Mango", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Grape", price: "£1.25", imageUrl: "lays")
-            ])
-        ]),Category(title: "Taping", isExpanded: false, subcategories: [
-            Subcategory(title: "Flavors", isExpanded: false, gridItems: [
-                Product(brand: "Lays", name: "Apple", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Mango", price: "£1.25", imageUrl: "lays"),
-                Product(brand: "Lays", name: "Grape", price: "£1.25", imageUrl: "lays")
-            ])
-        ])]
+    var categories: [Category] = []
     
     var filteredCategories: [Category] = []
     var overlayView = UIView()
@@ -101,18 +27,11 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
        private var viewBasketButton: UIButton!
     private var cartItems: [Product : Int] = [:]
     
+    var expandedCategoryIndex: Int? = nil
+    var expandedSubcategoryIndex: IndexPath? = nil
+    
     var collectionView: UICollectionView!
     var selectedBrands: Set<String> = []
-    
-    let brands = ["Additional POS", "Airheads", "Airplane", "Al Fakher", "Aspire Gotek",
-                  "Bar Juice 5000", "Bebeto", "Blackfriars", "Candy Break", "Canabar",
-                  "Chupa Chups", "Crystal Clear", "D&K", "Duracell", "Edge", "Elements",
-                  "ELFA Pro", "Energizer", "Fanta", "Goat", "Gold Bar", "Hayati", "Hot Chip",
-                  "Jelly Rose", "JUUL", "Kit Kat", "Like Home", "Lost Mary BM6000", "IVG","Additional POS", "Airheads", "Airplane", "Al Fakher", "Aspire Gotek",
-                  "Bar Juice 5000", "Bebeto", "Blackfriars", "Candy Break", "Canabar",
-                  "Chupa Chups", "Crystal Clear", "D&K", "Duracell", "Edge", "Elements",
-                  "ELFA Pro", "Energizer", "Fanta", "Goat", "Gold Bar", "Hayati", "Hot Chip",
-                  "Jelly Rose", "JUUL", "Kit Kat", "Like Home", "Lost Mary BM6000", "IVG"]
     
     var selectedProductOption: String = "All"
     var selectedStockOption: String = "All"
@@ -125,7 +44,11 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
         super.viewDidLoad()
         setupSearchAndSortBar()
         setupTableView()
-        filteredCategories = categories
+        
+        if let loadedCategories = loadCategoriesFromJSON() {
+                   categories = loadedCategories
+               }
+        print(categories)
         setupOverlayView()
     }
     
@@ -245,7 +168,7 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
         view.addSubview(tableView)
 
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 10),
+            tableView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 5),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -258,13 +181,11 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let category = categories[section]
-        var count = 1
-        for subcategory in category.subcategories {
-            if category.isExpanded {
-                count += 1
-                if subcategory.isExpanded {
-                    count += 1
-                }
+        var count = 1 // Category row
+        if expandedCategoryIndex == section {
+            count += category.subCats.count // Expand subcategories if category is expanded
+            if let expandedSubcategoryIndex = expandedSubcategoryIndex, expandedSubcategoryIndex.section == section {
+                count += 1 // Expand grid if subcategory is expanded
             }
         }
         return count
@@ -272,64 +193,49 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let category = categories[indexPath.section]
+        
         if indexPath.row == 0 {
-            return 50 // Category cell
+            return 50 // Category row height
         } else {
             var rowIndex = 1
-            for subcategory in category.subcategories {
+            for subcategory in category.subCats {
                 if rowIndex == indexPath.row {
-                    return 50 + 5 // Add 5px space
+                    return 50 + 5 // Subcategory row height
                 }
                 rowIndex += 1
-                if subcategory.isExpanded {
-                    if rowIndex == indexPath.row {
-                        let heights = 210 * ceil(Double(subcategory.gridItems.count) / 2) + 20
-                        return CGFloat(heights) + 5 // Add 5px space
-                    }
-                    rowIndex += 1
+                
+                if let expandedSubcategoryIndex = expandedSubcategoryIndex, expandedSubcategoryIndex == indexPath {
+                    let gridHeight = 250 * ceil(Double(subcategory.products.count) / 2) + 50
+                    return CGFloat(gridHeight) + 5
                 }
             }
         }
         return UITableView.automaticDimension
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let category = categories[indexPath.section]
         
         if indexPath.row == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ExpandableCell", for: indexPath) as! ExpandableCell
-            cell.configure(title: category.title, isExpanded: category.isExpanded)
+            let isExpanded = expandedCategoryIndex == indexPath.section
+            cell.configure(title: category.title, isExpanded: isExpanded)
             return cell
         } else {
             var rowIndex = 1
-            for subcategory in category.subcategories {
+            for subcategory in category.subCats {
                 if rowIndex == indexPath.row {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "ExpandableCell", for: indexPath) as! ExpandableCell
-                    cell.configure(title: subcategory.title, isExpanded: subcategory.isExpanded, isSubCell: true)
-                    
-                    // Add bottom spacing
-                    let spacerView = UIView()
-                    spacerView.backgroundColor = .white
-                    spacerView.translatesAutoresizingMaskIntoConstraints = false
-                    cell.contentView.addSubview(spacerView)
-                    
-                    NSLayoutConstraint.activate([
-                        spacerView.heightAnchor.constraint(equalToConstant: 5),
-                        spacerView.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor),
-                        spacerView.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor),
-                        spacerView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor)
-                    ])
-                    
+                    let isExpanded = expandedSubcategoryIndex == indexPath
+                    cell.configure(title: subcategory.title, isExpanded: isExpanded, isSubCell: true)
                     return cell
                 }
                 rowIndex += 1
-                if subcategory.isExpanded {
-                    if rowIndex == indexPath.row {
-                        let gridCell = tableView.dequeueReusableCell(withIdentifier: "GridCell", for: indexPath) as! GridTableCell
-                        gridCell.configure(items: subcategory.gridItems)
-                        return gridCell
-                    }
-                    rowIndex += 1
+                
+                if let expandedSubcategoryIndex = expandedSubcategoryIndex, expandedSubcategoryIndex == indexPath {
+                    let gridCell = tableView.dequeueReusableCell(withIdentifier: "GridCell", for: indexPath) as! GridTableCell
+                    gridCell.configure(items: subcategory.products, name: subcategory.title)
+                    return gridCell
                 }
             }
         }
@@ -337,27 +243,32 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let category = categories[indexPath.section]
-        if indexPath.row == 0 {
-            category.isExpanded.toggle()
-        } else {
-            var rowIndex = 1
-            for i in 0..<category.subcategories.count {
-                if rowIndex == indexPath.row {
-                    category.subcategories[i].isExpanded.toggle()
-                    break
-                }
-                rowIndex += 1
-                if category.subcategories[i].isExpanded {
-                    rowIndex += 1
-                }
+        if indexPath.row == 0 { // Category tapped
+            if expandedCategoryIndex == indexPath.section {
+                expandedCategoryIndex = nil
+                expandedSubcategoryIndex = nil
+            } else {
+                expandedCategoryIndex = indexPath.section
+                expandedSubcategoryIndex = nil
+            }
+        } else { // Subcategory tapped
+            let subcategoryIndexPath = IndexPath(row: indexPath.row + 1, section: indexPath.section)
+            if expandedSubcategoryIndex == subcategoryIndexPath {
+                expandedSubcategoryIndex = nil
+            } else {
+                expandedSubcategoryIndex = subcategoryIndexPath
             }
         }
-        categories[indexPath.section] = category
         tableView.reloadData()
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return nil
+        let headerView = UIView()
+        headerView.backgroundColor = .clear // You can set a light gray color if needed
+        return headerView
     }
-}
 
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 10 // Adjust the spacing as needed
+    }
+
+}

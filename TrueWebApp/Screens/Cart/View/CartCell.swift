@@ -41,8 +41,8 @@ class CartCell: UITableViewCell {
         contentView.layer.cornerRadius = 4
         
         quantityView.layer.cornerRadius = 4
-        quantityView.layer.borderWidth = 1
-        quantityView.layer.borderColor = UIColor.customBlue.cgColor
+//        quantityView.layer.borderWidth = 1
+        quantityView.layer.backgroundColor = UIColor.systemGray5.cgColor
         starView.layer.borderWidth = 1
         starView.layer.borderColor = UIColor.gray.cgColor
         starView.layer.cornerRadius = starView.frame.height / 2

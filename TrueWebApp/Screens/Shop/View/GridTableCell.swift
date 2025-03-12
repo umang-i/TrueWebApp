@@ -11,6 +11,7 @@ class GridTableCell: UITableViewCell, UICollectionViewDelegate, UICollectionView
     
     var collectionView: UICollectionView!
     var item: [Product] = []
+    var name : String?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -35,8 +36,9 @@ class GridTableCell: UITableViewCell, UICollectionViewDelegate, UICollectionView
         ])
     }
     
-    func configure(items: [Product]) {
+    func configure(items: [Product] , name : String) {
         self.item = items
+        self.name = name
         collectionView.reloadData()
     }
     
@@ -46,11 +48,11 @@ class GridTableCell: UITableViewCell, UICollectionViewDelegate, UICollectionView
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! GridCell
-        print(item[indexPath.row].name)
-        cell.configure(title: item[indexPath.row].name,
-                           image: item[indexPath.row].imageUrl,
+        print(item[indexPath.row].title)
+        cell.configure(title: item[indexPath.row].title,
+                       image: item[indexPath.row].img,
                            price: "\(item[indexPath.row].price)",
-                       wallet: "\(item[indexPath.row].price)", brand: item[indexPath.row].brand)
+                       wallet: "\(item[indexPath.row].price)", brand: name ?? "")
         return cell
     }
     
@@ -83,7 +85,8 @@ class ExpandableCell: UITableViewCell {
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             arrowImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            arrowImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+            arrowImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 50)
         ])
     }
     
