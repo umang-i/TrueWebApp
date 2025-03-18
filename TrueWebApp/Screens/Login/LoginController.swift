@@ -94,6 +94,7 @@ class LoginController: UIViewController, UITextViewDelegate {
         button.backgroundColor = .customRed
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 4
+        button.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
         button.translatesAutoresizingMaskIntoConstraints = false
         
         return button

@@ -75,25 +75,25 @@ class PasswordController: UIViewController, CustomNavBarDelegate {
                 currentPasswordField.topAnchor.constraint(equalTo: bannerImageView.bottomAnchor, constant: 20),
                 currentPasswordField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
                 currentPasswordField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-                currentPasswordField.heightAnchor.constraint(equalToConstant: 60),
+                currentPasswordField.heightAnchor.constraint(equalToConstant: textFieldHeight),
                 
                 // New Password Field
                 newPasswordField.topAnchor.constraint(equalTo: currentPasswordField.bottomAnchor, constant: 10),
                 newPasswordField.leadingAnchor.constraint(equalTo: currentPasswordField.leadingAnchor),
                 newPasswordField.trailingAnchor.constraint(equalTo: currentPasswordField.trailingAnchor),
-                newPasswordField.heightAnchor.constraint(equalToConstant: 60),
+                newPasswordField.heightAnchor.constraint(equalToConstant: textFieldHeight),
                 
                 // Confirm Password Field
                 confirmPasswordField.topAnchor.constraint(equalTo: newPasswordField.bottomAnchor, constant: 10),
                 confirmPasswordField.leadingAnchor.constraint(equalTo: newPasswordField.leadingAnchor),
                 confirmPasswordField.trailingAnchor.constraint(equalTo: newPasswordField.trailingAnchor),
-                confirmPasswordField.heightAnchor.constraint(equalToConstant: 60),
+                confirmPasswordField.heightAnchor.constraint(equalToConstant: textFieldHeight),
                 
                 // Update Button
                 updateButton.topAnchor.constraint(equalTo: confirmPasswordField.bottomAnchor, constant: 20),
                 updateButton.leadingAnchor.constraint(equalTo: confirmPasswordField.leadingAnchor),
                 updateButton.trailingAnchor.constraint(equalTo: confirmPasswordField.trailingAnchor),
-                updateButton.heightAnchor.constraint(equalToConstant: 50),
+                updateButton.heightAnchor.constraint(equalToConstant: buttonHeight),
             ])
         }
     

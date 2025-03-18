@@ -9,7 +9,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DetailOrderController" customModule="TrueApp" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="DetailOrderController" customModule="TrueWebApp" customModuleProvider="target">
             <connections>
                 <outlet property="addressTextLable" destination="JKO-x8-ODV" id="Ya2-Fe-wIS"/>
                 <outlet property="cancelOrderButton" destination="0kt-Ei-Xea" id="56l-0H-PO9"/>
@@ -69,7 +69,7 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="0KH-jc-g4b">
-                                    <rect key="frame" x="10" y="689" width="373" height="468.33333333333326"/>
+                                    <rect key="frame" x="10" y="679" width="373" height="468.33333333333326"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 </tableView>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nsy-1I-a4p">
@@ -302,32 +302,32 @@ Immyz Ltd, 78 Stockport Road, Ashton-under-Lyne, Greater Manchester, OL70LH</str
                                     </constraints>
                                 </view>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0kt-Ei-Xea">
-                                    <rect key="frame" x="10" y="652" width="373" height="50"/>
+                                    <rect key="frame" x="10" y="642" width="373" height="40"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="50" id="2E3-7c-uwJ"/>
+                                        <constraint firstAttribute="height" constant="40" id="2E3-7c-uwJ"/>
                                     </constraints>
                                     <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <state key="normal" title="Button"/>
                                     <buttonConfiguration key="configuration" style="filled" title="Cancel Order">
-                                        <fontDescription key="titleFontDescription" type="boldSystem" pointSize="16"/>
+                                        <fontDescription key="titleFontDescription" type="boldSystem" pointSize="14"/>
                                         <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </buttonConfiguration>
                                 </button>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Order Items" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hpp-GB-Uoq">
-                                    <rect key="frame" x="10" y="662" width="183" height="21"/>
+                                    <rect key="frame" x="10" y="652" width="183" height="21"/>
                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qMv-4f-dl1">
-                                    <rect key="frame" x="10" y="592" width="373" height="50"/>
+                                    <rect key="frame" x="10" y="592" width="373" height="40"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="50" id="aVq-3D-CJ8"/>
+                                        <constraint firstAttribute="height" constant="40" id="aVq-3D-CJ8"/>
                                     </constraints>
                                     <color key="tintColor" red="1" green="0.1960784314" blue="0.062745098040000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <state key="normal" title="Button"/>
                                     <buttonConfiguration key="configuration" style="filled" title="Complete Payment">
-                                        <fontDescription key="titleFontDescription" type="boldSystem" pointSize="16"/>
+                                        <fontDescription key="titleFontDescription" type="boldSystem" pointSize="14"/>
                                         <color key="baseBackgroundColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </buttonConfiguration>
                                 </button>

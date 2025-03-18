@@ -112,10 +112,11 @@ class RewardCell: UITableViewCell {
     private let claimButton: UIButton = {
         let button = UIButton()
         button.setTitle("CLAIM", for: .normal)
+        button.titleLabel?.font = UIFont(name: "Roboto-Medium", size: 14)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .customRed
         button.layer.cornerRadius = 4
-        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        button.heightAnchor.constraint(equalToConstant: buttonHeight).isActive = true
         button.clipsToBounds = true
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -178,8 +179,8 @@ class RewardCell: UITableViewCell {
             headStack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 20),
             headStack.trailingAnchor.constraint(lessThanOrEqualTo: containerView.trailingAnchor, constant: -20),
 
-            tierIcon.widthAnchor.constraint(equalToConstant: 80), // Set a fixed size
-            tierIcon.heightAnchor.constraint(equalToConstant: 80), // Adjust as needed
+            tierIcon.widthAnchor.constraint(equalToConstant: 50), // Set a fixed size
+            tierIcon.heightAnchor.constraint(equalToConstant: 50), // Adjust as needed
 
             descriptionLabel.topAnchor.constraint(equalTo: headStack.bottomAnchor, constant: 8),
             descriptionLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
@@ -193,9 +194,9 @@ class RewardCell: UITableViewCell {
             detailsStack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
             detailsStack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10),
 
-            claimButton.heightAnchor.constraint(equalToConstant: 50),
+            claimButton.heightAnchor.constraint(equalToConstant: buttonHeight),
             claimButton.widthAnchor.constraint(equalTo: detailsStack.widthAnchor),
-            claimButton.topAnchor.constraint(equalTo: detailsStack.bottomAnchor, constant: 10)
+            claimButton.topAnchor.constraint(equalTo: detailsStack.bottomAnchor, constant: 20)
         
         ])
     }

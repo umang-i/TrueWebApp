@@ -39,7 +39,7 @@ class MyCompanyController: UIViewController, CustomNavBarDelegate {
     let updateButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont(name: "Roboto-Bold", size: 16)
+        button.titleLabel?.font = UIFont(name: "Roboto-Bold", size: 14)
         button.backgroundColor = UIColor.customRed
         button.layer.cornerRadius = 4
         button.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .normal)
@@ -52,7 +52,7 @@ class MyCompanyController: UIViewController, CustomNavBarDelegate {
         let button = UIButton(type: .system)
         button.setTitle("Delete", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
         button.backgroundColor = UIColor.customRed
         button.layer.cornerRadius = 4
         button.setImage(UIImage(systemName: "trash.fill"), for: .normal)
@@ -147,32 +147,32 @@ class MyCompanyController: UIViewController, CustomNavBarDelegate {
             line1Field.topAnchor.constraint(equalTo: companyNameField.bottomAnchor, constant: 10),
             line1Field.leadingAnchor.constraint(equalTo: companyNameField.leadingAnchor),
             line1Field.trailingAnchor.constraint(equalTo: companyNameField.trailingAnchor),
-            line1Field.heightAnchor.constraint(equalToConstant: 60),
+            line1Field.heightAnchor.constraint(equalToConstant:textFieldHeight),
             
             line2Field.topAnchor.constraint(equalTo: line1Field.bottomAnchor, constant: 10),
             line2Field.leadingAnchor.constraint(equalTo: line1Field.leadingAnchor),
             line2Field.trailingAnchor.constraint(equalTo: line1Field.trailingAnchor),
-            line2Field.heightAnchor.constraint(equalToConstant: 60),
+            line2Field.heightAnchor.constraint(equalToConstant: textFieldHeight),
             
             cityField.topAnchor.constraint(equalTo: line2Field.bottomAnchor, constant: 10),
             cityField.leadingAnchor.constraint(equalTo: line2Field.leadingAnchor),
             cityField.trailingAnchor.constraint(equalTo: line2Field.trailingAnchor),
-            cityField.heightAnchor.constraint(equalToConstant: 60),
+            cityField.heightAnchor.constraint(equalToConstant: textFieldHeight),
             
             countyField.topAnchor.constraint(equalTo: cityField.bottomAnchor, constant: 10),
             countyField.leadingAnchor.constraint(equalTo: cityField.leadingAnchor),
             countyField.trailingAnchor.constraint(equalTo: cityField.trailingAnchor),
-            countyField.heightAnchor.constraint(equalToConstant: 60),
+            countyField.heightAnchor.constraint(equalToConstant: textFieldHeight),
             
             postcodeField.topAnchor.constraint(equalTo: countyField.bottomAnchor, constant: 10),
             postcodeField.leadingAnchor.constraint(equalTo: countyField.leadingAnchor),
             postcodeField.trailingAnchor.constraint(equalTo: countyField.trailingAnchor),
-            postcodeField.heightAnchor.constraint(equalToConstant: 60),
+            postcodeField.heightAnchor.constraint(equalToConstant: textFieldHeight),
             
             updateButton.topAnchor.constraint(equalTo: postcodeField.bottomAnchor, constant: 20),
             updateButton.leadingAnchor.constraint(equalTo: postcodeField.leadingAnchor),
             updateButton.trailingAnchor.constraint(equalTo: postcodeField.trailingAnchor),
-            updateButton.heightAnchor.constraint(equalToConstant: 50),
+            updateButton.heightAnchor.constraint(equalToConstant: buttonHeight),
         ])
 
         if num == 1 {
@@ -181,7 +181,7 @@ class MyCompanyController: UIViewController, CustomNavBarDelegate {
                 deleteButton.topAnchor.constraint(equalTo: updateButton.bottomAnchor, constant: 15),
                 deleteButton.leadingAnchor.constraint(equalTo: updateButton.leadingAnchor),
                 deleteButton.trailingAnchor.constraint(equalTo: updateButton.trailingAnchor),
-                deleteButton.heightAnchor.constraint(equalToConstant: 50),
+                deleteButton.heightAnchor.constraint(equalToConstant: buttonHeight),
             ])
         }
     }

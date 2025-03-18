@@ -134,7 +134,7 @@ class NotificationPrefCell: UITableViewCell {
 
     private func setupRadioButton(outerView: UIView, innerView: UIView, selector: Selector) {
         // Outer circle (border)
-        outerView.layer.cornerRadius = 4
+        outerView.layer.cornerRadius = 12
         outerView.layer.borderWidth = 2
         outerView.layer.borderColor = UIColor.customRed.cgColor
         outerView.backgroundColor = .white
@@ -142,7 +142,7 @@ class NotificationPrefCell: UITableViewCell {
         outerView.isUserInteractionEnabled = true
 
         // Inner circle (filled when selected)
-        innerView.layer.cornerRadius = 4
+        innerView.layer.cornerRadius = 6
         innerView.backgroundColor = .clear
         innerView.translatesAutoresizingMaskIntoConstraints = false
 

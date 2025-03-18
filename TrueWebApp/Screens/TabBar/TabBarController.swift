@@ -51,7 +51,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         
         homeVC.tabBarItem = UITabBarItem(title: "Dashboard", image: resizeImage(named: "dash", size: CGSize(width: 25, height: 25)), tag: 0)
         shopVC.tabBarItem = UITabBarItem(title: "Shop", image: resizeImage(named: "shop", size: CGSize(width: 25, height: 25)), tag: 1)
-        rewardVc.tabBarItem = UITabBarItem(title: "Rewards", image: resizeImage(named: "badge", size: CGSize(width: 25, height: 25)), tag: 2)
+        rewardVc.tabBarItem = UITabBarItem(title: "Rewards", image: resizeImage(named: "reward", size: CGSize(width: 25, height: 25)), tag: 2)
         accountVC.tabBarItem = UITabBarItem(title: "Account", image: resizeImage(named: "user1", size: CGSize(width: 25, height: 25)), tag: 3)
         
         // Apply font to all tab bar items
@@ -197,7 +197,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
             appBarImageView.image = UIImage(named: "shop")?.withRenderingMode(.alwaysTemplate)
         case 2:
             appBarLabel.text = "Rewards"
-            appBarImageView.image = UIImage(named: "badge1")?.withRenderingMode(.alwaysTemplate)
+            appBarImageView.image = UIImage(named: "reward")?.withRenderingMode(.alwaysTemplate)
         default:
             break
         }

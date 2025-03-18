@@ -279,7 +279,7 @@ class QuantitySelectorView: UIView {
         let button = UIButton()
         button.setTitle("−", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .regular)
-        button.setTitleColor(.customBlue, for: .normal)
+        button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .clear
         return button
     }()
@@ -288,7 +288,7 @@ class QuantitySelectorView: UIView {
         let button = UIButton()
         button.setTitle("+", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .regular)
-        button.setTitleColor(.customBlue, for: .normal)
+        button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .clear
         return button
     }()
@@ -298,7 +298,7 @@ class QuantitySelectorView: UIView {
         label.text = "1"
         label.font = UIFont(name: "Roboto-Regular", size: 20)
         label.textAlignment = .center
-        label.textColor = .customBlue
+        label.textColor = .white
         return label
     }()
     
@@ -314,10 +314,10 @@ class QuantitySelectorView: UIView {
     }
     
     private func setupUI() {
-        backgroundColor = UIColor.systemGray5
+        backgroundColor = UIColor.customRed
         layer.cornerRadius = 4
         //layer.borderWidth = 1
-        //layer.borderColor = UIColor.customBlue.cgColor
+       // layer.backgroundColor = UIColor.customRed.cgColor
         clipsToBounds = true
         
         addSubview(minusButton)

@@ -14,7 +14,7 @@ class HelperFunct {
     static func createTextField(placeholder: String, isSecure: Bool = false) -> UITextField {
         let textField = UITextField()
         textField.placeholder = placeholder
-        textField.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        textField.heightAnchor.constraint(equalToConstant: textFieldHeight).isActive = true
         textField.borderStyle = .roundedRect
         textField.font = UIFont(name: "Roboto-Regular", size: 14)
         textField.layer.borderColor = UIColor.customBlue.cgColor

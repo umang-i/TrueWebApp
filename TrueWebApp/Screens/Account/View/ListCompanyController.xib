@@ -10,7 +10,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ListCompanyController" customModule="TrueApp" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ListCompanyController" customModule="TrueWebApp" customModuleProvider="target">
             <connections>
                 <outlet property="listTableView" destination="pqi-RE-92V" id="kUW-Nj-Esj"/>
                 <outlet property="newBranchButton" destination="FBP-we-Rn3" id="OEj-of-FLt"/>
@@ -35,19 +35,19 @@
                                     </constraints>
                                 </imageView>
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="pqi-RE-92V">
-                                    <rect key="frame" x="0.0" y="270" width="393" height="572"/>
+                                    <rect key="frame" x="0.0" y="260" width="393" height="582"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 </tableView>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FBP-we-Rn3">
-                                    <rect key="frame" x="10" y="200" width="373" height="50"/>
+                                    <rect key="frame" x="10" y="200" width="373" height="40"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="50" id="zOb-qm-GxQ"/>
+                                        <constraint firstAttribute="height" constant="40" id="zOb-qm-GxQ"/>
                                     </constraints>
                                     <state key="normal" title="Button"/>
                                     <buttonConfiguration key="configuration" style="filled" title="New Branch" imagePadding="10">
-                                        <imageReference key="image" image="plus" catalog="system" symbolScale="large"/>
+                                        <imageReference key="image" image="plus" catalog="system" symbolScale="medium"/>
                                         <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" weight="bold"/>
-                                        <fontDescription key="titleFontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="17"/>
+                                        <fontDescription key="titleFontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="14"/>
                                         <color key="baseBackgroundColor" red="0.73333333329999995" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     </buttonConfiguration>
                                     <connections>

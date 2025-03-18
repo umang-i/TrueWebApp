@@ -23,7 +23,11 @@ class DashboardController: UIViewController {
     @IBOutlet weak var creditView: UIView!
     @IBOutlet weak var notificationsTableView: UITableView!
     @IBOutlet weak var allOrdersButton: UIButton!
-    // @IBOutlet weak var dashView: UIView!
+    @IBOutlet weak var bannerCollectionView: UICollectionView!
+    @IBOutlet weak var imgPageController: UIPageControl!
+    var bannerImages = ["dummy" , "dummy1"]
+    var timer : Timer?
+    var currentIndex = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +35,7 @@ class DashboardController: UIViewController {
         setupUI()
         setupTableViews()
         setupTapGesture()
+        setCollectionView()
     }
     
     func setupUI(){
@@ -50,7 +55,7 @@ class DashboardController: UIViewController {
         shopButton.titleLabel?.font = UIFont(name: "Roboto-Bold", size: 14)
         favouriteButton.titleLabel?.font = UIFont(name: "Roboto-Bold", size: 14)
         creditLabel.font =  UIFont(name: "Roboto-Medium", size: 16)
-        referTextLabel.font =  UIFont(name: "Roboto-Medium", size: 20)
+        referTextLabel.font =  UIFont(name: "Roboto-Medium", size: 18)
         referLabel.font =  UIFont(name: "Roboto-Medium", size: 14)
         recentNotifLabel.font = UIFont(name: "Roboto-Regular", size: 15)
         recentOrderLabel.font = UIFont(name: "Roboto-Medium", size: 15)
@@ -63,6 +68,37 @@ class DashboardController: UIViewController {
         notificationsTableView.dataSource = self
         ordersTableView.register(UINib(nibName: "OrderCell", bundle: nil), forCellReuseIdentifier: "OrderCell")
         notificationsTableView.register(UINib(nibName: "NotificationCell", bundle: nil), forCellReuseIdentifier: "NotificationCell")
+    }
+    
+    func setCollectionView() {
+        bannerCollectionView.delegate = self
+        bannerCollectionView.dataSource = self
+        bannerCollectionView.register(UINib(nibName: "BannerImageCell", bundle: nil), forCellWithReuseIdentifier: "bannerCell")
+        
+        if let layout = bannerCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.scrollDirection = .horizontal
+            layout.minimumLineSpacing = 0
+            layout.minimumInteritemSpacing = 0
+        }
+        
+        bannerCollectionView.isPagingEnabled = true // Ensures smooth sliding
+        bannerCollectionView.showsHorizontalScrollIndicator = false
+        bannerCollectionView.showsVerticalScrollIndicator = false
+        
+        timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(slideToNext), userInfo: nil, repeats: true)
+        imgPageController.numberOfPages = bannerImages.count
+    }
+
+    
+    @objc func slideToNext() {
+        if currentIndex < bannerImages.count - 1 {
+            currentIndex += 1
+        } else {
+            currentIndex = 0
+        }
+        imgPageController.currentPage = currentIndex
+        let indexPath = IndexPath(item: currentIndex, section: 0)
+        bannerCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     }
     
     func setupTapGesture() {
@@ -82,8 +118,8 @@ class DashboardController: UIViewController {
     }
     
     @objc func navigateToReferView() {
-        let referController = ReferRetailerViewController()
-        self.navigationController?.pushViewController(referController, animated: true)
+        let referRetailerVC = ReferController()
+        self.navigationController?.pushViewController(referRetailerVC, animated: true)
     }
     @IBAction func shopButtonAction(_ sender: Any) {
         if let tabBarController = self.tabBarController {
@@ -159,3 +195,27 @@ extension DashboardController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return bannerImages.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
+            return UICollectionViewCell()
+        }
+        cell.setImages(imgName: bannerImages[indexPath.row])
+        return cell
+    }
+    
+    // 🔹 Ensure cell size dynamically matches the collection view's size
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+    }
+    
+    // 🔹 Ensure no spacing between items
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+}

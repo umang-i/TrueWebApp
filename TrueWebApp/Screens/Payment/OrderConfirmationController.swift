@@ -42,7 +42,7 @@ class OrderConfirmationViewController: UIViewController {
         continueButton.setTitle("CONTINUE SHOPPING", for: .normal)
         continueButton.backgroundColor = .customBlue
         continueButton.setTitleColor(.white, for: .normal)
-        continueButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        continueButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
         continueButton.layer.cornerRadius = 4
         continueButton.addTarget(self, action: #selector(continueShoppingTapped), for: .touchUpInside)
         continueButton.translatesAutoresizingMaskIntoConstraints = false
@@ -70,7 +70,7 @@ class OrderConfirmationViewController: UIViewController {
             continueButton.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 30),
             continueButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             continueButton.widthAnchor.constraint(equalToConstant: 380),
-            continueButton.heightAnchor.constraint(equalToConstant: 50)
+            continueButton.heightAnchor.constraint(equalToConstant: buttonHeight)
         ])
     }
 

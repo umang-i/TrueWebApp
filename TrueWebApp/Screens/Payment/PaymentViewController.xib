@@ -9,7 +9,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PaymentViewController" customModule="TrueApp" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PaymentViewController" customModule="TrueWebApp" customModuleProvider="target">
             <connections>
                 <outlet property="bankDropDownButton" destination="Di0-eK-IsU" id="DuG-Sh-aYg"/>
                 <outlet property="bankRadioButton" destination="qgD-Gz-qLd" id="udG-WT-XnU"/>
@@ -75,10 +75,10 @@
                     <rect key="frame" x="20" y="210" width="353" height="223"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="47W-Co-ZUM">
-                            <rect key="frame" x="20" y="20" width="313" height="50"/>
+                            <rect key="frame" x="20" y="30" width="313" height="40"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="PAY BY BANK TO RECEIVE £1.00 CREDITED" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KIH-1P-of7">
-                                    <rect key="frame" x="20" y="16.666666666666657" width="283" height="17"/>
+                                    <rect key="frame" x="20" y="11.666666666666657" width="283" height="17"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="17" id="efH-g0-6P8"/>
                                     </constraints>
@@ -90,7 +90,7 @@
                             <color key="backgroundColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <constraints>
                                 <constraint firstItem="KIH-1P-of7" firstAttribute="centerY" secondItem="47W-Co-ZUM" secondAttribute="centerY" id="G65-4d-3rz"/>
-                                <constraint firstAttribute="height" constant="50" id="K6l-cu-ddi"/>
+                                <constraint firstAttribute="height" constant="40" id="K6l-cu-ddi"/>
                                 <constraint firstItem="KIH-1P-of7" firstAttribute="leading" secondItem="47W-Co-ZUM" secondAttribute="leading" constant="20" id="qMe-kl-uOv"/>
                                 <constraint firstAttribute="trailing" secondItem="KIH-1P-of7" secondAttribute="trailing" constant="10" id="v97-3P-QPx"/>
                             </constraints>
@@ -101,9 +101,9 @@
                             </userDefinedRuntimeAttributes>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9uZ-Be-PLQ">
-                            <rect key="frame" x="20" y="153" width="313" height="50"/>
+                            <rect key="frame" x="20" y="153" width="313" height="40"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="50" id="FQN-9m-arY"/>
+                                <constraint firstAttribute="height" constant="40" id="FQN-9m-arY"/>
                             </constraints>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="filled" title="AUTHORIZE PAYMENT - £32.9">
@@ -126,10 +126,10 @@
                         <constraint firstItem="Di0-eK-IsU" firstAttribute="trailing" secondItem="47W-Co-ZUM" secondAttribute="trailing" id="67I-Lr-kYQ"/>
                         <constraint firstItem="Di0-eK-IsU" firstAttribute="leading" secondItem="47W-Co-ZUM" secondAttribute="leading" id="8pC-gL-h9W"/>
                         <constraint firstItem="47W-Co-ZUM" firstAttribute="leading" secondItem="9CX-2c-xpy" secondAttribute="leading" constant="20" id="9Cz-VP-jod"/>
-                        <constraint firstItem="47W-Co-ZUM" firstAttribute="top" secondItem="9CX-2c-xpy" secondAttribute="top" constant="20" id="J2b-9g-d0g"/>
+                        <constraint firstItem="47W-Co-ZUM" firstAttribute="top" secondItem="9CX-2c-xpy" secondAttribute="top" constant="30" id="J2b-9g-d0g"/>
                         <constraint firstItem="9uZ-Be-PLQ" firstAttribute="top" secondItem="Di0-eK-IsU" secondAttribute="bottom" constant="17" id="NVb-Ke-tVX"/>
                         <constraint firstItem="9uZ-Be-PLQ" firstAttribute="trailing" secondItem="Di0-eK-IsU" secondAttribute="trailing" id="Qfh-0A-ucM"/>
-                        <constraint firstAttribute="bottom" secondItem="9uZ-Be-PLQ" secondAttribute="bottom" constant="20" id="bXY-0z-56C"/>
+                        <constraint firstAttribute="bottom" secondItem="9uZ-Be-PLQ" secondAttribute="bottom" constant="30" id="bXY-0z-56C"/>
                         <constraint firstItem="9uZ-Be-PLQ" firstAttribute="leading" secondItem="Di0-eK-IsU" secondAttribute="leading" id="d1k-cp-4du"/>
                         <constraint firstAttribute="trailing" secondItem="47W-Co-ZUM" secondAttribute="trailing" constant="20" id="lT6-8q-4Ft"/>
                         <constraint firstItem="Di0-eK-IsU" firstAttribute="top" secondItem="47W-Co-ZUM" secondAttribute="bottom" constant="16" id="tmT-ep-8hD"/>
@@ -173,12 +173,13 @@
                     <rect key="frame" x="20" y="502" width="353" height="290"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fsB-an-kK9">
-                            <rect key="frame" x="17" y="220" width="319" height="50"/>
+                            <rect key="frame" x="17" y="220" width="319" height="40"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="50" id="Oh7-6A-Wde"/>
+                                <constraint firstAttribute="height" constant="40" id="Oh7-6A-Wde"/>
                             </constraints>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="filled" title="Complete Payment">
+                                <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="14"/>
                                 <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <color key="baseBackgroundColor" red="0.73333333329999995" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             </buttonConfiguration>
@@ -251,7 +252,7 @@
                         <constraint firstItem="9di-eo-DTl" firstAttribute="top" secondItem="gEt-hL-ewy" secondAttribute="bottom" constant="10" id="5l1-ql-OTH"/>
                         <constraint firstItem="ydt-nq-wkv" firstAttribute="leading" secondItem="9di-eo-DTl" secondAttribute="trailing" constant="16" id="883-DT-AYi"/>
                         <constraint firstItem="hve-Cu-2Z6" firstAttribute="centerX" secondItem="Xh1-tU-nbj" secondAttribute="centerX" id="9oE-Eg-mGD"/>
-                        <constraint firstAttribute="bottom" secondItem="fsB-an-kK9" secondAttribute="bottom" constant="20" id="Dig-FA-a2a"/>
+                        <constraint firstAttribute="bottom" secondItem="fsB-an-kK9" secondAttribute="bottom" constant="30" id="Dig-FA-a2a"/>
                         <constraint firstItem="9di-eo-DTl" firstAttribute="leading" secondItem="gEt-hL-ewy" secondAttribute="leading" id="HEd-LC-9LB"/>
                         <constraint firstItem="ydt-nq-wkv" firstAttribute="trailing" secondItem="gEt-hL-ewy" secondAttribute="trailing" id="TiH-tu-t97"/>
                         <constraint firstItem="ydt-nq-wkv" firstAttribute="width" secondItem="Xh1-tU-nbj" secondAttribute="width" multiplier="0.35" id="Yw6-5K-AoB"/>

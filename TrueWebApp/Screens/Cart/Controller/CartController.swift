@@ -52,7 +52,7 @@ class CartController: UIViewController, CustomNavBarDelegate {
                     totalHeight += cartTableView.rectForRow(at: indexPath).height
                 }
             }
-            tableViewHeightConstraint?.constant = totalHeight
+            tableViewHeightConstraint?.constant = totalHeight + 100
         }
     func setnavBar() {
         let topBackgroundView = UIView()

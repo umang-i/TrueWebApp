@@ -8,6 +8,9 @@
 import Foundation
 import UIKit
 
+var buttonHeight = 50.0
+var textFieldHeight = 50.0
+
 class CustomRadioButton: UIButton {
     
     // Selected and unselected states
