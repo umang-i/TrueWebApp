@@ -10,6 +10,7 @@ import UIKit
 class DashboardController: UIViewController {
     
     // @IBOutlet weak var dashboardLabel: UILabel!
+    @IBOutlet weak var circleCollectionView: UICollectionView!
     @IBOutlet weak var recentOrderLabel: UILabel!
     @IBOutlet weak var recentNotifLabel: UILabel!
     @IBOutlet weak var referLabel: UILabel!
@@ -25,7 +26,10 @@ class DashboardController: UIViewController {
     @IBOutlet weak var allOrdersButton: UIButton!
     @IBOutlet weak var bannerCollectionView: UICollectionView!
     @IBOutlet weak var imgPageController: UIPageControl!
+    @IBOutlet weak var itemsCollectionView: UICollectionView!
     var bannerImages = ["dummy" , "dummy1"]
+    var items = ["dum" , "dum1" , "dum2"]
+    var img = ["img1","img2","img3","img4","img1","img2","img3","img4","img1","img2"]
     var timer : Timer?
     var currentIndex = 0
     
@@ -75,16 +79,36 @@ class DashboardController: UIViewController {
         bannerCollectionView.dataSource = self
         bannerCollectionView.register(UINib(nibName: "BannerImageCell", bundle: nil), forCellWithReuseIdentifier: "bannerCell")
         
+        itemsCollectionView.delegate = self
+        itemsCollectionView.dataSource = self
+        itemsCollectionView.register(UINib(nibName: "BannerImageCell", bundle: nil), forCellWithReuseIdentifier: "bannerCell")
+        
+        circleCollectionView.register(UINib(nibName: "CircleCategoryCell", bundle: nil), forCellWithReuseIdentifier: "circleCell")
+        circleCollectionView.delegate = self
+        circleCollectionView.dataSource = self
+      //  circleCollectionView.backgroundColor = UIColor.customBlue.withAlphaComponent(0.2)
+
+        
         if let layout = bannerCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.scrollDirection = .horizontal
             layout.minimumLineSpacing = 0
             layout.minimumInteritemSpacing = 0
         }
+            if let layout = itemsCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                layout.scrollDirection = .horizontal
+                layout.minimumLineSpacing = 0
+                layout.minimumInteritemSpacing = 0
+            }
+        if let layout = circleCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                layout.scrollDirection = .horizontal
+              //  layout.minimumLineSpacing = 10
+                layout.minimumInteritemSpacing = 0
+            }
         
         bannerCollectionView.isPagingEnabled = true // Ensures smooth sliding
         bannerCollectionView.showsHorizontalScrollIndicator = false
         bannerCollectionView.showsVerticalScrollIndicator = false
-        
+    
         timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(slideToNext), userInfo: nil, repeats: true)
         imgPageController.numberOfPages = bannerImages.count
     }
@@ -198,20 +222,51 @@ extension DashboardController: UITableViewDelegate, UITableViewDataSource {
 extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return bannerImages.count
+       if collectionView == circleCollectionView {
+           return img.count
+        } else if collectionView == bannerCollectionView {
+            return bannerImages.count
+
+        } else if collectionView == itemsCollectionView {
+            return items.count
+        }
+        return 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
-            return UICollectionViewCell()
+        
+        if collectionView == circleCollectionView {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "circleCell", for: indexPath) as? CircleCategoryCell else {
+                return UICollectionViewCell()
+            }
+            cell.setCell(categoryName: "Handmade", image: img[indexPath.row]) // Set category cell
+            return cell
+
+        } else if collectionView == bannerCollectionView {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
+                return UICollectionViewCell()
+            }
+            cell.setImages(imgName: bannerImages[indexPath.row], callerId: 0) // Set banner image
+            return cell
+
+        } else if collectionView == itemsCollectionView {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
+                return UICollectionViewCell()
+            }
+            cell.setImages(imgName: items[indexPath.row], callerId: 1) // Set item image
+            return cell
         }
-        cell.setImages(imgName: bannerImages[indexPath.row])
-        return cell
+
+        return UICollectionViewCell() // Default fallback
     }
     
     // 🔹 Ensure cell size dynamically matches the collection view's size
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+        if collectionView == circleCollectionView {
+            return CGSize(width: 100, height: 100) // Fixed size for circle items
+        } else {
+            return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+        }
     }
     
     // 🔹 Ensure no spacing between items

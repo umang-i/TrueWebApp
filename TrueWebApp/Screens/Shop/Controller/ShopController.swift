@@ -15,16 +15,18 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
     private var filterView: FilterView?
 
     var tableView: UITableView!
+    var dealTableView : UITableView!
+    
     var categories: [Category] = []
     
     var filteredCategories: [Category] = []
     var overlayView = UIView()
     
     private var cartView: UIView!
-       private var cartItemCountLabel: UILabel!
-       private var cartTotalLabel: UILabel!
-       private var cartTextLabel: UILabel!
-       private var viewBasketButton: UIButton!
+    private var cartItemCountLabel: UILabel!
+    private var cartTotalLabel: UILabel!
+    private var cartTextLabel: UILabel!
+    private var viewBasketButton: UIButton!
     private var cartItems: [Product : Int] = [:]
     
     var expandedCategoryIndex: Int? = nil
@@ -32,6 +34,11 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     var collectionView: UICollectionView!
     var selectedBrands: Set<String> = []
+    
+    var expandedCategories: Set<Int> = [] // Stores expanded categories
+    var expandedSubcategories: [IndexPath: Bool] = [:] // Tracks expanded subcategories per category
+
+
     
     var selectedProductOption: String = "All"
     var selectedStockOption: String = "All"
@@ -46,8 +53,8 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
         setupTableView()
         
         if let loadedCategories = loadCategoriesFromJSON() {
-                   categories = loadedCategories
-               }
+            categories = loadedCategories
+        }
         print(categories)
         setupOverlayView()
     }
@@ -181,86 +188,116 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let category = categories[section]
-        var count = 1 // Category row
-        if expandedCategoryIndex == section {
-            count += category.subCats.count // Expand subcategories if category is expanded
-            if let expandedSubcategoryIndex = expandedSubcategoryIndex, expandedSubcategoryIndex.section == section {
-                count += 1 // Expand grid if subcategory is expanded
+        
+        if expandedCategories.contains(section) {
+            var count = 1 // 1 for the category cell
+            for (index, _) in category.subCats.enumerated() {
+                let subcategoryIndexPath = IndexPath(row: count, section: section)
+                count += 1 // For subcategory
+                
+                if expandedSubcategories[subcategoryIndexPath] == true {
+                    count += 1 // Add extra row for grid cell
+                }
             }
+            return count
+        } else {
+            return 1 // Only show category if not expanded
         }
-        return count
     }
-
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         let category = categories[indexPath.section]
         
         if indexPath.row == 0 {
             return 50 // Category row height
-        } else {
-            var rowIndex = 1
-            for subcategory in category.subCats {
+        }
+
+        var rowIndex = 1
+        for (index, subcategory) in category.subCats.enumerated() {
+            let subcategoryIndexPath = IndexPath(row: rowIndex, section: indexPath.section)
+
+            if rowIndex == indexPath.row {
+                return 50 // Subcategory row height
+            }
+            
+            rowIndex += 1
+
+            if expandedSubcategories[subcategoryIndexPath] == true {
                 if rowIndex == indexPath.row {
-                    return 50 + 5 // Subcategory row height
+                    let gridHeight = 300 * ceil(Double(subcategory.products.count) / 2) + 50
+                                        return CGFloat(gridHeight) + 5
+                    return gridHeight // Increased height for expanded subcategory grid
                 }
                 rowIndex += 1
-                
-                if let expandedSubcategoryIndex = expandedSubcategoryIndex, expandedSubcategoryIndex == indexPath {
-                    let gridHeight = 250 * ceil(Double(subcategory.products.count) / 2) + 50
-                    return CGFloat(gridHeight) + 5
-                }
             }
         }
+
         return UITableView.automaticDimension
     }
+
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let category = categories[indexPath.section]
-        
+
+        // If first row, it's the main category cell
         if indexPath.row == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ExpandableCell", for: indexPath) as! ExpandableCell
-            let isExpanded = expandedCategoryIndex == indexPath.section
+            let isExpanded = expandedCategories.contains(indexPath.section)
             cell.configure(title: category.title, isExpanded: isExpanded)
             return cell
-        } else {
-            var rowIndex = 1
-            for subcategory in category.subCats {
+        }
+
+        var rowIndex = 1
+        for (index, subcategory) in category.subCats.enumerated() {
+            let subcategoryIndexPath = IndexPath(row: rowIndex, section: indexPath.section)
+            
+            if rowIndex == indexPath.row {
+                // Subcategory cell
+                let cell = tableView.dequeueReusableCell(withIdentifier: "ExpandableCell", for: indexPath) as! ExpandableCell
+                let isExpanded = expandedSubcategories[subcategoryIndexPath] ?? false
+                cell.configure(title: subcategory.title, isExpanded: isExpanded, isSubCell: true)
+                return cell
+            }
+            
+            rowIndex += 1
+
+            if expandedSubcategories[subcategoryIndexPath] == true {
                 if rowIndex == indexPath.row {
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "ExpandableCell", for: indexPath) as! ExpandableCell
-                    let isExpanded = expandedSubcategoryIndex == indexPath
-                    cell.configure(title: subcategory.title, isExpanded: isExpanded, isSubCell: true)
-                    return cell
-                }
-                rowIndex += 1
-                
-                if let expandedSubcategoryIndex = expandedSubcategoryIndex, expandedSubcategoryIndex == indexPath {
+                    // Grid cell
                     let gridCell = tableView.dequeueReusableCell(withIdentifier: "GridCell", for: indexPath) as! GridTableCell
                     gridCell.configure(items: subcategory.products, name: subcategory.title)
                     return gridCell
                 }
+                rowIndex += 1
             }
         }
+
         return UITableViewCell()
     }
+
+
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == 0 { // Category tapped
-            if expandedCategoryIndex == indexPath.section {
-                expandedCategoryIndex = nil
-                expandedSubcategoryIndex = nil
+        if indexPath.row == 0 { // Category clicked
+            if expandedCategories.contains(indexPath.section) {
+                expandedCategories.remove(indexPath.section)
             } else {
-                expandedCategoryIndex = indexPath.section
-                expandedSubcategoryIndex = nil
+                expandedCategories.insert(indexPath.section)
             }
-        } else { // Subcategory tapped
-            let subcategoryIndexPath = IndexPath(row: indexPath.row + 1, section: indexPath.section)
-            if expandedSubcategoryIndex == subcategoryIndexPath {
-                expandedSubcategoryIndex = nil
+            tableView.reloadSections([indexPath.section], with: .automatic)
+        } else { // Subcategory clicked
+            let subcategoryIndexPath = IndexPath(row: indexPath.row, section: indexPath.section)
+            
+            if let isExpanded = expandedSubcategories[subcategoryIndexPath] {
+                expandedSubcategories[subcategoryIndexPath] = !isExpanded
             } else {
-                expandedSubcategoryIndex = subcategoryIndexPath
+                expandedSubcategories[subcategoryIndexPath] = true
             }
+            
+            tableView.reloadSections([indexPath.section], with: .automatic)
         }
-        tableView.reloadData()
     }
+
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let headerView = UIView()
         headerView.backgroundColor = .clear // You can set a light gray color if needed

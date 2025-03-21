@@ -9,9 +9,9 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OrdersController" customModule="TrueApp" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OrdersController" customModule="TrueWebApp" customModuleProvider="target">
             <connections>
-                <outlet property="ordersTableView" destination="FoX-jg-iY2" id="SDS-6N-qmf"/>
+                <outlet property="ordersTableView" destination="FoX-jg-iY2" id="Q5G-OP-aSw"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>

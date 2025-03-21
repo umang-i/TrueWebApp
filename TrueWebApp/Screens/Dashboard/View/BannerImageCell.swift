@@ -13,11 +13,12 @@ class BannerImageCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+
     }
     
-    func setImages(imgName : String){
+    func setImages(imgName : String , callerId : Int){
         bannerImageView.image = UIImage(named: imgName)
+        bannerImageView.layer.cornerRadius = 10
     }
     
     override func prepareForReuse() {

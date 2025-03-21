@@ -100,6 +100,47 @@ class GridCell: UICollectionViewCell {
         return button
     }()
     
+    private let shadowView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 10
+
+        // Adding elevation effect (shadow)
+        view.layer.shadowColor = UIColor.customBlue.cgColor
+        view.layer.shadowOpacity = 0.2
+        view.layer.shadowOffset = CGSize(width: 0, height: 0) // Shadow on all sides
+        view.layer.shadowRadius = 6
+        view.layer.masksToBounds = false // Allow shadow to extend beyond bounds
+        
+        return view
+    }()
+    
+    private let bottomPriceLabel: UILabel = {
+        let label = UILabel()
+        label.text = "£3.14 (55%)"
+        label.textColor = .customBlue
+        label.font = UIFont(name: "Roboto-Regular", size: 12)
+        label.numberOfLines = 2
+        label.textAlignment = .left
+        return label
+    }()
+    private let bottomTextLabel: UILabel = {
+        let label = UILabel()
+        label.text = "FAM members"
+        label.textColor = .customBlue
+        label.font = UIFont(name: "Roboto-Bold", size: 12)
+        label.numberOfLines = 2
+        label.textAlignment = .left
+        return label
+    }()
+
+    private let offerBackGroundView: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.customBlue.withAlphaComponent(0.2)
+        view.layer.cornerRadius = 4
+        return view
+    }()
+    
     
     private let quantitySelector = QuantitySelectorView()
     
@@ -115,9 +156,29 @@ class GridCell: UICollectionViewCell {
     }
     
     private func setupUI() {
-        contentView.layer.cornerRadius = 10
-        contentView.layer.borderWidth = 1
-        contentView.layer.borderColor = UIColor.customBlue.cgColor
+        contentView.layer.borderWidth = 0
+           contentView.layer.borderColor = nil
+           contentView.layer.cornerRadius = 10
+           contentView.clipsToBounds = true
+           
+           // Add shadowView behind contentView
+           addSubview(shadowView)
+           shadowView.addSubview(contentView)
+           
+           // Disable autoresizing masks for AutoLayout
+           shadowView.translatesAutoresizingMaskIntoConstraints = false
+           contentView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+                shadowView.topAnchor.constraint(equalTo: topAnchor),
+                shadowView.leadingAnchor.constraint(equalTo: leadingAnchor),
+                shadowView.trailingAnchor.constraint(equalTo: trailingAnchor),
+                shadowView.bottomAnchor.constraint(equalTo: bottomAnchor),
+
+                contentView.topAnchor.constraint(equalTo: shadowView.topAnchor),
+                contentView.leadingAnchor.constraint(equalTo: shadowView.leadingAnchor),
+                contentView.trailingAnchor.constraint(equalTo: shadowView.trailingAnchor),
+                contentView.bottomAnchor.constraint(equalTo: shadowView.bottomAnchor)
+            ])
         
         // Add subviews
         contentView.addSubview(gridImageView)
@@ -129,7 +190,10 @@ class GridCell: UICollectionViewCell {
         contentView.addSubview(addButton)
         contentView.addSubview(quantitySelector)
         contentView.addSubview(originalPriceLabel)
-        
+        contentView.addSubview(offerBackGroundView)
+        offerBackGroundView.addSubview(bottomPriceLabel)
+        offerBackGroundView.addSubview(bottomTextLabel)
+
         // Enable Auto Layout
         gridImageView.translatesAutoresizingMaskIntoConstraints = false
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -140,7 +204,10 @@ class GridCell: UICollectionViewCell {
         favouriteIcon.translatesAutoresizingMaskIntoConstraints = false
         addButton.translatesAutoresizingMaskIntoConstraints = false
         quantitySelector.translatesAutoresizingMaskIntoConstraints = false
-        
+        offerBackGroundView.translatesAutoresizingMaskIntoConstraints = false
+        bottomPriceLabel.translatesAutoresizingMaskIntoConstraints = false
+        bottomTextLabel.translatesAutoresizingMaskIntoConstraints = false
+
         // Constraints
         NSLayoutConstraint.activate([
             saleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
@@ -170,35 +237,50 @@ class GridCell: UICollectionViewCell {
             priceLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             priceLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
             
-            originalPriceLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            originalPriceLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 0),
-            originalPriceLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
+            originalPriceLabel.leadingAnchor.constraint(equalTo: priceLabel.trailingAnchor, constant: 10),
+            originalPriceLabel.topAnchor.constraint(equalTo: priceLabel.topAnchor, constant: 0),
             
-            addButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
-            addButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            offerBackGroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            offerBackGroundView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            offerBackGroundView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
+            offerBackGroundView.heightAnchor.constraint(equalToConstant: 40),
+            
+            bottomPriceLabel.topAnchor.constraint(equalTo: offerBackGroundView.topAnchor, constant: 5),
+            bottomPriceLabel.leadingAnchor.constraint(equalTo: offerBackGroundView.leadingAnchor, constant: 5),
+            bottomPriceLabel.trailingAnchor.constraint(equalTo: offerBackGroundView.trailingAnchor, constant: -5),
+            
+            // Bottom Text Label (Below Bottom Price Label)
+            bottomTextLabel.topAnchor.constraint(equalTo: bottomPriceLabel.bottomAnchor, constant: 2),
+            bottomTextLabel.leadingAnchor.constraint(equalTo: offerBackGroundView.leadingAnchor, constant: 5),
+            bottomTextLabel.trailingAnchor.constraint(equalTo: offerBackGroundView.trailingAnchor, constant: -5),
+            bottomTextLabel.bottomAnchor.constraint(equalTo: offerBackGroundView.bottomAnchor, constant: -5),
+            
+            
+            addButton.trailingAnchor.constraint(equalTo: gridImageView.trailingAnchor, constant: 5),
+            addButton.bottomAnchor.constraint(equalTo: gridImageView.bottomAnchor, constant: 5),
             addButton.widthAnchor.constraint(equalToConstant: 30),
             addButton.heightAnchor.constraint(equalToConstant: 30),
             
             // Quantity Selector (Visible at the bottom)
-            quantitySelector.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
-            quantitySelector.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            quantitySelector.leadingAnchor.constraint(equalTo: priceLabel.trailingAnchor, constant: 10),
-           // quantitySelector.widthAnchor.constraint(equalToConstant: 80),
-            quantitySelector.heightAnchor.constraint(equalToConstant: 30)
+            quantitySelector.trailingAnchor.constraint(equalTo: gridImageView.trailingAnchor, constant: 5),
+            quantitySelector.bottomAnchor.constraint(equalTo: gridImageView.bottomAnchor, constant: 5),
+            quantitySelector.widthAnchor.constraint(equalToConstant: 100),
+            quantitySelector.heightAnchor.constraint(equalToConstant: 30),
         ])
-        
+
         // Initially hide the quantity selector
         quantitySelector.isHidden = true
-        
+
         // Button Actions
         favouriteIcon.addTarget(self, action: #selector(favouriteButtonTapped), for: .touchUpInside)
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
+
     
     func configure(title: String, image: String, price: String, wallet: String, brand: String) {
         nameLabel.text = brand
         titleLabel.text = title
-        priceLabel.text = "\(price)"
+        priceLabel.text = "£\(price)"
         walletAmountLabel.text = "£\(wallet)"
         
         // Load image from URL

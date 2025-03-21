@@ -127,32 +127,6 @@ class LoginController: UIViewController, UITextViewDelegate {
         termsLabel.delegate = self
         authButton.addTarget(self, action: #selector(authButtonTapped), for: .touchUpInside)
     }
-    
-//    private func setupNavigationBar() {
-//        if let navigationController = navigationController {
-//            let appearance = UINavigationBarAppearance()
-//            appearance.configureWithOpaqueBackground()
-//            appearance.backgroundColor = .white // Keep the navigation bar white
-//            appearance.titleTextAttributes = [.foregroundColor: UIColor.black] // Title text color
-//
-//            navigationController.navigationBar.standardAppearance = appearance
-//            navigationController.navigationBar.scrollEdgeAppearance = appearance
-//            navigationController.navigationBar.compactAppearance = appearance
-//            navigationController.navigationBar.tintColor = .black
-//
-//            // Set a custom height for the navigation bar
-//            navigationController.navigationBar.isTranslucent = false
-//            navigationController.navigationBar.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 100)
-//
-//            // Add a blue background view behind the status bar
-//            if let window = UIApplication.shared.windows.first {
-//                let statusBarHeight = window.windowScene?.statusBarManager?.statusBarFrame.height ?? 0
-//                let statusBarView = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: statusBarHeight))
-//                statusBarView.backgroundColor = .customBlue
-//                window.addSubview(statusBarView)
-//            }
-//        }
-//    }
 
 
     // Override this in your ViewController to control status bar text color

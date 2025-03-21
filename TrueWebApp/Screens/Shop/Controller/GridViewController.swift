@@ -7,7 +7,7 @@
 
 import UIKit
 
-class GridViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+class GridViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     var collectionView: UICollectionView!
     var items: [String]
@@ -24,29 +24,33 @@ class GridViewController: UIViewController, UICollectionViewDelegate, UICollecti
     override func viewDidLoad() {
         super.viewDidLoad()
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 100, height: 120)
+        layout.itemSize = CGSize(width: 100, height: 600) // Increased height
         layout.minimumInteritemSpacing = 5
         layout.minimumLineSpacing = 10
         
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
+        collectionView = UICollectionView(frame: view.bounds)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "gridCell")
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
+        
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
         
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         }
-
-        
-        collectionView.collectionViewLayout.invalidateLayout()
-           collectionView.heightAnchor.constraint(equalToConstant: collectionView.contentSize.height).isActive = true
-
     }
+    
     override func viewDidLayoutSubviews() {
-          super.viewDidLayoutSubviews()
-          collectionView.collectionViewLayout.invalidateLayout()
-      }
+        super.viewDidLayoutSubviews()
+        collectionView.collectionViewLayout.invalidateLayout()
+    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return items.count
@@ -57,7 +61,9 @@ class GridViewController: UIViewController, UICollectionViewDelegate, UICollecti
         cell.backgroundColor = .blue
         return cell
     }
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-           return CGSize(width: collectionView.frame.width - 20, height: UICollectionViewFlowLayout.automaticSize.height)
-       }
+
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+//        return CGSize(width: 200, height: 700) // Increase height as needed
+//    }
+
 }
