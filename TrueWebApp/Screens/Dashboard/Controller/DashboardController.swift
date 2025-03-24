@@ -8,16 +8,15 @@
 import UIKit
 
 class DashboardController: UIViewController {
-    
-    // @IBOutlet weak var dashboardLabel: UILabel!
+
     @IBOutlet weak var circleCollectionView: UICollectionView!
     @IBOutlet weak var recentOrderLabel: UILabel!
     @IBOutlet weak var recentNotifLabel: UILabel!
-    @IBOutlet weak var referLabel: UILabel!
-    @IBOutlet weak var referTextLabel: UILabel!
+  //  @IBOutlet weak var referLabel: UILabel!
+   // @IBOutlet weak var referTextLabel: UILabel!
     @IBOutlet weak var creditLabel: UILabel!
     @IBOutlet weak var shopButton: UIButton!
-    @IBOutlet weak var referRewardView: UIView!
+  //  @IBOutlet weak var referRewardView: UIView!
     @IBOutlet weak var notifHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var favouriteButton: UIButton!
     @IBOutlet weak var ordersTableView: UITableView!
@@ -40,6 +39,7 @@ class DashboardController: UIViewController {
         setupTableViews()
         setupTapGesture()
         setCollectionView()
+    
     }
     
     func setupUI(){
@@ -54,13 +54,13 @@ class DashboardController: UIViewController {
         creditView.layer.cornerRadius = 4
         
         allOrdersButton.addTarget(self, action: #selector(allOrdersButtonTapped), for: .touchUpInside)
-        referRewardView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(navigateToReferView)))
+       // referRewardView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(navigateToReferView)))
         
         shopButton.titleLabel?.font = UIFont(name: "Roboto-Bold", size: 14)
         favouriteButton.titleLabel?.font = UIFont(name: "Roboto-Bold", size: 14)
         creditLabel.font =  UIFont(name: "Roboto-Medium", size: 16)
-        referTextLabel.font =  UIFont(name: "Roboto-Medium", size: 18)
-        referLabel.font =  UIFont(name: "Roboto-Medium", size: 14)
+//        referTextLabel.font =  UIFont(name: "Roboto-Medium", size: 18)
+//        referLabel.font =  UIFont(name: "Roboto-Medium", size: 14)
         recentNotifLabel.font = UIFont(name: "Roboto-Regular", size: 15)
         recentOrderLabel.font = UIFont(name: "Roboto-Medium", size: 15)
     }
@@ -256,8 +256,7 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
             cell.setImages(imgName: items[indexPath.row], callerId: 1) // Set item image
             return cell
         }
-
-        return UICollectionViewCell() // Default fallback
+        return UICollectionViewCell()
     }
     
     // 🔹 Ensure cell size dynamically matches the collection view's size

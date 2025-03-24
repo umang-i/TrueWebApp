@@ -118,7 +118,7 @@ class GridCell: UICollectionViewCell {
     private let bottomPriceLabel: UILabel = {
         let label = UILabel()
         label.text = "£3.14 (55%)"
-        label.textColor = .customBlue
+        label.textColor = .black
         label.font = UIFont(name: "Roboto-Regular", size: 12)
         label.numberOfLines = 2
         label.textAlignment = .left
@@ -127,7 +127,7 @@ class GridCell: UICollectionViewCell {
     private let bottomTextLabel: UILabel = {
         let label = UILabel()
         label.text = "FAM members"
-        label.textColor = .customBlue
+        label.textColor = .black
         label.font = UIFont(name: "Roboto-Bold", size: 12)
         label.numberOfLines = 2
         label.textAlignment = .left
@@ -136,7 +136,7 @@ class GridCell: UICollectionViewCell {
 
     private let offerBackGroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.customBlue.withAlphaComponent(0.2)
+        view.backgroundColor = UIColor(hex: "#BB0000", alpha: 0.2)
         view.layer.cornerRadius = 4
         return view
     }()

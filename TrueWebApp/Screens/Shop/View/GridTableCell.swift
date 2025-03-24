@@ -124,43 +124,87 @@ class GridTableCell: UITableViewCell, UICollectionViewDelegate, UICollectionView
 class ExpandableCell: UITableViewCell {
     
     let titleLabel = UILabel()
+    let offrLabel = UILabel()
     let arrowImageView = UIImageView()
+    let spacerView = UIView()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         backgroundColor = .customBlue
+        
+        // Title Label
         titleLabel.textColor = .white
         titleLabel.font = UIFont(name: "Roboto-Medium", size: 16)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(titleLabel)
         
+        // Offer Label (Only for subcells)
+        offrLabel.text = "HOT"
+        offrLabel.backgroundColor = .customRed
+        offrLabel.textColor = .white
+        offrLabel.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+        offrLabel.textAlignment = .center
+        offrLabel.layer.cornerRadius = 10
+        offrLabel.clipsToBounds = true
+        offrLabel.translatesAutoresizingMaskIntoConstraints = false
+        offrLabel.isHidden = true // Initially hidden
+        contentView.addSubview(offrLabel)
+        
+        // Arrow Image
         arrowImageView.image = UIImage(systemName: "chevron.down")
         arrowImageView.tintColor = .white
+        arrowImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(arrowImageView)
         
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        arrowImageView.translatesAutoresizingMaskIntoConstraints = false
+        // Spacer View (Separator)
+        spacerView.backgroundColor = .white
+        spacerView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(spacerView)
         
+        // Constraints
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor  , constant:  -3),
+            
+            offrLabel.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: 10),
+            offrLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor , constant: -3),
+            offrLabel.widthAnchor.constraint(equalToConstant: 40),
+            offrLabel.heightAnchor.constraint(equalToConstant: 30),
+            
             arrowImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            arrowImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 50)
+            arrowImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor , constant: -3), // Fix alignment
+            
+            // Spacer view as a bottom separator
+            spacerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            spacerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            spacerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            spacerView.heightAnchor.constraint(equalToConstant: 5), // Fixed height
+            
+            contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 55)
         ])
     }
     
     func configure(title: String, isExpanded: Bool, isSubCell: Bool = false) {
         titleLabel.text = title
+
+        // Set custom red background only for "Deals and offers"
+        if title == "Deals and offers" {
+            backgroundColor = .customRed
+        } else {
+            backgroundColor = isSubCell ? UIColor.systemGray5 : UIColor.customBlue
+        }
+        
         arrowImageView.image = isExpanded ? UIImage(systemName: "chevron.up") : UIImage(systemName: "chevron.down")
-        backgroundColor = isSubCell ? UIColor.systemGray5 : UIColor.customBlue
+        
         titleLabel.textColor = isSubCell ? .black : .white
         arrowImageView.tintColor = isSubCell ? .black : .white
+        
+        // Show "HOT" label only for subcells
+        offrLabel.isHidden = !isSubCell
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-

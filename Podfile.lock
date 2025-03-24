@@ -1,3 +1,16 @@
-PODFILE CHECKSUM: 08bf0ff2936be4e96f454e50d0b69b3197bfd8f4
+PODS:
+  - FLAnimatedImage (1.0.17)
+
+DEPENDENCIES:
+  - FLAnimatedImage
+
+SPEC REPOS:
+  trunk:
+    - FLAnimatedImage
+
+SPEC CHECKSUMS:
+  FLAnimatedImage: bbf914596368867157cc71b38a8ec834b3eeb32b
+
+PODFILE CHECKSUM: c5012bad57fb1ceae2926204f2e8cc4fa5a6fad2
 
 COCOAPODS: 1.16.2

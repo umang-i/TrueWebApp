@@ -4,26 +4,33 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>Pods-TrueApp-TrueAppUITests.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-			<key>orderHint</key>
-			<integer>1</integer>
-		</dict>
-		<key>Pods-TrueApp.xcscheme</key>
+		<key>FLAnimatedImage.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
-		<key>Pods-TrueAppTests.xcscheme</key>
+		<key>Pods-TrueWebApp-TrueWebAppUITests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
 			<integer>2</integer>
+		</dict>
+		<key>Pods-TrueWebApp.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+		<key>Pods-TrueWebAppTests.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+			<key>orderHint</key>
+			<integer>3</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>

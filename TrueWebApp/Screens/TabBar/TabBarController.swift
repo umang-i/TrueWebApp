@@ -15,6 +15,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
     let appBarLabel = UILabel()
     let balanceLabel = UILabel()
     let overlayView = UIView()
+    let badgeLabel = UILabel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,6 +35,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         
         let homeVC = DashboardController()
         let shopVC = ShopViewController()
+        let scan = ShopViewController()
         let rewardVc = RewardsController(nibName: "RewardsController", bundle: nil)
         let accountVC = AccountController()
         
@@ -49,16 +51,17 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
             .foregroundColor: UIColor.customRed // Color for selected item
         ]
         
-        homeVC.tabBarItem = UITabBarItem(title: "Dashboard", image: resizeImage(named: "dash", size: CGSize(width: 25, height: 25)), tag: 0)
-        shopVC.tabBarItem = UITabBarItem(title: "Shop", image: resizeImage(named: "shop", size: CGSize(width: 25, height: 25)), tag: 1)
+        homeVC.tabBarItem = UITabBarItem(title: "Home", image: resizeImage(named: "dash", size: CGSize(width: 25, height: 25)), tag: 0)
+        shopVC.tabBarItem = UITabBarItem(title: "Browse", image: resizeImage(named: "browse", size: CGSize(width: 25, height: 25)), tag: 1)
+        scan.tabBarItem = UITabBarItem(title: "Scan", image: resizeImage(named: "scan", size: CGSize(width: 25, height: 25)), tag: 1)
         rewardVc.tabBarItem = UITabBarItem(title: "Rewards", image: resizeImage(named: "reward", size: CGSize(width: 25, height: 25)), tag: 2)
-        accountVC.tabBarItem = UITabBarItem(title: "Account", image: resizeImage(named: "user1", size: CGSize(width: 25, height: 25)), tag: 3)
+        accountVC.tabBarItem = UITabBarItem(title: "Account", image: resizeImage(named: "user", size: CGSize(width: 25, height: 25)), tag: 3)
         
         // Apply font to all tab bar items
         UITabBarItem.appearance().setTitleTextAttributes(normalAttributes, for: .normal)
         UITabBarItem.appearance().setTitleTextAttributes(selectedAttributes, for: .selected)
         
-        viewControllers = [homeVC, shopVC, rewardVc, accountVC]
+        viewControllers = [homeVC, shopVC,scan, rewardVc, accountVC]
     }
     
     
@@ -96,8 +99,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
            ])
            
            // ImageView
-           appBarImageView.image = UIImage(systemName: "stopwatch.fill")
-           appBarImageView.tintColor = .customBlue
+           appBarImageView.image = UIImage(named: "iconApp")
            appBarImageView.contentMode = .scaleAspectFit
            appBarImageView.translatesAutoresizingMaskIntoConstraints = false
            appBarView.addSubview(appBarImageView)
@@ -110,7 +112,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
            ])
            
            // Label
-           appBarLabel.text = "Dashboard"
+           appBarLabel.text = "Home"
            appBarLabel.font = UIFont(name: "Roboto-Medium", size: 18)
            appBarLabel.textColor = .customBlue
            appBarLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -121,7 +123,6 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
                appBarLabel.leadingAnchor.constraint(equalTo: appBarImageView.trailingAnchor, constant: 10)
            ])
            
-        let cartImageView = UIImageView()
         cartImageView.image = UIImage(named: "bag")
         cartImageView.tintColor = .customBlue
         cartImageView.contentMode = .scaleAspectFit
@@ -134,7 +135,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         cartImageView.addGestureRecognizer(tapGesture)
 
         // Badge Label
-        let badgeLabel = UILabel()
+        
         badgeLabel.text = "5"  // Dynamic number
         badgeLabel.textColor = .white
         badgeLabel.backgroundColor = .customRed
@@ -160,7 +161,6 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
             badgeLabel.widthAnchor.constraint(equalToConstant: 24),
             badgeLabel.heightAnchor.constraint(equalToConstant: 24)
         ])
-
         
         // Balance Label
         balanceLabel.text = "£200.50"
@@ -187,25 +187,40 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
     func updateAppBar(for index: Int) {
         switch index {
         case 0:
-            appBarLabel.text = "Dashboard"
-            appBarImageView.image = UIImage(named: "dash")?.withRenderingMode(.alwaysTemplate)
-        case 3:
-            appBarLabel.text = "Account"
-            appBarImageView.image = UIImage(named: "user1")?.withRenderingMode(.alwaysTemplate)
+            appBarLabel.text = "Home"
+            appBarImageView.image = UIImage(named: "logo2")
+            appBarImageView.contentMode = .scaleAspectFill
+            toggleShopElements(isVisible: false)
+           // appBarImageView.tintColor = .none
         case 1:
-            appBarLabel.text = "Shop"
-            appBarImageView.image = UIImage(named: "shop")?.withRenderingMode(.alwaysTemplate)
+            appBarLabel.text = "Browse"
+            appBarImageView.image = UIImage(named: "browse")?.withRenderingMode(.alwaysTemplate)
+            toggleShopElements(isVisible: true) // Show only in ShopViewController
+            appBarImageView.tintColor = UIColor.customBlue
         case 2:
             appBarLabel.text = "Rewards"
             appBarImageView.image = UIImage(named: "reward")?.withRenderingMode(.alwaysTemplate)
+            toggleShopElements(isVisible: false)
+            appBarImageView.tintColor = UIColor.customBlue
+        case 3:
+            appBarLabel.text = "Account"
+            appBarImageView.image = UIImage(named: "user")?.withRenderingMode(.alwaysTemplate)
+            toggleShopElements(isVisible: false)
+            appBarImageView.tintColor = UIColor.customBlue
         default:
             break
         }
-        
+
         // Apply custom blue color
-        appBarImageView.tintColor = UIColor.customBlue
+     //   appBarImageView.tintColor = UIColor.customBlue
     }
-    
+
+    func toggleShopElements(isVisible: Bool) {
+        cartImageView.isHidden = !isVisible
+        badgeLabel.isHidden = !isVisible
+        balanceLabel.isHidden = !isVisible
+    }
+
     // Resizes custom images
     func resizeImage(named imageName: String, size: CGSize) -> UIImage? {
         guard let image = UIImage(named: imageName) else { return nil }

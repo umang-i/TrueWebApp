@@ -305,7 +305,7 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 10 // Adjust the spacing as needed
+        return 5
     }
 
 }
