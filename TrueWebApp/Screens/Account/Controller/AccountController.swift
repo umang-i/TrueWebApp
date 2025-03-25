@@ -17,7 +17,9 @@ class AccountController: UIViewController {
 
         let accountItems: [AccountItem] = [
             AccountItem(title: "My Rep Details", iconName: "rep"),
-            AccountItem(title: "Company Address", iconName: "company"),
+            AccountItem(title: "My Orders", iconName: "bag1"),
+            AccountItem(title: "My Address", iconName: "company"),
+            AccountItem(title: "Payment Options", iconName: "card"),
             AccountItem(title: "Service & Display Solutions", iconName: "service"),
             AccountItem(title: "Profile", iconName: "user"),
             AccountItem(title: "Wallet", iconName: "wallet"),
@@ -133,7 +135,7 @@ extension AccountController: UITableViewDelegate, UITableViewDataSource {
         }else if selectedItem.title == "Wallet"{
             let walletController = WalletViewController()
             self.navigationController?.pushViewController(walletController, animated: true)
-        } else if selectedItem.title == "Company Address" {
+        } else if selectedItem.title == "My Address" {
             let companyController = ListCompanyController()
             self.navigationController?.pushViewController(companyController, animated: true)
         } else if selectedItem.title == "Service & Display Solutions" {
@@ -146,6 +148,12 @@ extension AccountController: UITableViewDelegate, UITableViewDataSource {
             showLogoutAlert(on: self)
         }else if selectedItem.title == "Delete Account" {
             showDeleteAlert(on: self)
+        }else if selectedItem.title == "My Orders"{
+            let ordersController = OrdersController()
+            self.navigationController?.pushViewController(ordersController, animated: true)
+        }else if selectedItem.title == "Payment Options"{
+            let paymentController = PaymentOptionsController(nibName: "PaymentOptionsController", bundle: nil)
+            self.navigationController?.pushViewController(paymentController, animated: true)
         }
     }
 }

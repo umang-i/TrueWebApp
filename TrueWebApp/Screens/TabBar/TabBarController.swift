@@ -35,7 +35,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         
         let homeVC = DashboardController()
         let shopVC = ShopViewController()
-        let scan = ShopViewController()
+        let walletVc = WalletViewController()
         let rewardVc = RewardsController(nibName: "RewardsController", bundle: nil)
         let accountVC = AccountController()
         
@@ -53,15 +53,15 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         
         homeVC.tabBarItem = UITabBarItem(title: "Home", image: resizeImage(named: "dash", size: CGSize(width: 25, height: 25)), tag: 0)
         shopVC.tabBarItem = UITabBarItem(title: "Browse", image: resizeImage(named: "browse", size: CGSize(width: 25, height: 25)), tag: 1)
-        scan.tabBarItem = UITabBarItem(title: "Scan", image: resizeImage(named: "scan", size: CGSize(width: 25, height: 25)), tag: 1)
-        rewardVc.tabBarItem = UITabBarItem(title: "Rewards", image: resizeImage(named: "reward", size: CGSize(width: 25, height: 25)), tag: 2)
-        accountVC.tabBarItem = UITabBarItem(title: "Account", image: resizeImage(named: "user", size: CGSize(width: 25, height: 25)), tag: 3)
+        walletVc.tabBarItem = UITabBarItem(title: "Wallet", image: resizeImage(named: "wallet", size: CGSize(width: 25, height: 25)), tag: 2)
+        rewardVc.tabBarItem = UITabBarItem(title: "Rewards", image: resizeImage(named: "reward", size: CGSize(width: 25, height: 25)), tag: 3)
+        accountVC.tabBarItem = UITabBarItem(title: "Account", image: resizeImage(named: "user", size: CGSize(width: 25, height: 25)), tag: 4)
         
         // Apply font to all tab bar items
         UITabBarItem.appearance().setTitleTextAttributes(normalAttributes, for: .normal)
         UITabBarItem.appearance().setTitleTextAttributes(selectedAttributes, for: .selected)
         
-        viewControllers = [homeVC, shopVC,scan, rewardVc, accountVC]
+        viewControllers = [homeVC, shopVC,walletVc, rewardVc, accountVC]
     }
     
     
@@ -107,8 +107,8 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
            NSLayoutConstraint.activate([
                appBarImageView.centerYAnchor.constraint(equalTo: appBarView.centerYAnchor),
                appBarImageView.leadingAnchor.constraint(equalTo: appBarView.leadingAnchor, constant: 16),
-               appBarImageView.widthAnchor.constraint(equalToConstant: 25),
-               appBarImageView.heightAnchor.constraint(equalToConstant: 25)
+               appBarImageView.widthAnchor.constraint(equalToConstant: 30),
+               appBarImageView.heightAnchor.constraint(equalToConstant: 30)
            ])
            
            // Label
@@ -188,7 +188,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         switch index {
         case 0:
             appBarLabel.text = "Home"
-            appBarImageView.image = UIImage(named: "logo2")
+            appBarImageView.image = UIImage(named: "logo1")
             appBarImageView.contentMode = .scaleAspectFill
             toggleShopElements(isVisible: false)
            // appBarImageView.tintColor = .none
@@ -198,11 +198,16 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
             toggleShopElements(isVisible: true) // Show only in ShopViewController
             appBarImageView.tintColor = UIColor.customBlue
         case 2:
+            appBarLabel.text = "Wallet"
+            appBarImageView.image = UIImage(named: "wallet")?.withRenderingMode(.alwaysTemplate)
+            toggleShopElements(isVisible: false) // Show only in ShopViewController
+            appBarImageView.tintColor = UIColor.customBlue
+        case 3:
             appBarLabel.text = "Rewards"
             appBarImageView.image = UIImage(named: "reward")?.withRenderingMode(.alwaysTemplate)
             toggleShopElements(isVisible: false)
             appBarImageView.tintColor = UIColor.customBlue
-        case 3:
+        case 4:
             appBarLabel.text = "Account"
             appBarImageView.image = UIImage(named: "user")?.withRenderingMode(.alwaysTemplate)
             toggleShopElements(isVisible: false)

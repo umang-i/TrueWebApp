@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PaymentOptionsController" customModule="TrueWebApp" customModuleProvider="target">
+            <connections>
+                <outlet property="addTableView" destination="cbI-9W-koK" id="XcB-x3-2jJ"/>
+                <outlet property="savedTableView" destination="JAv-NY-feF" id="Xtn-jJ-UQY"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gif" translatesAutoresizingMaskIntoConstraints="NO" id="fR6-VQ-Lp7">
+                    <rect key="frame" x="0.0" y="60.000000000000014" width="393" height="170.33333333333337"/>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Saved Payment Methods" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jte-d5-ZDb">
+                    <rect key="frame" x="20" y="250.33333333333337" width="189" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="JAv-NY-feF">
+                    <rect key="frame" x="20" y="281.33333333333331" width="353" height="153.33333333333331"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                </tableView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add Payment Methods" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="unM-Xs-3Nr">
+                    <rect key="frame" x="20" y="454.66666666666669" width="353" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="cbI-9W-koK">
+                    <rect key="frame" x="20" y="485.66666666666669" width="353" height="255.66666666666669"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                </tableView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="cbI-9W-koK" firstAttribute="top" secondItem="unM-Xs-3Nr" secondAttribute="bottom" constant="10" id="2tM-7c-MGF"/>
+                <constraint firstItem="unM-Xs-3Nr" firstAttribute="top" secondItem="JAv-NY-feF" secondAttribute="bottom" constant="20" id="5uY-SW-s45"/>
+                <constraint firstItem="JAv-NY-feF" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" multiplier="0.18" id="CmK-Te-eaf"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="JAv-NY-feF" secondAttribute="trailing" constant="20" id="D1B-bD-SPm"/>
+                <constraint firstItem="cbI-9W-koK" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" multiplier="0.3" id="E7a-fZ-Oi1"/>
+                <constraint firstItem="unM-Xs-3Nr" firstAttribute="leading" secondItem="JAv-NY-feF" secondAttribute="leading" id="Ebh-jK-1Cy"/>
+                <constraint firstItem="Jte-d5-ZDb" firstAttribute="top" secondItem="fR6-VQ-Lp7" secondAttribute="bottom" constant="20" id="G0k-9n-X3c"/>
+                <constraint firstItem="fR6-VQ-Lp7" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="60" id="Kge-h9-n1q"/>
+                <constraint firstItem="fR6-VQ-Lp7" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" multiplier="0.2" id="PTd-cD-Fsk"/>
+                <constraint firstItem="cbI-9W-koK" firstAttribute="trailing" secondItem="unM-Xs-3Nr" secondAttribute="trailing" id="XG5-ya-scD"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="fR6-VQ-Lp7" secondAttribute="trailing" id="aw9-Ds-eiv"/>
+                <constraint firstItem="Jte-d5-ZDb" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="20" id="bT9-ef-gEv"/>
+                <constraint firstItem="JAv-NY-feF" firstAttribute="top" secondItem="Jte-d5-ZDb" secondAttribute="bottom" constant="10" id="dhm-mg-KJV"/>
+                <constraint firstItem="cbI-9W-koK" firstAttribute="leading" secondItem="unM-Xs-3Nr" secondAttribute="leading" id="hcC-Hm-KEx"/>
+                <constraint firstItem="fR6-VQ-Lp7" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="hzq-df-MhN"/>
+                <constraint firstItem="unM-Xs-3Nr" firstAttribute="trailing" secondItem="JAv-NY-feF" secondAttribute="trailing" id="jic-Ym-CF1"/>
+                <constraint firstItem="JAv-NY-feF" firstAttribute="leading" secondItem="Jte-d5-ZDb" secondAttribute="leading" id="xmU-lh-234"/>
+            </constraints>
+            <point key="canvasLocation" x="140" y="20"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="gif" width="3480" height="2000"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

@@ -9,6 +9,7 @@ import UIKit
 
 class OrderCell: UITableViewCell {
 
+    @IBOutlet weak var reorderButton: UIButton!
     @IBOutlet weak var totalPaidNum: UILabel!
     @IBOutlet weak var totalPaidLabel: UILabel!
     @IBOutlet weak var skuNumLabel: UILabel!
@@ -35,6 +36,10 @@ class OrderCell: UITableViewCell {
         
     }
     
+    @IBAction func reorderButtonAction(_ sender: Any) {
+     
+    }
+    
     func applyCustomFont() {
             let fontName = "Roboto-Regular"
             let fontSize: CGFloat = 12 // Adjust size as needed
@@ -51,5 +56,4 @@ class OrderCell: UITableViewCell {
                 label?.textColor = .black
             }
         }
-    
 }

@@ -10,25 +10,27 @@ import UIKit
 class DashboardController: UIViewController {
 
     @IBOutlet weak var circleCollectionView: UICollectionView!
-    @IBOutlet weak var recentOrderLabel: UILabel!
+  //  @IBOutlet weak var recentOrderLabel: UILabel!
     @IBOutlet weak var recentNotifLabel: UILabel!
   //  @IBOutlet weak var referLabel: UILabel!
    // @IBOutlet weak var referTextLabel: UILabel!
-    @IBOutlet weak var creditLabel: UILabel!
+   // @IBOutlet weak var creditLabel: UILabel!
     @IBOutlet weak var shopButton: UIButton!
   //  @IBOutlet weak var referRewardView: UIView!
     @IBOutlet weak var notifHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var favouriteButton: UIButton!
-    @IBOutlet weak var ordersTableView: UITableView!
-    @IBOutlet weak var creditView: UIView!
+  //  @IBOutlet weak var ordersTableView: UITableView!
+  //  @IBOutlet weak var creditView: UIView!
     @IBOutlet weak var notificationsTableView: UITableView!
-    @IBOutlet weak var allOrdersButton: UIButton!
+  //  @IBOutlet weak var allOrdersButton: UIButton!
     @IBOutlet weak var bannerCollectionView: UICollectionView!
+    @IBOutlet weak var catCollectionView: UICollectionView!
     @IBOutlet weak var imgPageController: UIPageControl!
     @IBOutlet weak var itemsCollectionView: UICollectionView!
     var bannerImages = ["dummy" , "dummy1"]
     var items = ["dum" , "dum1" , "dum2"]
     var img = ["img1","img2","img3","img4","img1","img2","img3","img4","img1","img2"]
+    var imgs = ["im","im1","im2","im3"]
     var timer : Timer?
     var currentIndex = 0
     
@@ -39,38 +41,39 @@ class DashboardController: UIViewController {
         setupTableViews()
         setupTapGesture()
         setCollectionView()
-    
     }
     
     func setupUI(){
         
-        allOrdersButton.layer.borderWidth = 1
-        allOrdersButton.layer.borderColor = UIColor.customBlue.cgColor
-        allOrdersButton.layer.cornerRadius = 4
-        allOrdersButton.titleLabel?.font = UIFont(name: "Roboto-Medium", size: 16)
+//        allOrdersButton.layer.borderWidth = 1
+//        allOrdersButton.layer.borderColor = UIColor.customBlue.cgColor
+//        allOrdersButton.layer.cornerRadius = 4
+//        allOrdersButton.titleLabel?.font = UIFont(name: "Roboto-Medium", size: 16)
+//        
+//        creditView.layer.borderWidth = 1
+//        creditView.layer.borderColor = UIColor.customBlue.cgColor
+//        creditView.layer.cornerRadius = 4
         
-        creditView.layer.borderWidth = 1
-        creditView.layer.borderColor = UIColor.customBlue.cgColor
-        creditView.layer.cornerRadius = 4
-        
-        allOrdersButton.addTarget(self, action: #selector(allOrdersButtonTapped), for: .touchUpInside)
+//        allOrdersButton.addTarget(self, action: #selector(allOrdersButtonTapped), for: .touchUpInside)
        // referRewardView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(navigateToReferView)))
         
         shopButton.titleLabel?.font = UIFont(name: "Roboto-Bold", size: 14)
         favouriteButton.titleLabel?.font = UIFont(name: "Roboto-Bold", size: 14)
-        creditLabel.font =  UIFont(name: "Roboto-Medium", size: 16)
+        shopButton.setTitle("Browse", for: .normal)
+
+      //  creditLabel.font =  UIFont(name: "Roboto-Medium", size: 16)
 //        referTextLabel.font =  UIFont(name: "Roboto-Medium", size: 18)
 //        referLabel.font =  UIFont(name: "Roboto-Medium", size: 14)
         recentNotifLabel.font = UIFont(name: "Roboto-Regular", size: 15)
-        recentOrderLabel.font = UIFont(name: "Roboto-Medium", size: 15)
+      //  recentOrderLabel.font = UIFont(name: "Roboto-Medium", size: 15)
     }
     
     func setupTableViews(){
-        ordersTableView.delegate = self
-        ordersTableView.dataSource = self
+//        ordersTableView.delegate = self
+//        ordersTableView.dataSource = self
         notificationsTableView.delegate = self
         notificationsTableView.dataSource = self
-        ordersTableView.register(UINib(nibName: "OrderCell", bundle: nil), forCellReuseIdentifier: "OrderCell")
+//        ordersTableView.register(UINib(nibName: "OrderCell", bundle: nil), forCellReuseIdentifier: "OrderCell")
         notificationsTableView.register(UINib(nibName: "NotificationCell", bundle: nil), forCellReuseIdentifier: "NotificationCell")
     }
     
@@ -86,7 +89,11 @@ class DashboardController: UIViewController {
         circleCollectionView.register(UINib(nibName: "CircleCategoryCell", bundle: nil), forCellWithReuseIdentifier: "circleCell")
         circleCollectionView.delegate = self
         circleCollectionView.dataSource = self
-      //  circleCollectionView.backgroundColor = UIColor.customBlue.withAlphaComponent(0.2)
+        
+        catCollectionView.register(UINib(nibName: "BannerImageCell", bundle: nil), forCellWithReuseIdentifier: "bannerCell")
+        catCollectionView.delegate = self
+        catCollectionView.dataSource = self
+        catCollectionView.isPagingEnabled = false
 
         
         if let layout = bannerCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
@@ -103,7 +110,13 @@ class DashboardController: UIViewController {
                 layout.scrollDirection = .horizontal
               //  layout.minimumLineSpacing = 10
                 layout.minimumInteritemSpacing = 0
-            }
+        }
+        if let layout = catCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.scrollDirection = .horizontal
+            layout.minimumInteritemSpacing = 10
+            layout.minimumLineSpacing = 10 // ✅ Add spacing between items
+        }
+
         
         bannerCollectionView.isPagingEnabled = true // Ensures smooth sliding
         bannerCollectionView.showsHorizontalScrollIndicator = false
@@ -127,8 +140,8 @@ class DashboardController: UIViewController {
     
     func setupTapGesture() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(navigateToWallet))
-        creditView.addGestureRecognizer(tapGesture)
-        creditView.isUserInteractionEnabled = true
+//        creditView.addGestureRecognizer(tapGesture)
+//        creditView.isUserInteractionEnabled = true
     }
     
     @objc func navigateToWallet() {
@@ -154,7 +167,7 @@ class DashboardController: UIViewController {
 
 extension DashboardController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return tableView == notificationsTableView ? 4 : 2// Number of cells (each cell is a section)
+        return  2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -172,7 +185,7 @@ extension DashboardController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if tableView == notificationsTableView {
+      //  if tableView == notificationsTableView {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "NotificationCell") as? NotificationCell else {
                 return UITableViewCell()
             }
@@ -187,17 +200,17 @@ extension DashboardController: UITableViewDelegate, UITableViewDataSource {
             // cell.configure(with: data[indexPath.section])
             
             return cell
-        } else if tableView == ordersTableView {
-            // Handle ordersTableView cells (if needed)
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "OrderCell") as? OrderCell else {
-                return UITableViewCell()
-            }
-            cell.layer.cornerRadius = 4
-            cell.layer.masksToBounds = true
-            cell.layer.borderColor = UIColor.customBlue.cgColor
-            cell.layer.borderWidth = 0.6
-            return cell
-        }
+//        } else if tableView == ordersTableView {
+//            // Handle ordersTableView cells (if needed)
+//            guard let cell = tableView.dequeueReusableCell(withIdentifier: "OrderCell") as? OrderCell else {
+//                return UITableViewCell()
+//            }
+//            cell.layer.cornerRadius = 4
+//            cell.layer.masksToBounds = true
+//            cell.layer.borderColor = UIColor.customBlue.cgColor
+//            cell.layer.borderWidth = 0.6
+//            return cell
+//        }
         return UITableViewCell()
     }
     
@@ -205,17 +218,17 @@ extension DashboardController: UITableViewDelegate, UITableViewDataSource {
         return tableView == notificationsTableView ? 50 : 170
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if tableView == notificationsTableView {
+      //  if tableView == notificationsTableView {
             let detailVC = NotificationDetailController(nibName: "NotificationDetailController", bundle: nil)
             // detailVC.notification = data[indexPath.section]
             
             navigationController?.pushViewController(detailVC, animated: true)
-        } else if tableView == ordersTableView{
-            let detailOC = DetailOrderController()
-            // detailVC.notification = data[indexPath.section]
-    
-            navigationController?.pushViewController(detailOC, animated: true)
-        }
+//        } else if tableView == ordersTableView{
+//            let detailOC = DetailOrderController()
+//            // detailVC.notification = data[indexPath.section]
+//    
+//            navigationController?.pushViewController(detailOC, animated: true)
+//        }
     }
 }
 
@@ -229,6 +242,8 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
 
         } else if collectionView == itemsCollectionView {
             return items.count
+        }else if collectionView == catCollectionView {
+            return imgs.count
         }
         return 1
     }
@@ -246,7 +261,7 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
                 return UICollectionViewCell()
             }
-            cell.setImages(imgName: bannerImages[indexPath.row], callerId: 0) // Set banner image
+            cell.setImages(imgName: bannerImages[indexPath.row], callerId: 0)
             return cell
 
         } else if collectionView == itemsCollectionView {
@@ -254,6 +269,12 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
                 return UICollectionViewCell()
             }
             cell.setImages(imgName: items[indexPath.row], callerId: 1) // Set item image
+            return cell
+        }else if collectionView == catCollectionView {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
+                return UICollectionViewCell()
+            }
+            cell.setImages(imgName: imgs[indexPath.row], callerId: 1) // Set item image
             return cell
         }
         return UICollectionViewCell()
@@ -263,13 +284,18 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == circleCollectionView {
             return CGSize(width: 100, height: 100) // Fixed size for circle items
-        } else {
+        } else if collectionView == catCollectionView {
+            return CGSize(width: 140, height: collectionView.frame.height) // Fixed size for circle items
+        } else{
             return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
         }
     }
     
     // 🔹 Ensure no spacing between items
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        if collectionView == catCollectionView {
+                   return 10 // ✅ Space between items in catCollectionView
+               }
         return 0
     }
 }

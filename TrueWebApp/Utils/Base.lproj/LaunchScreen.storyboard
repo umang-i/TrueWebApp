@@ -16,19 +16,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launch" translatesAutoresizingMaskIntoConstraints="NO" id="Uxa-PU-XXc">
-                                <rect key="frame" x="0.0" y="62" width="440" height="860"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="dqB-N2-kau">
+                                <rect key="frame" x="66" y="334.66666666666663" width="308" height="286.66666666666663"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="Uxa-PU-XXc" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="QEp-Fd-KkA"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Uxa-PU-XXc" secondAttribute="bottom" id="QTO-FJ-KpP"/>
-                            <constraint firstItem="Uxa-PU-XXc" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="SMr-Vc-H9H"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Uxa-PU-XXc" secondAttribute="trailing" id="fXE-i6-i8p"/>
-                            <constraint firstItem="Uxa-PU-XXc" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="fiA-G2-fl1"/>
-                            <constraint firstItem="Uxa-PU-XXc" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="h5N-S8-4hm"/>
+                            <constraint firstItem="dqB-N2-kau" firstAttribute="height" secondItem="Ze5-6b-2t3" secondAttribute="height" multiplier="0.3" id="3Ca-ll-2uR"/>
+                            <constraint firstItem="dqB-N2-kau" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="0.7" id="LVp-gk-6B2"/>
+                            <constraint firstItem="dqB-N2-kau" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="U3V-GR-FQh"/>
+                            <constraint firstItem="dqB-N2-kau" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="ow1-lW-K1I"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -38,6 +36,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="launch" width="720" height="1280"/>
+        <image name="logo" width="423" height="403"/>
     </resources>
 </document>

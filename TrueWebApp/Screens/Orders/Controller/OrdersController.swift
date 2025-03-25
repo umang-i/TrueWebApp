@@ -49,7 +49,7 @@ class OrdersController: UIViewController, CustomNavBarDelegate {
 }
 extension OrdersController : UITableViewDataSource , UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 6
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
        return 1
@@ -73,7 +73,7 @@ extension OrdersController : UITableViewDataSource , UITableViewDelegate {
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 170
+        return 200
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let detailOC = DetailOrderController()

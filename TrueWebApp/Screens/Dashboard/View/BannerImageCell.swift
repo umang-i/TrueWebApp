@@ -13,12 +13,19 @@ class BannerImageCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-
+        bannerImageView.layer.cornerRadius = 10
+        bannerImageView.clipsToBounds = true
     }
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        bannerImageView.layer.cornerRadius = 10
+        bannerImageView.clipsToBounds = true
+    }
+
     
     func setImages(imgName : String , callerId : Int){
         bannerImageView.image = UIImage(named: imgName)
-        bannerImageView.layer.cornerRadius = 10
+        
     }
     
     override func prepareForReuse() {

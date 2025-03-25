@@ -41,7 +41,7 @@ class ListCompanyController: UIViewController, CustomNavBarDelegate {
         topBackgroundView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(topBackgroundView)
 
-        let navBar = CustomNavBar(text: "Company Address")
+        let navBar = CustomNavBar(text: "My Addresses")
         navBar.delegate = self
         navBar.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(navBar)
