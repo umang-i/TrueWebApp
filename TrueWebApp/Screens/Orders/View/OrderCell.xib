@@ -110,11 +110,11 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="exS-ej-PWS">
-                        <rect key="frame" x="229.66666666666666" y="160" width="70.333333333333343" height="30"/>
+                        <rect key="frame" x="194.33333333333334" y="160" width="105.66666666666666" height="30"/>
                         <color key="backgroundColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="tintColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <state key="normal" title="Button"/>
-                        <buttonConfiguration key="configuration" style="filled" title="Reorder">
+                        <buttonConfiguration key="configuration" style="filled" title="Reorder Items">
                             <fontDescription key="titleFontDescription" type="system" weight="medium" pointSize="12"/>
                             <color key="baseBackgroundColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </buttonConfiguration>

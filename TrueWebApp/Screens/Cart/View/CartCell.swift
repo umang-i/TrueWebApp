@@ -8,7 +8,6 @@
 import UIKit
 
 protocol CartCellDelegate: AnyObject {
-   // func didTapFavouriteButton(in cell: CartCell)
     func didTapDeleteButton(in cell: CartCell)
 }
 
@@ -41,7 +40,6 @@ class CartCell: UITableViewCell {
         contentView.layer.cornerRadius = 4
         
         quantityView.layer.cornerRadius = 4
-//        quantityView.layer.borderWidth = 1
         quantityView.layer.backgroundColor = UIColor.systemGray5.cgColor
         starView.layer.borderWidth = 1
         starView.layer.borderColor = UIColor.gray.cgColor

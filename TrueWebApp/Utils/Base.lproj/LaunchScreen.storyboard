@@ -16,15 +16,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="dqB-N2-kau">
-                                <rect key="frame" x="66" y="334.66666666666663" width="308" height="286.66666666666663"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo11" translatesAutoresizingMaskIntoConstraints="NO" id="dqB-N2-kau">
+                                <rect key="frame" x="88" y="351.33333333333331" width="264" height="253.33333333333331"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="dqB-N2-kau" firstAttribute="height" secondItem="Ze5-6b-2t3" secondAttribute="height" multiplier="0.3" id="3Ca-ll-2uR"/>
-                            <constraint firstItem="dqB-N2-kau" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="0.7" id="LVp-gk-6B2"/>
+                            <constraint firstItem="dqB-N2-kau" firstAttribute="height" secondItem="Ze5-6b-2t3" secondAttribute="height" multiplier="0.265" id="3Ca-ll-2uR"/>
+                            <constraint firstItem="dqB-N2-kau" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" multiplier="0.6" id="LVp-gk-6B2"/>
                             <constraint firstItem="dqB-N2-kau" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="U3V-GR-FQh"/>
                             <constraint firstItem="dqB-N2-kau" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="ow1-lW-K1I"/>
                         </constraints>
@@ -36,6 +36,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="logo" width="423" height="403"/>
+        <image name="logo11" width="1513" height="1119"/>
     </resources>
 </document>

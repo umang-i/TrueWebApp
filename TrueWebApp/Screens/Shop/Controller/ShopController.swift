@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UITextFieldDelegate {
+class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UITextFieldDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
 
     var items: [Product] = []
     var scrollView: UIScrollView!
@@ -15,28 +15,28 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
     private var filterView: FilterView?
 
     var tableView: UITableView!
-    var dealTableView : UITableView!
-    
+    var dealTableView: UITableView!
+
     var categories: [Category] = []
-    
+
     var filteredCategories: [Category] = []
     var overlayView = UIView()
-    
+
     private var cartView: UIView!
     private var cartItemCountLabel: UILabel!
     private var cartTotalLabel: UILabel!
     private var cartTextLabel: UILabel!
     private var viewBasketButton: UIButton!
-    private var cartItems: [Product : Int] = [:]
-    
+    private var cartItems: [Product: Int] = [:]
+
     var expandedCategoryIndex: Int? = nil
     var expandedSubcategoryIndex: IndexPath? = nil
-    
+
     var collectionView: UICollectionView!
     var selectedBrands: Set<String> = []
-    
-    var expandedCategories: Set<Int> = [] // Stores expanded categories
-    var expandedSubcategories: [IndexPath: Bool] = [:] // Tracks expanded subcategories per category
+
+    var expandedCategories: Set<Int> = []
+    var expandedSubcategories: [IndexPath: Bool] = [:]
 
     var selectedProductOption: String = "All"
     var selectedStockOption: String = "All"
@@ -44,34 +44,95 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var contentStack: UIStackView!
     var searchTextField: UITextField!
     let searchSortView = UIView()
-    
+
     var tableViewHeightConstraint: NSLayoutConstraint!
+
+    var bannerCollectionView: UICollectionView!
+    var img: [String] = [
+        "s6" ,"s2" , "s1" , "s3","s4","s5"
+    ]
+    var bannerImages: [String] = [
+        "d1" ,"d2" , "d3" , "d4","d5","d6","d1" ,"d2" , "d3" , "d4","d5","d6"
+    ]
     
-    let bannerImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "gif")
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        return imageView
-    }()
-    
+    var bannerTimer: Timer?
+    var currentBannerIndex = 0
+
+    var containerView = UIView()
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupScrollView()
+        setupBannerCollectionView()
+        startBannerAutoScroll()
         setupSearchAndSortBar()
         setupTableView()
-        
+
         if let loadedCategories = loadCategoriesFromJSON() {
             categories = loadedCategories
         }
         print(categories)
         setupOverlayView()
     }
-    
+
+    func setupScrollView() {
+        scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(containerView)
+
+        // ScrollView Constraints
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        // Container View Constraints
+        NSLayoutConstraint.activate([
+            containerView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            containerView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            containerView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        ])
+    }
+
+    func setupBannerCollectionView() {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 0
+        layout.itemSize = CGSize(width: view.frame.width, height: 120)
+
+        bannerCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        bannerCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        bannerCollectionView.isPagingEnabled = true
+        bannerCollectionView.delegate = self
+        bannerCollectionView.dataSource = self
+        bannerCollectionView.showsHorizontalScrollIndicator = false
+        bannerCollectionView.register(BannerImageCelll.self, forCellWithReuseIdentifier: "BannerImageCelll")
+        bannerCollectionView.layer.cornerRadius = 10
+        bannerCollectionView.contentMode = .scaleAspectFill
+
+        containerView.addSubview(bannerCollectionView) // Add to containerView
+
+        NSLayoutConstraint.activate([
+            bannerCollectionView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 140), // Use containerView.topAnchor
+            bannerCollectionView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor , constant: 10),
+            bannerCollectionView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor , constant: -10),
+            bannerCollectionView.heightAnchor.constraint(equalToConstant: 150)
+        ])
+    }
+
     func setupSearchAndSortBar() {
         // Create the container view for search bar and sort button
-       
+
         searchSortView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(searchSortView)
+        containerView.addSubview(searchSortView)
 
         // Create the custom search text field
         searchTextField = UITextField()
@@ -116,9 +177,9 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
         // Set constraints for the container view
         NSLayoutConstraint.activate([
-            searchSortView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 80),
-            searchSortView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-            searchSortView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            searchSortView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 80),
+            searchSortView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
+            searchSortView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10),
             searchSortView.heightAnchor.constraint(equalToConstant: 50)
         ])
 
@@ -140,46 +201,49 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
 
     func setupOverlayView() {
-           overlayView =  FilterView(frame: view.bounds)
-           overlayView.backgroundColor = UIColor.white.withAlphaComponent(1)
-           overlayView.isHidden = true // Initially hidden
-           overlayView.translatesAutoresizingMaskIntoConstraints = false
-           view.addSubview(overlayView)
+        overlayView = FilterView(frame: view.bounds)
+        overlayView.backgroundColor = UIColor.white.withAlphaComponent(1)
+        overlayView.isHidden = true // Initially hidden
+        overlayView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(overlayView)
 
-           NSLayoutConstraint.activate([
+        NSLayoutConstraint.activate([
             overlayView.topAnchor.constraint(equalTo: searchSortView.bottomAnchor, constant: 5),
-               overlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-               overlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-               overlayView.heightAnchor.constraint(equalToConstant: 500)
-           ])
-       }
+            overlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            overlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            overlayView.heightAnchor.constraint(equalToConstant: 500)
+        ])
+    }
 
-       @objc func toggleOverlay() {
-           overlayView.isHidden.toggle()
-           tableView.isHidden.toggle()
-       }
-    
+    @objc func toggleOverlay() {
+        overlayView.isHidden.toggle()
+        tableView.isHidden.toggle()
+    }
+
+    func startBannerAutoScroll() {
+        bannerTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(scrollBanner), userInfo: nil, repeats: true)
+    }
+
+    @objc func scrollBanner() {
+        if currentBannerIndex < img.count - 1 {
+            currentBannerIndex += 1
+        } else {
+            currentBannerIndex = 0
+        }
+        let indexPath = IndexPath(item: currentBannerIndex, section: 0)
+        bannerCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+    }
+
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-           if searchText.isEmpty {
-               filteredCategories = categories
-           } else {
-               filteredCategories = categories.filter { $0.title.lowercased().contains(searchText.lowercased()) }
-           }
-           tableView.reloadData()
-       }
+        if searchText.isEmpty {
+            filteredCategories = categories
+        } else {
+            filteredCategories = categories.filter { $0.title.lowercased().contains(searchText.lowercased()) }
+        }
+        tableView.reloadData()
+    }
 
     func setupTableView() {
-        let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(scrollView)
-
-        let containerView = UIView()
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(containerView)
-
-        bannerImageView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(bannerImageView)
-
         tableView = UITableView(frame: .zero, style: .plain)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.sectionHeaderHeight = 10
@@ -191,164 +255,185 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
         tableView.backgroundColor = .white
         tableView.register(ExpandableCell.self, forCellReuseIdentifier: "ExpandableCell")
         tableView.register(GridTableCell.self, forCellReuseIdentifier: "GridCell")
-        
+
         containerView.addSubview(tableView)
-
-        // ScrollView Constraints
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 5),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-
-        // Container View Constraints
-        NSLayoutConstraint.activate([
-            containerView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            containerView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            containerView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            containerView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            containerView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
-        ])
-        
-        // Banner Image Constraints
-        NSLayoutConstraint.activate([
-            bannerImageView.topAnchor.constraint(equalTo: containerView.topAnchor),
-            bannerImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
-            bannerImageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10),
-            bannerImageView.heightAnchor.constraint(equalToConstant: 120)
-        ])
 
         // Set dynamic height constraint
         tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 1) // Temporary value
         tableViewHeightConstraint.isActive = true
 
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: bannerImageView.bottomAnchor, constant: 20),
+            tableView.topAnchor.constraint(equalTo: bannerCollectionView.bottomAnchor, constant: 20),
             tableView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
             tableView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10),
-            tableView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor) // Important
+            tableView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
 
         // Update TableView Height After Data Loads
         tableView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
     }
-    
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "contentSize" {
             let contentHeight = tableView.contentSize.height
             let minHeight = view.frame.height * 0.6 // Adjust this as needed
 
             // Set a minimum height to allow scrolling even when collapsed
             tableViewHeightConstraint.constant = max(contentHeight, minHeight)
-            
+
             // Make sure the layout updates
             view.layoutIfNeeded()
         }
     }
 
 
-      func numberOfSections(in tableView: UITableView) -> Int {
-          return categories.count
-      }
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return categories.count
+    }
 
-      func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-          let category = categories[section]
-          if expandedCategories.contains(section) {
-              var count = 1
-              for (index, _) in category.subCats.enumerated() {
-                  let subcategoryIndexPath = IndexPath(row: count, section: section)
-                  count += 1
-                  if expandedSubcategories[subcategoryIndexPath] == true {
-                      count += 1
-                  }
-              }
-              return count
-          } else {
-              return 1
-          }
-      }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let category = categories[section]
+        if expandedCategories.contains(section) {
+            var count = 1
+            for (_, _) in category.subCats.enumerated() {
+                let subcategoryIndexPath = IndexPath(row: count, section: section)
+                count += 1
+                if expandedSubcategories[subcategoryIndexPath] == true {
+                    count += 1
+                }
+            }
+            return count
+        } else {
+            return 1
+        }
+    }
 
-      func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-          let category = categories[indexPath.section]
-          if indexPath.row == 0 {
-              return 50
-          }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let category = categories[indexPath.section]
+        if indexPath.row == 0 {
+            return 50
+        }
 
-          var rowIndex = 1
-          for (index, subcategory) in category.subCats.enumerated() {
-              let subcategoryIndexPath = IndexPath(row: rowIndex, section: indexPath.section)
-              if rowIndex == indexPath.row {
-                  return 50
-              }
-              rowIndex += 1
-              if expandedSubcategories[subcategoryIndexPath] == true {
-                  if rowIndex == indexPath.row {
-                      let rows = ceil(Double(subcategory.products.count) / 2.0)
-                      return CGFloat((rows * 150) + 50) + 10
-                  }
-                  rowIndex += 1
-              }
-          }
-          return UITableView.automaticDimension
-      }
+        var rowIndex = 1
+        for (_, subcategory) in category.subCats.enumerated() {
+            let subcategoryIndexPath = IndexPath(row: rowIndex, section: indexPath.section)
+            if rowIndex == indexPath.row {
+                return 50
+            }
+            rowIndex += 1
+            if expandedSubcategories[subcategoryIndexPath] == true {
+                if rowIndex == indexPath.row {
+                    let rows = ceil(Double(subcategory.products.count) / 2.0)
+                    return CGFloat((rows * 150) + 50) + 10
+                }
+                rowIndex += 1
+            }
+        }
+        return UITableView.automaticDimension
+    }
 
-      func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-          let category = categories[indexPath.section]
-          if indexPath.row == 0 {
-              let cell = tableView.dequeueReusableCell(withIdentifier: "ExpandableCell", for: indexPath) as! ExpandableCell
-              let isExpanded = expandedCategories.contains(indexPath.section)
-              cell.configure(title: category.title, isExpanded: isExpanded)
-              return cell
-          }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let category = categories[indexPath.section]
 
-          var rowIndex = 1
-          for (index, subcategory) in category.subCats.enumerated() {
-              let subcategoryIndexPath = IndexPath(row: rowIndex, section: indexPath.section)
-              if rowIndex == indexPath.row {
-                  let cell = tableView.dequeueReusableCell(withIdentifier: "ExpandableCell", for: indexPath) as! ExpandableCell
-                  let isExpanded = expandedSubcategories[subcategoryIndexPath] ?? false
-                  cell.configure(title: subcategory.title, isExpanded: isExpanded, isSubCell: true)
-                  return cell
-              }
-              rowIndex += 1
-              if expandedSubcategories[subcategoryIndexPath] == true {
-                  if rowIndex == indexPath.row {
-                      let gridCell = tableView.dequeueReusableCell(withIdentifier: "GridCell", for: indexPath) as! GridTableCell
-                      gridCell.configure(items: subcategory.products, name: subcategory.title)
-                      return gridCell
-                  }
-                  rowIndex += 1
-              }
-          }
-          return UITableViewCell()
-      }
+        // Main category cell (row 0)
+        if indexPath.row == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ExpandableCell", for: indexPath) as! ExpandableCell
+            let isExpanded = expandedCategories.contains(indexPath.section)
+            // No icon for main category
+            cell.configure(title: category.title, icon: nil, isExpanded: isExpanded)
+            return cell
+        }
 
-      func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-          if indexPath.row == 0 {
-              if expandedCategories.contains(indexPath.section) {
-                  expandedCategories.remove(indexPath.section)
-              } else {
-                  expandedCategories.insert(indexPath.section)
-              }
-          } else {
-              let subcategoryIndexPath = IndexPath(row: indexPath.row, section: indexPath.section)
-              expandedSubcategories[subcategoryIndexPath] = !(expandedSubcategories[subcategoryIndexPath] ?? false)
-          }
-          tableView.reloadSections([indexPath.section], with: .automatic)
-      }
+        var rowIndex = 1
+        for (subIndex, subcategory) in category.subCats.enumerated() {
+            let subcategoryIndexPath = IndexPath(row: rowIndex, section: indexPath.section)
 
-      func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-          return UIView()
-      }
+            // Subcategory title cell
+            if rowIndex == indexPath.row {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "ExpandableCell", for: indexPath) as! ExpandableCell
+                let isExpanded = expandedSubcategories[subcategoryIndexPath] ?? false
+                // Use subIndex to get the image correctly
+                let icon = subIndex < bannerImages.count ? UIImage(named: bannerImages[subIndex]) : nil
+                cell.configure(title: subcategory.title, icon: icon, isExpanded: isExpanded, isSubCell: true)
+                return cell
+            }
 
-      func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-          return 5
-      }
-  }
+            rowIndex += 1
 
-  extension UITableView {
-      override open var intrinsicContentSize: CGSize {
-          return contentSize
-      }
-  }
+            // Subcategory expanded grid cell
+            if expandedSubcategories[subcategoryIndexPath] == true {
+                if rowIndex == indexPath.row {
+                    let gridCell = tableView.dequeueReusableCell(withIdentifier: "GridCell", for: indexPath) as! GridTableCell
+                    gridCell.configure(items: subcategory.products, name: subcategory.title)
+                    return gridCell
+                }
+                rowIndex += 1
+            }
+        }
+
+        return UITableViewCell()
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == 0 {
+            if expandedCategories.contains(indexPath.section) {
+                expandedCategories.remove(indexPath.section)
+            } else {
+                expandedCategories.insert(indexPath.section)
+            }
+        } else {
+            let subcategoryIndexPath = IndexPath(row: indexPath.row, section: indexPath.section)
+            expandedSubcategories[subcategoryIndexPath] = !(expandedSubcategories[subcategoryIndexPath] ?? false)
+        }
+        tableView.reloadSections([indexPath.section], with: .automatic)
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return UIView()
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 5
+    }
+}
+
+extension ShopViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return img.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BannerImageCelll", for: indexPath) as! BannerImageCelll
+        cell.imageView.image = UIImage(named: img[indexPath.row])
+        return cell
+    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+            return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
+    }
+}
+
+class BannerImageCelll: UICollectionViewCell {
+    let imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.layer.cornerRadius = 10
+        return imageView
+    }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.addSubview(imageView)
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        ])
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}

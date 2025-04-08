@@ -16,7 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: windowScene)
-        let loginVc = AnimationViewController(nibName: "AnimationViewController", bundle: nil)
+        let loginVc = SplashScreen()
         let navigationController = UINavigationController(rootViewController: loginVc) // Wrap in Navigation Controller
         
         window.rootViewController = navigationController

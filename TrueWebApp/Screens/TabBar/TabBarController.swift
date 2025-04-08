@@ -17,6 +17,11 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
     let overlayView = UIView()
     let badgeLabel = UILabel()
     
+    var appBarImageLeadingConstraint: NSLayoutConstraint!
+    var appBarImageCenterConstraint: NSLayoutConstraint!
+    var appBarImageWidthConstraint: NSLayoutConstraint!
+    var appBarImageHeightConstraint: NSLayoutConstraint!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
@@ -36,8 +41,9 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         let homeVC = DashboardController()
         let shopVC = ShopViewController()
         let walletVc = WalletViewController()
-        let rewardVc = RewardsController(nibName: "RewardsController", bundle: nil)
+       // let rewardVc = RewardsController(nibName: "RewardsController", bundle: nil)
         let accountVC = AccountController()
+        let cartVc = CartController(nibName: "CartController", bundle: nil)
         
         let customFont = UIFont(name: "Roboto-Regular", size: 12) ?? UIFont.systemFont(ofSize: 12)
         
@@ -51,17 +57,17 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
             .foregroundColor: UIColor.customRed // Color for selected item
         ]
         
-        homeVC.tabBarItem = UITabBarItem(title: "Home", image: resizeImage(named: "dash", size: CGSize(width: 25, height: 25)), tag: 0)
-        shopVC.tabBarItem = UITabBarItem(title: "Browse", image: resizeImage(named: "browse", size: CGSize(width: 25, height: 25)), tag: 1)
-        walletVc.tabBarItem = UITabBarItem(title: "Wallet", image: resizeImage(named: "wallet", size: CGSize(width: 25, height: 25)), tag: 2)
-        rewardVc.tabBarItem = UITabBarItem(title: "Rewards", image: resizeImage(named: "reward", size: CGSize(width: 25, height: 25)), tag: 3)
+        homeVC.tabBarItem = UITabBarItem(title: "Home", image: resizeImage(named: "home", size: CGSize(width: 25, height: 25)), tag: 0)
+        shopVC.tabBarItem = UITabBarItem(title: "Browse", image: resizeImage(named: "menub", size: CGSize(width: 25, height: 25)), tag: 1)
+        cartVc.tabBarItem = UITabBarItem(title: "Cart", image: resizeImage(named: "cart", size: CGSize(width: 25, height: 25)), tag: 2)
+        walletVc.tabBarItem = UITabBarItem(title: "Wallet", image: resizeImage(named: "wallet", size: CGSize(width: 25, height: 25)), tag: 3)
         accountVC.tabBarItem = UITabBarItem(title: "Account", image: resizeImage(named: "user", size: CGSize(width: 25, height: 25)), tag: 4)
         
         // Apply font to all tab bar items
         UITabBarItem.appearance().setTitleTextAttributes(normalAttributes, for: .normal)
         UITabBarItem.appearance().setTitleTextAttributes(selectedAttributes, for: .selected)
         
-        viewControllers = [homeVC, shopVC,walletVc, rewardVc, accountVC]
+        viewControllers = [homeVC, shopVC,cartVc, walletVc, accountVC]
     }
     
     
@@ -72,10 +78,10 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
            
            // AppBar View
            appBarView.backgroundColor = .white
-           appBarView.layer.shadowColor = UIColor.black.cgColor
-           appBarView.layer.shadowOpacity = 0.2
-           appBarView.layer.shadowOffset = CGSize(width: 0, height: 2)
-           appBarView.layer.shadowRadius = 3
+          // appBarView.layer.shadowColor = UIColor.black.cgColor
+           //appBarView.layer.shadowOpacity = 0.2
+           //appBarView.layer.shadowOffset = CGSize(width: 0, height: 2)
+          // appBarView.layer.shadowRadius = 3
            appBarView.translatesAutoresizingMaskIntoConstraints = false
            view.addSubview(appBarView)
            
@@ -83,6 +89,10 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
            overlayView.backgroundColor = UIColor.customBlue
            overlayView.translatesAutoresizingMaskIntoConstraints = false
            view.addSubview(overlayView)
+        
+        appBarImageLeadingConstraint = appBarImageView.leadingAnchor.constraint(equalTo: appBarView.leadingAnchor, constant: 16)
+        appBarImageCenterConstraint = appBarImageView.centerXAnchor.constraint(equalTo: appBarView.centerXAnchor)
+
            
            NSLayoutConstraint.activate([
                overlayView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -99,17 +109,22 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
            ])
            
            // ImageView
-           appBarImageView.image = UIImage(named: "iconApp")
-           appBarImageView.contentMode = .scaleAspectFit
-           appBarImageView.translatesAutoresizingMaskIntoConstraints = false
-           appBarView.addSubview(appBarImageView)
-           
-           NSLayoutConstraint.activate([
-               appBarImageView.centerYAnchor.constraint(equalTo: appBarView.centerYAnchor),
-               appBarImageView.leadingAnchor.constraint(equalTo: appBarView.leadingAnchor, constant: 16),
-               appBarImageView.widthAnchor.constraint(equalToConstant: 30),
-               appBarImageView.heightAnchor.constraint(equalToConstant: 30)
-           ])
+        appBarImageView.image = UIImage(named: "iconApp")
+        appBarImageView.contentMode = .scaleAspectFill
+        appBarImageView.translatesAutoresizingMaskIntoConstraints = false
+        appBarView.addSubview(appBarImageView)
+
+        appBarImageLeadingConstraint = appBarImageView.leadingAnchor.constraint(equalTo: appBarView.leadingAnchor, constant: 16)
+        appBarImageCenterConstraint = appBarImageView.centerXAnchor.constraint(equalTo: appBarView.centerXAnchor)
+        appBarImageWidthConstraint = appBarImageView.widthAnchor.constraint(equalToConstant: 40)
+        appBarImageHeightConstraint = appBarImageView.heightAnchor.constraint(equalToConstant: 30)
+
+        NSLayoutConstraint.activate([
+            appBarImageView.centerYAnchor.constraint(equalTo: appBarView.centerYAnchor),
+            appBarImageWidthConstraint,
+            appBarImageHeightConstraint,
+            appBarImageLeadingConstraint // Start with leading constraint active
+        ])
            
            // Label
            appBarLabel.text = "Home"
@@ -119,13 +134,13 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
            appBarView.addSubview(appBarLabel)
            
            NSLayoutConstraint.activate([
-               appBarLabel.centerYAnchor.constraint(equalTo: appBarView.centerYAnchor),
+            appBarLabel.centerYAnchor.constraint(equalTo: appBarView.centerYAnchor),
                appBarLabel.leadingAnchor.constraint(equalTo: appBarImageView.trailingAnchor, constant: 10)
            ])
            
         cartImageView.image = UIImage(named: "bag")
         cartImageView.tintColor = .customBlue
-        cartImageView.contentMode = .scaleAspectFit
+        cartImageView.contentMode = .scaleAspectFill
         cartImageView.isUserInteractionEnabled = true // Enable interaction
         cartImageView.translatesAutoresizingMaskIntoConstraints = false
         appBarView.addSubview(cartImageView)
@@ -150,8 +165,8 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         NSLayoutConstraint.activate([
             cartImageView.centerYAnchor.constraint(equalTo: appBarView.centerYAnchor),
             cartImageView.trailingAnchor.constraint(equalTo: appBarView.trailingAnchor, constant: -16),
-            cartImageView.widthAnchor.constraint(equalToConstant: 25),
-            cartImageView.heightAnchor.constraint(equalToConstant: 25)
+            cartImageView.widthAnchor.constraint(equalToConstant: 28),
+            cartImageView.heightAnchor.constraint(equalToConstant: 28)
         ])
 
         // Constraints for badgeLabel
@@ -180,45 +195,95 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
     }
     
     @objc func openCart() {
-        let cartController = CartController(nibName: "CartController", bundle: nil) 
-        navigationController?.pushViewController(cartController, animated: true)
+        selectedIndex = 2
+            updateAppBar(for: 2)
     }
     
     func updateAppBar(for index: Int) {
         switch index {
         case 0:
-            appBarLabel.text = "Home"
-            appBarImageView.image = UIImage(named: "logo1")
-            appBarImageView.contentMode = .scaleAspectFill
+            appBarLabel.isHidden = true
+
+            appBarImageLeadingConstraint.isActive = false
+            appBarImageCenterConstraint.isActive = true
+
+            appBarImageView.image = UIImage(named: "logo11")
+            appBarImageView.contentMode = .scaleToFill
+
+            // Update image size to 60x60
+            appBarImageWidthConstraint.constant = 70
+            appBarImageHeightConstraint.constant = 50
+
             toggleShopElements(isVisible: false)
-           // appBarImageView.tintColor = .none
+
         case 1:
             appBarLabel.text = "Browse"
-            appBarImageView.image = UIImage(named: "browse")?.withRenderingMode(.alwaysTemplate)
-            toggleShopElements(isVisible: true) // Show only in ShopViewController
-            appBarImageView.tintColor = UIColor.customBlue
+            appBarLabel.isHidden = false
+
+            appBarImageView.image = UIImage(named: "menub")?.withRenderingMode(.alwaysTemplate)
+            appBarImageView.contentMode = .scaleAspectFit
+            appBarImageView.tintColor = .customBlue
+
+            appBarImageLeadingConstraint.isActive = true
+            appBarImageCenterConstraint.isActive = false
+            
+            appBarImageWidthConstraint.constant = 40
+            appBarImageHeightConstraint.constant = 30
+
+            toggleShopElements(isVisible: true)
+
         case 2:
-            appBarLabel.text = "Wallet"
-            appBarImageView.image = UIImage(named: "wallet")?.withRenderingMode(.alwaysTemplate)
-            toggleShopElements(isVisible: false) // Show only in ShopViewController
-            appBarImageView.tintColor = UIColor.customBlue
-        case 3:
-            appBarLabel.text = "Rewards"
-            appBarImageView.image = UIImage(named: "reward")?.withRenderingMode(.alwaysTemplate)
+            appBarLabel.text = "Cart"
+            appBarLabel.isHidden = false
+
+            appBarImageView.image = resizeImage(named: "cart", size: CGSize(width: 25, height: 25))
+            appBarImageView.tintColor = .customBlue
+
+            appBarImageLeadingConstraint.isActive = true
+            appBarImageCenterConstraint.isActive = false
+            
+            appBarImageWidthConstraint.constant = 40
+            appBarImageHeightConstraint.constant = 30
+
             toggleShopElements(isVisible: false)
-            appBarImageView.tintColor = UIColor.customBlue
+
+        case 3:
+            appBarLabel.text = "Wallet"
+            appBarLabel.isHidden = false
+
+            appBarImageView.image = resizeImage(named: "wallet", size: CGSize(width: 25, height: 25))
+            appBarImageView.tintColor = .customBlue
+
+            appBarImageLeadingConstraint.isActive = true
+            appBarImageCenterConstraint.isActive = false
+            
+            appBarImageWidthConstraint.constant = 40
+            appBarImageHeightConstraint.constant = 30
+
+            toggleShopElements(isVisible: false)
+
         case 4:
             appBarLabel.text = "Account"
+            appBarLabel.isHidden = false
+
             appBarImageView.image = UIImage(named: "user")?.withRenderingMode(.alwaysTemplate)
+            appBarImageView.tintColor = .customBlue
+
+            appBarImageLeadingConstraint.isActive = true
+            appBarImageCenterConstraint.isActive = false
+            
+            appBarImageWidthConstraint.constant = 40
+            appBarImageHeightConstraint.constant = 30
+
             toggleShopElements(isVisible: false)
-            appBarImageView.tintColor = UIColor.customBlue
+
         default:
+            appBarImageWidthConstraint.constant = 40
+            appBarImageHeightConstraint.constant = 30
             break
         }
-
-        // Apply custom blue color
-     //   appBarImageView.tintColor = UIColor.customBlue
     }
+
 
     func toggleShopElements(isVisible: Bool) {
         cartImageView.isHidden = !isVisible

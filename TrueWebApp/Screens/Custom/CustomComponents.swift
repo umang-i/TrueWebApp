@@ -103,11 +103,11 @@ class CustomPasswordField: UIView {
         addSubview(containerView)
         containerView.addSubview(textField)
         //containerView.addSubview(toggleButton)
-
+        
         containerView.translatesAutoresizingMaskIntoConstraints = false
         textField.translatesAutoresizingMaskIntoConstraints = false
-       // toggleButton.translatesAutoresizingMaskIntoConstraints = false
-
+        // toggleButton.translatesAutoresizingMaskIntoConstraints = false
+        
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: topAnchor),
             containerView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -119,23 +119,9 @@ class CustomPasswordField: UIView {
             textField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10),
             textField.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -10),
             textField.heightAnchor.constraint(equalToConstant: 50),
-
-//            toggleButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-//            toggleButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10),
-//            toggleButton.widthAnchor.constraint(equalToConstant: 24),
-//            toggleButton.heightAnchor.constraint(equalToConstant: 24),
+            
         ])
     }
-
-//    private func setupActions() {
-//        toggleButton.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
-//    }
-
-//    @objc private func togglePasswordVisibility() {
-//        textField.isSecureTextEntry.toggle()
-//        let imageName = textField.isSecureTextEntry ? "eye.fill" : "eye.slash.fill"
-//        toggleButton.setImage(UIImage(systemName: imageName), for: .normal)
-//    }
 }
 
 class CustomTextField: UITextField {

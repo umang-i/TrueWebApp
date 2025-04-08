@@ -41,7 +41,7 @@ struct Subcategory: Codable {
 struct Category: Codable {
     let id: Int
     let title: String
-    var subCats: [Subcategory]
+    let subCats: [Subcategory]
    // var isExpanded: Bool = false
 }
 
