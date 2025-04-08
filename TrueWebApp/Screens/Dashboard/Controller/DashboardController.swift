@@ -15,9 +15,9 @@ class DashboardController: UIViewController {
     @IBOutlet weak var cartCollectionView: UICollectionView!
     @IBOutlet weak var circleCollectionView: UICollectionView!
     @IBOutlet weak var recentNotifLabel: UILabel!
-    @IBOutlet weak var shopButton: UIButton!
+//    @IBOutlet weak var shopButton: UIButton!
     @IBOutlet weak var notifHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var favouriteButton: UIButton!
+   // @IBOutlet weak var favouriteButton: UIButton!
     @IBOutlet weak var notificationsTableView: UITableView!
     @IBOutlet weak var bannerCollectionView: UICollectionView!
     @IBOutlet weak var catCollectionView: UICollectionView!
@@ -42,7 +42,7 @@ class DashboardController: UIViewController {
         setupTableViews()
         setupTapGesture()
         setCollectionView()
-      //  gradientView.applyGradientBackground()
+        gradientView.applyGradientBackground()
         
         if let loadedCategories = loadCategoriesFromJSON() {
             categories = loadedCategories
@@ -77,20 +77,20 @@ class DashboardController: UIViewController {
         catCollectionView.dataSource = self
         catCollectionView.isPagingEnabled = false
         
-//        cartCollectionView.register(GridCell.self, forCellWithReuseIdentifier: "gridCell")
-//        cartCollectionView.delegate = self
-//        cartCollectionView.dataSource = self
-//        cartCollectionView.isPagingEnabled = false
-//        
-//        banner2CollectionView.register(UINib(nibName: "BannerImageCell", bundle: nil), forCellWithReuseIdentifier: "bannerCell")
-//        banner2CollectionView.delegate = self
-//        banner2CollectionView.dataSource = self
-//        banner2CollectionView.isPagingEnabled = false
-//        
-//        banner3CollectionView.register(GridCell.self, forCellWithReuseIdentifier: "gridCell");
-//        banner3CollectionView.delegate = self
-//        banner3CollectionView.dataSource = self
-//        banner3CollectionView.isPagingEnabled = false
+        cartCollectionView.register(GridCell.self, forCellWithReuseIdentifier: "gridCell")
+        cartCollectionView.delegate = self
+        cartCollectionView.dataSource = self
+        cartCollectionView.isPagingEnabled = false
+        
+        banner2CollectionView.register(UINib(nibName: "BannerImageCell", bundle: nil), forCellWithReuseIdentifier: "bannerCell")
+        banner2CollectionView.delegate = self
+        banner2CollectionView.dataSource = self
+        banner2CollectionView.isPagingEnabled = false
+        
+        banner3CollectionView.register(GridCell.self, forCellWithReuseIdentifier: "gridCell");
+        banner3CollectionView.delegate = self
+        banner3CollectionView.dataSource = self
+        banner3CollectionView.isPagingEnabled = false
 
         
         if let layout = bannerCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
@@ -113,28 +113,28 @@ class DashboardController: UIViewController {
             layout.minimumInteritemSpacing = 10
             layout.minimumLineSpacing = 10
         }
-//        if let layout = cartCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-//            layout.scrollDirection = .horizontal
-//            layout.minimumInteritemSpacing = 2
-//            layout.minimumLineSpacing = 2
-//        }
-//        if let layout = banner2CollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-//            layout.scrollDirection = .horizontal
-//            layout.minimumInteritemSpacing = 10
-//            layout.minimumLineSpacing = 10
-//        }
-//        if let layout = banner3CollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-//            layout.scrollDirection = .horizontal
-//            layout.minimumInteritemSpacing = 2
-//            layout.minimumLineSpacing = 2
-//        }
+        if let layout = cartCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.scrollDirection = .horizontal
+            layout.minimumInteritemSpacing = 2
+            layout.minimumLineSpacing = 2
+        }
+        if let layout = banner2CollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.scrollDirection = .horizontal
+            layout.minimumInteritemSpacing = 10
+            layout.minimumLineSpacing = 10
+        }
+        if let layout = banner3CollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.scrollDirection = .horizontal
+            layout.minimumInteritemSpacing = 2
+            layout.minimumLineSpacing = 2
+        }
         
         bannerCollectionView.isPagingEnabled = true // Ensures smooth sliding
         bannerCollectionView.showsHorizontalScrollIndicator = false
         bannerCollectionView.showsVerticalScrollIndicator = false
     
         timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(slideToNext), userInfo: nil, repeats: true)
-       // imgPageController.numberOfPages = bannerImages.count
+        imgPageController.numberOfPages = items.count
     }
 
     
@@ -144,7 +144,6 @@ class DashboardController: UIViewController {
         } else {
             currentIndex = 0
         }
-       // imgPageController.currentPage = currentIndex
         let indexPath = IndexPath(item: currentIndex, section: 0)
         bannerCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
     }
@@ -232,9 +231,9 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
         }else if collectionView == catCollectionView {
             return imgs.count
         }
-//        else if collectionView == banner3CollectionView {
-//            return categories[section].subCats.flatMap { $0.products }.count
-//        }
+        else if collectionView == banner3CollectionView {
+            return categories[section].subCats.flatMap { $0.products }.count
+        }
         return 5
     }
     
@@ -267,40 +266,40 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
             cell.setImages(imgName: imgs[indexPath.row], callerId: 1) // Set item image
             return cell
         
-//        }else if collectionView == cartCollectionView {
-//            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? GridCell else {
-//                return UICollectionViewCell()
-//            }
-//            let allProducts = categories[indexPath.section].subCats.flatMap { $0.products }
-//                    let product = allProducts[indexPath.row]
-//
-//                    cell.configure(title: product.title,
-//                                   image: product.img,
-//                                   price: product.price,
-//                                   wallet: product.sku,
-//                                   brand: "Lays") 
-//            return cell
-//        } else if collectionView == banner2CollectionView {
-//            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
-//                return UICollectionViewCell()
-//            }
-//            cell.setImages(imgName: imgs1[indexPath.row], callerId: 1) // Set item image
-//            return cell
+        }else if collectionView == cartCollectionView {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? GridCell else {
+                return UICollectionViewCell()
+            }
+            let allProducts = categories[indexPath.section].subCats.flatMap { $0.products }
+                    let product = allProducts[indexPath.row]
 
-//        }else if collectionView == banner3CollectionView {
-//            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? GridCell else {
-//                return UICollectionViewCell()
-//            }
-//            let allProducts = categories[indexPath.section].subCats.flatMap { $0.products }
-//                    let product = allProducts[indexPath.row]
-//
-//                    cell.configure(title: product.title,
-//                                   image: product.img,
-//                                   price: product.price,
-//                                   wallet: product.sku,
-//                                   brand: "Lays")  // Modify brand logic if needed
-//                    
-//                    return cell
+                    cell.configure(title: product.title,
+                                   image: product.img,
+                                   price: product.price,
+                                   wallet: product.sku,
+                                   brand: "Lays") 
+            return cell
+        } else if collectionView == banner2CollectionView {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
+                return UICollectionViewCell()
+            }
+            cell.setImages(imgName: imgs1[indexPath.row], callerId: 1) // Set item image
+            return cell
+
+        }else if collectionView == banner3CollectionView {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? GridCell else {
+                return UICollectionViewCell()
+            }
+            let allProducts = categories[indexPath.section].subCats.flatMap { $0.products }
+                    let product = allProducts[indexPath.row]
+
+                    cell.configure(title: product.title,
+                                   image: product.img,
+                                   price: product.price,
+                                   wallet: product.sku,
+                                   brand: "Lays")  // Modify brand logic if needed
+                    
+                    return cell
         }
         return UICollectionViewCell()
     }
@@ -313,12 +312,12 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
             return CGSize(width: 150, height: collectionView.frame.height) // Fixed size for circle items
         } else if collectionView == circleCollectionView {
             return CGSize(width: 10, height: 50) // Fixed size for circle items
-//        }else if collectionView == cartCollectionView {
-//            return CGSize(width: collectionView.frame.width * 0.45, height: collectionView.frame.height)
-//        }else if collectionView == banner2CollectionView  {
-//            return CGSize(width: 150, height: collectionView.frame.height) // Fixed size for circle items
-//        }else if collectionView == banner3CollectionView  {
-//            return CGSize(width: collectionView.frame.width * 0.4, height: collectionView.frame.height)
+        }else if collectionView == cartCollectionView {
+            return CGSize(width: collectionView.frame.width * 0.45, height: collectionView.frame.height)
+        }else if collectionView == banner2CollectionView  {
+            return CGSize(width: 150, height: collectionView.frame.height) // Fixed size for circle items
+        }else if collectionView == banner3CollectionView  {
+            return CGSize(width: collectionView.frame.width * 0.4, height: collectionView.frame.height)
         }
         else{
             return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
@@ -329,8 +328,8 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         if collectionView == catCollectionView {
                    return 5
-//        } else if collectionView == banner2CollectionView {
-//                   return 5
+        } else if collectionView == banner2CollectionView {
+                   return 5
                }
         return 0
     }
