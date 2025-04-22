@@ -11,11 +11,7 @@ class FilterView: UIView {
     var collectionView: UICollectionView!
     var selectedBrands: Set<String> = []
     
-    let brands = ["Additional POS", "Airheads", "Airplane", "Al Fakher", "Aspire Gotek",
-                  "Bar Juice 5000", "Bebeto", "Blackfriars", "Candy Break", "Canabar",
-                  "Chupa Chups", "Crystal Clear", "D&K", "Duracell", "Edge", "Elements",
-                  "ELFA Pro", "Energizer", "Fanta", "Goat", "Gold Bar", "Hayati", "Hot Chip",
-                  "Jelly Rose", "JUUL", "Kit Kat", "Like Home", "Lost Mary BM6000", "IVG"]
+    let brands = ["d1" ,"d2" , "d3" , "d4","d5","d6","d1" ,"d2" , "d3" , "d4","d5","d6" , "s6" ,"s3" , "s2" , "s1","s4","s5"]
     
     var selectedProductOption: String = "All"
     var selectedStockOption: String = "All"
@@ -37,33 +33,29 @@ class FilterView: UIView {
     
     private func setupOverlay() {
         self.backgroundColor = UIColor.black.withAlphaComponent(0.5) // Dimmed background
-        
+
         contentView.backgroundColor = .white
         contentView.layer.cornerRadius = 4
         contentView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentView)
-        
+        contentView.centerYAnchor.constraint(equalTo: self.centerYAnchor).priority = .defaultLow // Make centerY optional
+
         NSLayoutConstraint.activate([
-            contentView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            contentView.topAnchor.constraint(equalTo: self.topAnchor),
+            contentView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor), // Or self.topAnchor
             contentView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            contentView.heightAnchor.constraint(equalToConstant: 600)
+            contentView.bottomAnchor.constraint(lessThanOrEqualTo: self.safeAreaLayoutGuide.bottomAnchor), // Allow it to grow
+
         ])
     }
     
     private func setupFilters() {
-        let productLabel = createSectionLabel(text: "Products")
+        let productLabel = createSectionLabel(text: "All Brands")
         let productAll = createRadioButton(title: "All", selector: #selector(productOptionChanged(_:)))
         let productFavorites = createRadioButton(title: "Favorites", selector: #selector(productOptionChanged(_:)))
         let productStack = createHorizontalStack(views: [productAll, productFavorites])
-        
-        let stockLabel = createSectionLabel(text: "Stock")
-        let stockAll = createRadioButton(title: "All", selector: #selector(stockOptionChanged(_:)))
-        let stockInStock = createRadioButton(title: "In Stock Only", selector: #selector(stockOptionChanged(_:)))
-        let stockStack = createHorizontalStack(views: [stockAll, stockInStock])
-        
-        let stack = UIStackView(arrangedSubviews: [productLabel, productStack, stockLabel, stockStack])
+//        
+        let stack = UIStackView(arrangedSubviews: [productLabel, productStack])
         stack.axis = .vertical
         stack.spacing = 12
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -91,23 +83,17 @@ class FilterView: UIView {
     }
     
     private func setupCollectionView() {
-        // Create the "Brands" header label
-        let brandsLabel = UILabel()
-        brandsLabel.text = "Brands"
-        brandsLabel.font = UIFont(name: "Roboto-Medium", size: 16)
-        brandsLabel.textColor = .black
-        brandsLabel.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(brandsLabel)
         
         // Configure the CollectionView Layout
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: frame.width / 4 + 20  , height: 100)
+        layout.itemSize = CGSize(width: frame.width / 7 + 10  , height: 63)
         layout.minimumLineSpacing = 10
         
         // Initialize CollectionView
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .white
+        collectionView.isUserInteractionEnabled = true
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(UINib(nibName: "BrandCell", bundle: nil), forCellWithReuseIdentifier: "BrandCell")
@@ -115,13 +101,13 @@ class FilterView: UIView {
         
         // Apply Constraints
         NSLayoutConstraint.activate([
-            brandsLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 170),
-            brandsLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            
-            collectionView.topAnchor.constraint(equalTo: brandsLabel.bottomAnchor, constant: 10),
+//            brandsLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 170),
+//            brandsLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+//            
+            collectionView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 100),
             collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            collectionView.heightAnchor.constraint(equalToConstant: 320)
+            collectionView.heightAnchor.constraint(equalToConstant: 380)
         ])
     }
     
@@ -258,7 +244,7 @@ extension FilterView: UICollectionViewDelegate, UICollectionViewDataSource {
         
         let isSelected = selectedBrands.contains(brand) // ✅ Now `brand` is defined
         cell.setSelectedState(isSelected: isSelected) // ✅ Update border color
-        
+        cell.setImage(img: brands[indexPath.row])
         return cell
     }
     

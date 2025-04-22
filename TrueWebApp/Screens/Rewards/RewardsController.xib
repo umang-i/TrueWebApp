@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RewardsController" customModule="TrueApp" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RewardsController" customModule="TrueWebApp" customModuleProvider="target">
             <connections>
+                <outlet property="referView" destination="Udf-4w-Jmv" id="wah-tr-Wo7"/>
                 <outlet property="rewardTableView" destination="apK-ae-4q5" id="CJW-9j-dgS"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -26,7 +27,7 @@
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GEO-7a-3fk">
                             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             <subviews>
-                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gif" translatesAutoresizingMaskIntoConstraints="NO" id="nqc-Ap-X8h">
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bnr1" translatesAutoresizingMaskIntoConstraints="NO" id="nqc-Ap-X8h">
                                     <rect key="frame" x="0.0" y="80" width="393" height="120"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="120" id="G9R-Ot-d32"/>
@@ -39,21 +40,57 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="apK-ae-4q5">
-                                    <rect key="frame" x="0.0" y="200" width="393" height="652"/>
+                                    <rect key="frame" x="0.0" y="300" width="393" height="552"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 </tableView>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Udf-4w-Jmv">
+                                    <rect key="frame" x="10" y="220" width="373" height="60"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Referral Rewards" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9DN-y0-5qz">
+                                            <rect key="frame" x="10" y="5" width="138.33333333333334" height="21"/>
+                                            <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="18"/>
+                                            <color key="textColor" white="0.94289434530000005" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <nil key="highlightedColor"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="font" value="Roboto-Regular"/>
+                                            </userDefinedRuntimeAttributes>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Refer a Retailer to earn Rewards" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uEL-gJ-qHC">
+                                            <rect key="frame" x="10" y="31" width="207" height="17"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" red="0.73333333329999995" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="60" id="26L-Ag-4g5"/>
+                                        <constraint firstItem="uEL-gJ-qHC" firstAttribute="top" secondItem="9DN-y0-5qz" secondAttribute="bottom" constant="5" id="A7W-QS-Ybo"/>
+                                        <constraint firstItem="uEL-gJ-qHC" firstAttribute="leading" secondItem="9DN-y0-5qz" secondAttribute="leading" id="KGr-4o-cfI"/>
+                                        <constraint firstItem="9DN-y0-5qz" firstAttribute="leading" secondItem="Udf-4w-Jmv" secondAttribute="leading" constant="10" id="wff-tn-I7Y"/>
+                                        <constraint firstItem="9DN-y0-5qz" firstAttribute="top" secondItem="Udf-4w-Jmv" secondAttribute="top" constant="5" id="xzz-lL-ePa"/>
+                                    </constraints>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                            <integer key="value" value="4"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </view>
                             </subviews>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <constraints>
                                 <constraint firstAttribute="trailing" secondItem="nqc-Ap-X8h" secondAttribute="trailing" id="6Qx-ca-6k2"/>
+                                <constraint firstItem="Udf-4w-Jmv" firstAttribute="top" secondItem="nqc-Ap-X8h" secondAttribute="bottom" constant="20" id="6f4-xh-VwI"/>
                                 <constraint firstItem="nqc-Ap-X8h" firstAttribute="leading" secondItem="GEO-7a-3fk" secondAttribute="leading" id="CMN-AY-au2"/>
                                 <constraint firstItem="UFi-lf-BqM" firstAttribute="centerY" secondItem="GEO-7a-3fk" secondAttribute="centerY" id="Dkk-Wh-zhO"/>
                                 <constraint firstItem="nqc-Ap-X8h" firstAttribute="top" secondItem="GEO-7a-3fk" secondAttribute="top" constant="80" id="EVC-w5-p7p"/>
                                 <constraint firstItem="apK-ae-4q5" firstAttribute="leading" secondItem="GEO-7a-3fk" secondAttribute="leading" id="MJj-R3-6oO"/>
-                                <constraint firstItem="apK-ae-4q5" firstAttribute="top" secondItem="nqc-Ap-X8h" secondAttribute="bottom" id="NH5-xo-x1Y"/>
+                                <constraint firstItem="apK-ae-4q5" firstAttribute="top" secondItem="Udf-4w-Jmv" secondAttribute="bottom" constant="20" id="WqP-yy-FTA"/>
                                 <constraint firstItem="UFi-lf-BqM" firstAttribute="centerX" secondItem="GEO-7a-3fk" secondAttribute="centerX" id="X2J-L2-btC"/>
                                 <constraint firstAttribute="trailing" secondItem="apK-ae-4q5" secondAttribute="trailing" id="ZCJ-d1-iUs"/>
                                 <constraint firstAttribute="bottom" secondItem="apK-ae-4q5" secondAttribute="bottom" id="dvf-Qa-H6p"/>
+                                <constraint firstItem="Udf-4w-Jmv" firstAttribute="leading" secondItem="GEO-7a-3fk" secondAttribute="leading" constant="10" id="h4V-gR-L7C"/>
+                                <constraint firstAttribute="trailing" secondItem="Udf-4w-Jmv" secondAttribute="trailing" constant="10" id="v6s-kO-T5J"/>
                             </constraints>
                         </view>
                     </subviews>
@@ -75,11 +112,11 @@
                 <constraint firstAttribute="bottom" secondItem="u1n-sx-Olo" secondAttribute="bottom" id="wzt-Ez-Ew6"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="u1n-sx-Olo" secondAttribute="trailing" id="x8T-Zq-GfP"/>
             </constraints>
-            <point key="canvasLocation" x="97" y="20"/>
+            <point key="canvasLocation" x="96.946564885496173" y="19.718309859154932"/>
         </view>
     </objects>
     <resources>
-        <image name="gif" width="3480" height="2000"/>
+        <image name="bnr1" width="1080" height="360"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

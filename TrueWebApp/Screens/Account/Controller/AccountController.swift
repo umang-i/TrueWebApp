@@ -18,17 +18,18 @@ class AccountController: UIViewController {
         let accountItems: [AccountItem] = [
             AccountItem(title: "My Rep Details", iconName: "rep"),
             AccountItem(title: "My Orders", iconName: "bag1"),
+            AccountItem(title: "Loyalty Rewards", iconName: "reward"),
             AccountItem(title: "My Address", iconName: "company"),
             AccountItem(title: "Payment Options", iconName: "card"),
             AccountItem(title: "Service & Display Solutions", iconName: "service"),
-            AccountItem(title: "Profile", iconName: "user"),
-            AccountItem(title: "Wallet", iconName: "wallet"),
+            AccountItem(title: "Profile", iconName: "user_fill"),
+            AccountItem(title: "Wallet", iconName: "wallet_fill"),
             AccountItem(title: "Notification Preferences", iconName: "bell"),
             AccountItem(title: "Change Password", iconName: "lock"),
             AccountItem(title: "Terms and Conditions", iconName: "contract"),
             AccountItem(title: "Privacy Policy", iconName: "privacy"),
-            AccountItem(title: "Delete Account", iconName: "bin"),
             AccountItem(title: "Logout", iconName: "logout"),
+            AccountItem(title: "Delete Account", iconName: "bin"),
         ]
         
         override func viewDidLoad() {
@@ -84,9 +85,9 @@ extension AccountController: UITableViewDelegate, UITableViewDataSource {
     // Configure the cell
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AccountCell", for: indexPath) as! AccountCell
-        let data = accountItems[indexPath.row] // ✅ Fix: Use index
+        let data = accountItems[indexPath.row]
         
-        cell.iconImageView.image = UIImage(named: data.iconName) // ✅ Fix: Use systemName
+        cell.iconImageView.image = UIImage(named: data.iconName)?.withRenderingMode(.alwaysTemplate)
         cell.iconImageView.tintColor = .customBlue
         cell.textLabelView.text = data.title
         
@@ -154,6 +155,9 @@ extension AccountController: UITableViewDelegate, UITableViewDataSource {
         }else if selectedItem.title == "Payment Options"{
             let paymentController = PaymentOptionsController(nibName: "PaymentOptionsController", bundle: nil)
             self.navigationController?.pushViewController(paymentController, animated: true)
+        }else if selectedItem.title == "Loyalty Rewards"{
+            let rewardController = RewardsController(nibName: "RewardsController", bundle: nil)
+            self.navigationController?.pushViewController(rewardController, animated: true)
         }
     }
 }

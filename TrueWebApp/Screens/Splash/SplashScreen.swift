@@ -10,7 +10,7 @@ import UIKit
 class SplashScreen: UIViewController {
     
     let logoImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "logo")) // Ensure "logo" is in Assets.xcassets
+        let imageView = UIImageView(image: UIImage(named: "logo1")) // Ensure "logo" is in Assets.xcassets
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -19,7 +19,7 @@ class SplashScreen: UIViewController {
     let smartSolutionsLabel: UILabel = {
         let label = UILabel()
         label.text = "Smart Solutions"
-        label.textColor = .white
+        label.textColor = .customBlue
         label.font = UIFont(name: "Roboto-Medium", size: 30)
         label.textAlignment = .center
         label.alpha = 0
@@ -29,7 +29,7 @@ class SplashScreen: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(red: 4/255, green: 30/255, blue: 73/255, alpha: 1) // Dark blue background
+        view.backgroundColor = UIColor.white
         
         view.addSubview(logoImageView)
         view.addSubview(smartSolutionsLabel)

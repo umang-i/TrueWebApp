@@ -3,4 +3,182 @@
    uuid = "7BB39B72-1BBD-44FE-BB1D-BB0D8C64C286"
    type = "0"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F77F4557-413F-4708-B9ED-5DD581926C53"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "TrueWebApp/Screens/Splash/SplashController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "12"
+            endingLineNumber = "12"
+            landmarkName = "SplashViewController"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  uuid = "F77F4557-413F-4708-B9ED-5DD581926C53 - bf79b83b28a4daa9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "TrueWebApp.SplashViewController.__allocating_init(nibName: Swift.Optional&lt;Swift.String&gt;, bundle: Swift.Optional&lt;__C.NSBundle&gt;) -&gt; TrueWebApp.SplashViewController"
+                  moduleName = "TrueWebApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/umangkedan/Documents/TrueApp/TrueWebApp/Screens/Splash/SplashController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "F77F4557-413F-4708-B9ED-5DD581926C53 - 7d7e350cb90472e9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "TrueWebApp.SplashViewController.init(nibName: Swift.Optional&lt;Swift.String&gt;, bundle: Swift.Optional&lt;__C.NSBundle&gt;) -&gt; TrueWebApp.SplashViewController"
+                  moduleName = "TrueWebApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/umangkedan/Documents/TrueApp/TrueWebApp/Screens/Splash/SplashController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "15"
+                  endingLineNumber = "15">
+               </Location>
+               <Location
+                  uuid = "F77F4557-413F-4708-B9ED-5DD581926C53 - 327089aa1448bfe6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "TrueWebApp.SplashViewController.__allocating_init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;TrueWebApp.SplashViewController&gt;"
+                  moduleName = "TrueWebApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/umangkedan/Documents/TrueApp/TrueWebApp/Screens/Splash/SplashController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "F77F4557-413F-4708-B9ED-5DD581926C53 - 5a1074d212ff6e6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "TrueWebApp.SplashViewController.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;TrueWebApp.SplashViewController&gt;"
+                  moduleName = "TrueWebApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/umangkedan/Documents/TrueApp/TrueWebApp/Screens/Splash/SplashController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "15"
+                  endingLineNumber = "15">
+               </Location>
+               <Location
+                  uuid = "F77F4557-413F-4708-B9ED-5DD581926C53 - c78301592cefef45"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "TrueWebApp.SplashViewController.__deallocating_deinit"
+                  moduleName = "TrueWebApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/umangkedan/Documents/TrueApp/TrueWebApp/Screens/Splash/SplashController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A56E25BA-F081-4E2C-BEF6-666E67174BE3"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "TrueWebApp/Screens/Splash/AnimationViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "11"
+            endingLineNumber = "11"
+            landmarkName = "AnimationViewController"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  uuid = "A56E25BA-F081-4E2C-BEF6-666E67174BE3 - bcee7e49a488e16a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "TrueWebApp.AnimationViewController.__allocating_init(nibName: Swift.Optional&lt;Swift.String&gt;, bundle: Swift.Optional&lt;__C.NSBundle&gt;) -&gt; TrueWebApp.AnimationViewController"
+                  moduleName = "TrueWebApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/umangkedan/Documents/TrueApp/TrueWebApp/Screens/Splash/AnimationViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "A56E25BA-F081-4E2C-BEF6-666E67174BE3 - 3362b0a6fa8b474"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "TrueWebApp.AnimationViewController.init(nibName: Swift.Optional&lt;Swift.String&gt;, bundle: Swift.Optional&lt;__C.NSBundle&gt;) -&gt; TrueWebApp.AnimationViewController"
+                  moduleName = "TrueWebApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/umangkedan/Documents/TrueApp/TrueWebApp/Screens/Splash/AnimationViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "13"
+                  endingLineNumber = "13">
+               </Location>
+               <Location
+                  uuid = "A56E25BA-F081-4E2C-BEF6-666E67174BE3 - 2468bd44e85fe900"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "TrueWebApp.AnimationViewController.__allocating_init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;TrueWebApp.AnimationViewController&gt;"
+                  moduleName = "TrueWebApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/umangkedan/Documents/TrueApp/TrueWebApp/Screens/Splash/AnimationViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "A56E25BA-F081-4E2C-BEF6-666E67174BE3 - 63afe65d4b255286"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "TrueWebApp.AnimationViewController.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;TrueWebApp.AnimationViewController&gt;"
+                  moduleName = "TrueWebApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/umangkedan/Documents/TrueApp/TrueWebApp/Screens/Splash/AnimationViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "13"
+                  endingLineNumber = "13">
+               </Location>
+               <Location
+                  uuid = "A56E25BA-F081-4E2C-BEF6-666E67174BE3 - 87c2ef315e153bb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "TrueWebApp.AnimationViewController.__deallocating_deinit"
+                  moduleName = "TrueWebApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/umangkedan/Documents/TrueApp/TrueWebApp/Screens/Splash/AnimationViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

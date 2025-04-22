@@ -66,7 +66,7 @@ class GridTableCell: UITableViewCell, UICollectionViewDelegate, UICollectionView
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 180, height: 280)
+        layout.itemSize = CGSize(width: 180, height: 250)
         layout.minimumInteritemSpacing = 2
         layout.minimumLineSpacing = 10
         
@@ -138,6 +138,10 @@ class ExpandableCell: UITableViewCell {
         backgroundColor = .customBlue
 
         iconImageView.contentMode = .scaleAspectFill
+        iconImageView.layer.cornerRadius = 5
+        iconImageView.layer.borderWidth = 1
+        iconImageView.layer.borderColor = UIColor.black.cgColor
+        iconImageView.clipsToBounds = true
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(iconImageView)
 
@@ -167,9 +171,9 @@ class ExpandableCell: UITableViewCell {
         contentView.addSubview(spacerView)
 
         NSLayoutConstraint.activate([
-            iconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
+            iconImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             iconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor, constant: -3),
-            iconImageView.widthAnchor.constraint(equalToConstant: 20),
+            iconImageView.widthAnchor.constraint(equalToConstant: 50),
             iconImageView.heightAnchor.constraint(equalToConstant: 40),
             
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor, constant: -3),

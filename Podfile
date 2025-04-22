@@ -6,6 +6,7 @@ target 'TrueWebApp' do
   use_frameworks!
   
   pod 'FLAnimatedImage'
+pod 'SwiftyGif'
 
 
 

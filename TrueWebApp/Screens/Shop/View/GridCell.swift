@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 class GridCell: UICollectionViewCell {
     
@@ -29,14 +30,21 @@ class GridCell: UICollectionViewCell {
         return label
     }()
     
-    private let saleLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont(name: "Roboto-Medium", size: 14)
-        label.numberOfLines = 2
-        label.text = "SALE"
-        label.textColor = .customRed
-        label.textAlignment = .left
-        return label
+//    private let saleLabel: UILabel = {
+//        let label = UILabel()
+//        label.font = UIFont(name: "Roboto-Medium", size: 14)
+//        label.numberOfLines = 2
+//        label.text = "SALE"
+//        label.textColor = .customRed
+//        label.textAlignment = .left
+//        return label
+//    }()
+    private let saleLottieView: LottieAnimationView = {
+        let animationView = LottieAnimationView(name: "sale")
+        animationView.loopMode = .loop
+        animationView.contentMode = .scaleAspectFill
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        return animationView
     }()
     
     private let priceLabel: UILabel = {
@@ -80,7 +88,7 @@ class GridCell: UICollectionViewCell {
     
     private let favouriteIcon: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "star.fill"), for: .normal)
+        button.setImage(UIImage(systemName: "heart"), for: .normal)
         button.tintColor = .gray
         button.layer.cornerRadius = 15
         button.layer.borderWidth = 2
@@ -117,22 +125,22 @@ class GridCell: UICollectionViewCell {
     
     private let bottomPriceLabel: UILabel = {
         let label = UILabel()
-        label.text = "£3.14 (55%)"
+        label.text = "BUY 2 GET 1 FREE"
         label.textColor = .black
         label.font = UIFont(name: "Roboto-Regular", size: 12)
         label.numberOfLines = 2
         label.textAlignment = .left
         return label
     }()
-    private let bottomTextLabel: UILabel = {
-        let label = UILabel()
-        label.text = "FAM members"
-        label.textColor = .black
-        label.font = UIFont(name: "Roboto-Bold", size: 12)
-        label.numberOfLines = 2
-        label.textAlignment = .left
-        return label
-    }()
+//    private let bottomTextLabel: UILabel = {
+//        let label = UILabel()
+//        label.text = "FAM members"
+//        label.textColor = .black
+//        label.font = UIFont(name: "Roboto-Bold", size: 12)
+//        label.numberOfLines = 2
+//        label.textAlignment = .left
+//        return label
+//    }()
 
     private let offerBackGroundView: UIView = {
         let view = UIView()
@@ -148,6 +156,7 @@ class GridCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        saleLottieView.play()
         setupUI()
     }
     
@@ -185,19 +194,19 @@ class GridCell: UICollectionViewCell {
         contentView.addSubview(priceLabel)
         contentView.addSubview(nameLabel)
         contentView.addSubview(titleLabel)
-        contentView.addSubview(saleLabel)
+        contentView.addSubview(saleLottieView)
         contentView.addSubview(favouriteIcon)
         contentView.addSubview(addButton)
         contentView.addSubview(quantitySelector)
         contentView.addSubview(originalPriceLabel)
         contentView.addSubview(offerBackGroundView)
         offerBackGroundView.addSubview(bottomPriceLabel)
-        offerBackGroundView.addSubview(bottomTextLabel)
+       // offerBackGroundView.addSubview(bottomTextLabel)
 
         // Enable Auto Layout
         gridImageView.translatesAutoresizingMaskIntoConstraints = false
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
-        saleLabel.translatesAutoresizingMaskIntoConstraints = false
+        saleLottieView.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         originalPriceLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -206,15 +215,17 @@ class GridCell: UICollectionViewCell {
         quantitySelector.translatesAutoresizingMaskIntoConstraints = false
         offerBackGroundView.translatesAutoresizingMaskIntoConstraints = false
         bottomPriceLabel.translatesAutoresizingMaskIntoConstraints = false
-        bottomTextLabel.translatesAutoresizingMaskIntoConstraints = false
+      //  bottomTextLabel.translatesAutoresizingMaskIntoConstraints = false
 
         // Constraints
         NSLayoutConstraint.activate([
-            saleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            saleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            saleLottieView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 0),
+            saleLottieView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0),
+            saleLottieView.widthAnchor.constraint(equalToConstant: 60),
+            saleLottieView.heightAnchor.constraint(equalToConstant: 50),
             
             // Product Image
-            gridImageView.topAnchor.constraint(equalTo: saleLabel.bottomAnchor, constant: 3),
+            gridImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 35),
             gridImageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             gridImageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
             gridImageView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.4),
@@ -234,27 +245,27 @@ class GridCell: UICollectionViewCell {
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             
             // Price Label (Discounted & Original Price)
-            priceLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+            priceLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor , constant: -10),
             priceLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
             
-            originalPriceLabel.leadingAnchor.constraint(equalTo: priceLabel.trailingAnchor, constant: 10),
+            originalPriceLabel.leadingAnchor.constraint(equalTo: priceLabel.trailingAnchor, constant: 5),
             originalPriceLabel.topAnchor.constraint(equalTo: priceLabel.topAnchor, constant: 0),
             
             offerBackGroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             offerBackGroundView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            offerBackGroundView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
-            offerBackGroundView.heightAnchor.constraint(equalToConstant: 40),
+            offerBackGroundView.topAnchor.constraint(equalTo: originalPriceLabel.bottomAnchor, constant: 10),
+            offerBackGroundView.heightAnchor.constraint(equalToConstant: 25),
             
             bottomPriceLabel.topAnchor.constraint(equalTo: offerBackGroundView.topAnchor, constant: 5),
             bottomPriceLabel.leadingAnchor.constraint(equalTo: offerBackGroundView.leadingAnchor, constant: 5),
             bottomPriceLabel.trailingAnchor.constraint(equalTo: offerBackGroundView.trailingAnchor, constant: -5),
             
             // Bottom Text Label (Below Bottom Price Label)
-            bottomTextLabel.topAnchor.constraint(equalTo: bottomPriceLabel.bottomAnchor, constant: 2),
-            bottomTextLabel.leadingAnchor.constraint(equalTo: offerBackGroundView.leadingAnchor, constant: 5),
-            bottomTextLabel.trailingAnchor.constraint(equalTo: offerBackGroundView.trailingAnchor, constant: -5),
-            bottomTextLabel.bottomAnchor.constraint(equalTo: offerBackGroundView.bottomAnchor, constant: -5),
-            
+//            bottomTextLabel.topAnchor.constraint(equalTo: bottomPriceLabel.bottomAnchor, constant: 2),
+//            bottomTextLabel.leadingAnchor.constraint(equalTo: offerBackGroundView.leadingAnchor, constant: 5),
+//            bottomTextLabel.trailingAnchor.constraint(equalTo: offerBackGroundView.trailingAnchor, constant: -5),
+//            bottomTextLabel.bottomAnchor.constraint(equalTo: offerBackGroundView.bottomAnchor, constant: -5),
+//            
             
             addButton.trailingAnchor.constraint(equalTo: gridImageView.trailingAnchor, constant: 5),
             addButton.bottomAnchor.constraint(equalTo: gridImageView.bottomAnchor, constant: 5),
@@ -267,6 +278,7 @@ class GridCell: UICollectionViewCell {
             quantitySelector.widthAnchor.constraint(equalToConstant: 100),
             quantitySelector.heightAnchor.constraint(equalToConstant: 30),
         ])
+        
 
         // Initially hide the quantity selector
         quantitySelector.isHidden = true
@@ -275,7 +287,6 @@ class GridCell: UICollectionViewCell {
         favouriteIcon.addTarget(self, action: #selector(favouriteButtonTapped), for: .touchUpInside)
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
-
     
     func configure(title: String, image: String, price: String, wallet: String, brand: String) {
         nameLabel.text = brand
@@ -301,7 +312,11 @@ class GridCell: UICollectionViewCell {
     @objc private func favouriteButtonTapped() {
         isFavourite.toggle()
         favouriteIcon.tintColor = isFavourite ? .customRed : .gray
-        favouriteIcon.layer.borderColor = isFavourite ? UIColor.customRed.cgColor : UIColor.gray.cgColor
+        favouriteIcon.setImage(
+            UIImage(systemName: isFavourite ? "heart.fill" : "heart"),
+            for: .normal
+        )
+        favouriteIcon.layer.borderColor = (isFavourite ? UIColor.customRed : UIColor.gray).cgColor
     }
     
     @objc private func addButtonTapped() {

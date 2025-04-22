@@ -48,7 +48,7 @@ class WalletViewController: UIViewController, CustomNavBarDelegate {
 
         // Banner Image View
         let bannerImageView = UIImageView()
-        bannerImageView.image = UIImage(named: "gif") // Replace with your image name
+        bannerImageView.image = UIImage(named: "bnr1") // Replace with your image name
         bannerImageView.contentMode = .scaleAspectFill
         bannerImageView.clipsToBounds = true
         bannerImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -83,8 +83,10 @@ class WalletViewController: UIViewController, CustomNavBarDelegate {
         balanceContainer.heightAnchor.constraint(equalToConstant: 60).isActive = true
         balanceContainer.translatesAutoresizingMaskIntoConstraints = false
 
-        let balanceIcon = UIImageView(image: UIImage(systemName: "wallet.bifold.fill"))
+        let balanceIcon = UIImageView(image: UIImage(named: "wallet"))
         balanceIcon.tintColor = .customBlue
+        balanceIcon.heightAnchor.constraint(equalToConstant: 26).isActive = true
+        balanceIcon.widthAnchor.constraint(equalToConstant: 26).isActive = true
 
         let balanceLabel = UILabel()
         balanceLabel.text = "£2.50"

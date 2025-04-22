@@ -24,7 +24,7 @@ class DashboardController: UIViewController {
     @IBOutlet weak var imgPageController: UIPageControl!
     @IBOutlet weak var itemsCollectionView: UICollectionView!
     var bannerImages = ["b1" , "b2","b3" , "b4","b5" , "b6","b7" ,"b8"]
-    var items = ["s6" ,"s3" , "s2" , "s1","s4","s5"]
+    var items = ["bnr1", "s6" ,"s3" , "s2" , "s1","s4","s5"]
     var img = ["d1" , "d2" , "d3","d4","d5","d6"]
     var imgs = ["im1","im2","im3","im4","im5","im6"]
     var imgs1 = ["f1","f2","f3","f4","f5","f6"]
@@ -67,6 +67,9 @@ class DashboardController: UIViewController {
         itemsCollectionView.delegate = self
         itemsCollectionView.dataSource = self
         itemsCollectionView.register(UINib(nibName: "BannerImageCell", bundle: nil), forCellWithReuseIdentifier: "bannerCell")
+        itemsCollectionView.isPagingEnabled = true
+        imgPageController.numberOfPages = items.count
+        imgPageController.currentPage = 0
         
         circleCollectionView.register(UINib(nibName: "CircleCategoryCell", bundle: nil), forCellWithReuseIdentifier: "circleCell")
         circleCollectionView.delegate = self
@@ -136,7 +139,13 @@ class DashboardController: UIViewController {
         timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(slideToNext), userInfo: nil, repeats: true)
         imgPageController.numberOfPages = items.count
     }
-
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if scrollView == itemsCollectionView {
+            let page = Int(scrollView.contentOffset.x / scrollView.frame.width)
+            imgPageController.currentPage = page
+        }
+    }
     
     @objc func slideToNext() {
         if currentIndex < bannerImages.count - 1 {
@@ -175,7 +184,7 @@ class DashboardController: UIViewController {
 
 extension DashboardController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return  2
+        return  5
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

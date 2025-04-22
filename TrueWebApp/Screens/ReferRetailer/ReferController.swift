@@ -34,7 +34,7 @@ class ReferController : UIViewController , CustomNavBarDelegate {
         
         // Banner Image
         let bannerImageView = UIImageView()
-        bannerImageView.image = UIImage(named: "gif1")
+        bannerImageView.image = UIImage(named: "bnr1")
         bannerImageView.contentMode = .scaleToFill
         bannerImageView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(bannerImageView)

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -25,13 +25,13 @@
                     <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TqZ-kH-cVl">
-                            <rect key="frame" x="0.0" y="0.0" width="393" height="1071.3333333333333"/>
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="1157.3333333333333"/>
                             <subviews>
-                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gif" translatesAutoresizingMaskIntoConstraints="NO" id="UV9-uj-RVb">
-                                    <rect key="frame" x="0.0" y="70" width="393" height="119.33333333333331"/>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bnr1" translatesAutoresizingMaskIntoConstraints="NO" id="UV9-uj-RVb">
+                                    <rect key="frame" x="0.0" y="70" width="393" height="120"/>
                                 </imageView>
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3SJ-dy-DDT">
-                                    <rect key="frame" x="7" y="209.33333333333337" width="379" height="852.00000000000011"/>
+                                    <rect key="frame" x="7" y="210.00000000000006" width="379" height="937.33333333333348"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 </tableView>
                             </subviews>
@@ -60,10 +60,10 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstItem="UV9-uj-RVb" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" multiplier="0.14" id="FUp-aE-wUy"/>
+                <constraint firstItem="UV9-uj-RVb" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" multiplier="0.141" id="FUp-aE-wUy"/>
                 <constraint firstItem="mV3-Gq-2hN" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="LkU-m2-CkX"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="mV3-Gq-2hN" secondAttribute="trailing" id="ZfI-q6-9Ph"/>
-                <constraint firstItem="3SJ-dy-DDT" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" id="b1E-ed-oyS"/>
+                <constraint firstItem="3SJ-dy-DDT" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" multiplier="1.1" id="b1E-ed-oyS"/>
                 <constraint firstAttribute="bottom" secondItem="mV3-Gq-2hN" secondAttribute="bottom" id="hDb-Ee-XfF"/>
                 <constraint firstItem="mV3-Gq-2hN" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="ump-hD-TJV"/>
             </constraints>
@@ -71,7 +71,7 @@
         </view>
     </objects>
     <resources>
-        <image name="gif" width="3480" height="2000"/>
+        <image name="bnr1" width="1080" height="360"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

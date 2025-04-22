@@ -1,16 +1,20 @@
 PODS:
   - FLAnimatedImage (1.0.17)
+  - SwiftyGif (5.4.5)
 
 DEPENDENCIES:
   - FLAnimatedImage
+  - SwiftyGif
 
 SPEC REPOS:
   trunk:
     - FLAnimatedImage
+    - SwiftyGif
 
 SPEC CHECKSUMS:
   FLAnimatedImage: bbf914596368867157cc71b38a8ec834b3eeb32b
+  SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
 
-PODFILE CHECKSUM: c5012bad57fb1ceae2926204f2e8cc4fa5a6fad2
+PODFILE CHECKSUM: 9b30b176409f460c269b5f609e640c8cd9dfada5
 
 COCOAPODS: 1.16.2

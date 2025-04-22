@@ -16,6 +16,8 @@ enum AuthSegment: Int {
 class LoginController: UIViewController, UITextViewDelegate {
     
     private var stackView = UIStackView()
+    private var hstack = UIStackView()
+    private var hstack2 = UIStackView()
     
     // MARK: - UI Elements
     private let logoImageView: UIImageView = {
@@ -67,23 +69,26 @@ class LoginController: UIViewController, UITextViewDelegate {
     private let contentView = UIView()
     var isLogin = true
     
-    private let companyNameField = HelperFunct.createTextField(placeholder: "Please enter your company name")
+    private let username = HelperFunct.createTextField(placeholder: "First Name" , leftImage: "user_fill")
+    private let userLastName = HelperFunct.createTextField(placeholder: "Last Name" , leftImage: "user_fill")
     
-    private let invoiceAddressLabel = HelperFunct.createLabel(text: "Invoice Address")
-    private let invoiceAddressLine1Field = HelperFunct.createTextField(placeholder: "Please enter invoice address Line 1")
-    private let invoiceAddressLine2Field = HelperFunct.createTextField(placeholder: "Please enter invoice address Line 2")
-    private let invoiceAddressCityField = HelperFunct.createTextField(placeholder: "Please enter invoice address city")
-    private let invoiceAddressCountyField = HelperFunct.createTextField(placeholder: "Please enter invoice address county")
-    private let invoiceAddressPostcodeField = HelperFunct.createTextField(placeholder: "Please enter invoice address postcode")
+    private let companyNameField = HelperFunct.createTextField(placeholder: "Company name" , leftImage: "company")
     
-    private let mobileNumberLabel = HelperFunct.createLabel(text: "Mobile Number")
-    private let mobileNumberField = HelperFunct.createTextField(placeholder: "Please enter your mobile number")
+   // private let invoiceAddressLabel = HelperFunct.createLabel(text: "Invoice Address")
+    private let invoiceAddressLine1Field = HelperFunct.createTextField(placeholder: "Address Line 1" , leftImage: "location")
+    private let invoiceAddressLine2Field = HelperFunct.createTextField(placeholder: "Address Line 2" , leftImage: "location")
+    private let invoiceAddressCityField = HelperFunct.createTextField(placeholder: "City", leftImage: "location")
+    private let invoiceAddressCountyField = HelperFunct.createTextField(placeholder: "County", leftImage: "location")
+    private let invoiceAddressPostcodeField = HelperFunct.createTextField(placeholder: "Postcode", leftImage: "location")
     
-    private let loginDetailsLabel = HelperFunct.createLabel(text: "Login Details")
-    private let emailField = HelperFunct.createTextField(placeholder: "Please enter your email ")
-    private let passwordField = HelperFunct.createTextField(placeholder: "Please enter your password", isSecure: true)
-    private let confirmPasswordField = HelperFunct.createTextField(placeholder: "Please re-enter your password", isSecure: true)
-    private let repCodeField = HelperFunct.createTextField(placeholder: "Please enter rep code")
+   // private let mobileNumberLabel = HelperFunct.createLabel(text: "Mobile Number" )
+    private let mobileNumberField = HelperFunct.createTextField(placeholder: "Mobile number" , leftImage: "call")
+    
+   // private let loginDetailsLabel = HelperFunct.createLabel(text: "Login Details")
+    private let emailField = HelperFunct.createTextField(placeholder: "Email " , leftImage: "email")
+    private let passwordField = HelperFunct.createTextField(placeholder: "Password", isSecure: true , leftImage: "lock")
+    private let confirmPasswordField = HelperFunct.createTextField(placeholder: "Re-enter your password", isSecure: true, leftImage: "lock")
+    private let repCodeField = HelperFunct.createTextField(placeholder: "Rep code" , leftImage: "rep")
     var buttonHeightConstraint: NSLayoutConstraint!
     
     
@@ -128,7 +133,6 @@ class LoginController: UIViewController, UITextViewDelegate {
         authButton.addTarget(self, action: #selector(authButtonTapped), for: .touchUpInside)
     }
 
-
     // Override this in your ViewController to control status bar text color
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent // Makes time and battery icons white for visibility on blue background
@@ -153,36 +157,40 @@ class LoginController: UIViewController, UITextViewDelegate {
         authButtonHeightConstraint = authButton.heightAnchor.constraint(equalToConstant: 50)
         authButtonHeightConstraint.isActive = true
         
+        hstack = UIStackView(arrangedSubviews: [username, userLastName])
+        hstack.axis = .horizontal
+        hstack.spacing = 16 // You can adjust the spacing as per design
+        hstack.distribution = .fillEqually // This ensures both fields take equal space
+
+        hstack2 = UIStackView(arrangedSubviews: [invoiceAddressCityField, invoiceAddressPostcodeField])
+        hstack2.axis = .horizontal
+        hstack2.spacing = 16 // You can adjust the spacing as per design
+        hstack2.distribution = .fillEqually
+        
         stackView = UIStackView(arrangedSubviews: [
-            companyNameField,
-            invoiceAddressLabel,
-            invoiceAddressLine1Field,
-            invoiceAddressLine2Field,
-            invoiceAddressCityField,
-            invoiceAddressCountyField,
-            invoiceAddressPostcodeField,
-            mobileNumberLabel,
+            hstack,
             mobileNumberField,
-            loginDetailsLabel,
             emailField,
             passwordField,
-            confirmPasswordField,
             repCodeField,
+            companyNameField,
+            invoiceAddressLine1Field,
+            invoiceAddressLine2Field,
+            hstack2,
+            invoiceAddressCountyField,
+          //  confirmPasswordField,
             smallSpacer,
             authButton,
             termsLabel
         ])
-        
-//        stackView.setCustomSpacing(20, after: invoiceAddressPostcodeField)
-//        stackView.setCustomSpacing(20, after: companyNameField)
-//        stackView.setCustomSpacing(20, after: invoiceAddressPostcodeField)
-//        stackView.setCustomSpacing(20, after: mobileNumberField)
-//        stackView.setCustomSpacing(20, after: confirmPasswordField)
-//        stackView.setCustomSpacing(20, after: repCodeField)
-        
+
         stackView.axis = .vertical
         stackView.spacing = 16
+        stackView.distribution = .fill
         stackView.alignment = .fill
+
+        stackView.setCustomSpacing(20, after: confirmPasswordField)
+        stackView.setCustomSpacing(20, after: mobileNumberField)
         
         contentView.addSubview(stackView)
         
@@ -239,19 +247,20 @@ class LoginController: UIViewController, UITextViewDelegate {
     
     private func updateUIForSegment() {
         let isLogin = segmentedControl.selectedSegmentIndex == AuthSegment.login.rawValue
-
+        hstack.isHidden = isLogin
+        hstack2.isHidden = isLogin
         companyNameField.isHidden = isLogin
-        invoiceAddressLabel.isHidden = isLogin
+      //  invoiceAddressLabel.isHidden = isLogin
         invoiceAddressLine1Field.isHidden = isLogin
         invoiceAddressLine2Field.isHidden = isLogin
         invoiceAddressCityField.isHidden = isLogin
         invoiceAddressCountyField.isHidden = isLogin
         invoiceAddressPostcodeField.isHidden = isLogin
-        mobileNumberLabel.isHidden = isLogin
+       // mobileNumberLabel.isHidden = isLogin
         mobileNumberField.isHidden = isLogin
         confirmPasswordField.isHidden = isLogin
         repCodeField.isHidden = isLogin
-        loginDetailsLabel.isHidden = isLogin
+       // loginDetailsLabel.isHidden = isLogin
 
         authButton.setTitle(isLogin ? "LOGIN" : "REGISTER", for: .normal)
         authButton.titleLabel?.font = UIFont(name: "Roboto-Bold", size: 14)

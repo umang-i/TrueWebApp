@@ -49,7 +49,7 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
     var bannerCollectionView: UICollectionView!
     var img: [String] = [
-        "s6" ,"s2" , "s1" , "s3","s4","s5"
+        "bnr1",  "s6" ,"s2" , "s1" , "s3","s4","s5"
     ]
     var bannerImages: [String] = [
         "d1" ,"d2" , "d3" , "d4","d5","d6","d1" ,"d2" , "d3" , "d4","d5","d6"
@@ -106,7 +106,7 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = 0
-        layout.itemSize = CGSize(width: view.frame.width, height: 120)
+        layout.itemSize = CGSize(width: view.frame.width, height: 100)
 
         bannerCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         bannerCollectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -124,7 +124,7 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
             bannerCollectionView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 140), // Use containerView.topAnchor
             bannerCollectionView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor , constant: 10),
             bannerCollectionView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor , constant: -10),
-            bannerCollectionView.heightAnchor.constraint(equalToConstant: 150)
+            bannerCollectionView.heightAnchor.constraint(equalToConstant: 127)
         ])
     }
 
@@ -263,7 +263,7 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
         tableViewHeightConstraint.isActive = true
 
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: bannerCollectionView.bottomAnchor, constant: 20),
+            tableView.topAnchor.constraint(equalTo: bannerCollectionView.bottomAnchor, constant: 10),
             tableView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
             tableView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10),
             tableView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
@@ -324,7 +324,7 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
             if expandedSubcategories[subcategoryIndexPath] == true {
                 if rowIndex == indexPath.row {
                     let rows = ceil(Double(subcategory.products.count) / 2.0)
-                    return CGFloat((rows * 150) + 50) + 10
+                    return CGFloat((rows * 258) + 100) + 10
                 }
                 rowIndex += 1
             }
@@ -381,13 +381,23 @@ class ShopViewController: UIViewController, UITableViewDataSource, UITableViewDe
             } else {
                 expandedCategories.insert(indexPath.section)
             }
+            
+            // Scroll the table view a little bit upwards after expansion
+            let selectedCellRect = tableView.rectForRow(at: indexPath)
+            let targetOffsetY = selectedCellRect.origin.y - 5
+            
+            // Ensure the offset stays within the bounds of the content
+            let targetContentOffset = CGPoint(x: 0, y: max(targetOffsetY, 0))
+            scrollView.setContentOffset(targetContentOffset, animated: false)  // Set the scroll without animation
+            
         } else {
             let subcategoryIndexPath = IndexPath(row: indexPath.row, section: indexPath.section)
             expandedSubcategories[subcategoryIndexPath] = !(expandedSubcategories[subcategoryIndexPath] ?? false)
         }
+        
         tableView.reloadSections([indexPath.section], with: .automatic)
     }
-
+    
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         return UIView()
     }

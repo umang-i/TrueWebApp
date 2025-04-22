@@ -7,8 +7,12 @@
 
 import UIKit
 
-class RewardsController: UIViewController {
+class RewardsController: UIViewController, CustomNavBarDelegate {
+    func didTapBackButton() {
+        navigationController?.popViewController(animated: true)
+    }
 
+    @IBOutlet weak var referView: UIView!
     @IBOutlet weak var rewardTableView: UITableView!
     private let rewards: [RewardModel] = [
         RewardModel(
@@ -55,6 +59,43 @@ class RewardsController: UIViewController {
         rewardTableView.separatorStyle = .none
         let height = rewards.count * 430
         rewardTableView.heightAnchor.constraint(equalToConstant: CGFloat(height)).isActive = true
+        setnavBar()
+        setupReferViewTap()
+    }
+    func setnavBar() {
+        let topBackgroundView = UIView()
+        topBackgroundView.backgroundColor = .white
+        topBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(topBackgroundView)
+
+        let navBar = CustomNavBar(text: "Loyalty Rewards")
+        navBar.delegate = self
+        navBar.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(navBar)
+
+        NSLayoutConstraint.activate([
+            // Background View Constraints (covers top of the screen)
+            topBackgroundView.topAnchor.constraint(equalTo: view.topAnchor),
+            topBackgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            topBackgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            topBackgroundView.heightAnchor.constraint(equalToConstant: 100), // Adjust height as needed
+
+            // CustomNavBar Constraints
+            navBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            navBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            navBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            navBar.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    private func setupReferViewTap() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(referViewTapped))
+        referView.isUserInteractionEnabled = true
+        referView.addGestureRecognizer(tapGesture)
+    }
+
+    @objc private func referViewTapped() {
+        let referVC = ReferController() // Or use storyboard ID if you're using Storyboards
+        navigationController?.pushViewController(referVC, animated: true)
     }
 }
 
