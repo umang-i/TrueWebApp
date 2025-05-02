@@ -23,7 +23,7 @@ class MyCompanyController: UIViewController, CustomNavBarDelegate {
     // MARK: - UI Elements
     let bannerImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "gif")
+        imageView.image = UIImage(named: "bnr1")
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView

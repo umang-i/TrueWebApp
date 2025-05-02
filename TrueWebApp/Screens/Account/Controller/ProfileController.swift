@@ -8,9 +8,6 @@
 import UIKit
 
 class ProfileController: UIViewController, CustomNavBarDelegate {
-    func didTapBackButton() {
-        navigationController?.popViewController(animated: true)
-    }
     
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var repcodeTextLabel: UILabel!
@@ -23,47 +20,81 @@ class ProfileController: UIViewController, CustomNavBarDelegate {
     @IBOutlet weak var companyAddressLAbel: UILabel!
     @IBOutlet weak var companyNameText: UILabel!
     @IBOutlet weak var companyNameLAbel: UILabel!
+    
+    
     override func viewDidLoad() {
-        super.viewDidLoad()
-        setnavBar()
-        
-        emailLabelText.font = UIFont(name: "Roboto-Bold", size: 16)
-        emailTextLabel.font = UIFont(name: "Roboto-Medium", size: 14)
-        repCodeLabel.font = UIFont(name: "Roboto-Bold", size: 16)
-        repcodeTextLabel.font = UIFont(name: "Roboto-Medium", size: 14)
-        companyLAbelTextLAbel.font = UIFont(name: "Roboto-Medium", size: 14)
-        phoneNumberLabel.font = UIFont(name: "Roboto-Bold", size: 16)
-        companyNameText.font = UIFont(name: "Roboto-Medium", size: 14)
-        companyNameLAbel.font = UIFont(name: "Roboto-Bold", size: 16)
-        companyAddressLAbel.font = UIFont(name: "Roboto-Bold", size: 16)
-        phoneNumberTextLabel.font = UIFont(name: "Roboto-Medium", size: 14)
-        usernameLabel.font = UIFont(name: "Roboto-Bold", size: 20)
+           super.viewDidLoad()
+           setupNavBar()
+           setupFonts()
+           fetchUserData()
+       }
 
-    }
-    func setnavBar() {
-        let topBackgroundView = UIView()
-        topBackgroundView.backgroundColor = .white
-        topBackgroundView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(topBackgroundView)
+       // MARK: - NavBar
+       func setupNavBar() {
+           let topBackgroundView = UIView()
+           topBackgroundView.backgroundColor = .white
+           topBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+           view.addSubview(topBackgroundView)
 
-        let navBar = CustomNavBar(text: "Profile")
-        navBar.delegate = self
-        navBar.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(navBar)
+           let navBar = CustomNavBar(text: "Profile")
+           navBar.delegate = self
+           navBar.translatesAutoresizingMaskIntoConstraints = false
+           view.addSubview(navBar)
 
-        NSLayoutConstraint.activate([
-            // Background View Constraints (covers top of the screen)
-            topBackgroundView.topAnchor.constraint(equalTo: view.topAnchor),
-            topBackgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            topBackgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            topBackgroundView.heightAnchor.constraint(equalToConstant: 100), // Adjust height as needed
+           NSLayoutConstraint.activate([
+               topBackgroundView.topAnchor.constraint(equalTo: view.topAnchor),
+               topBackgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+               topBackgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+               topBackgroundView.heightAnchor.constraint(equalToConstant: 100),
+               
+               navBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+               navBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+               navBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+               navBar.heightAnchor.constraint(equalToConstant: 50)
+           ])
+       }
 
-            // CustomNavBar Constraints
-            navBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            navBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            navBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            navBar.heightAnchor.constraint(equalToConstant: 50)
-        ])
-    }
+       // MARK: - Font Styling
+       func setupFonts() {
+           usernameLabel.font = UIFont(name: "Roboto-Bold", size: 20)
+           repCodeLabel.font = UIFont(name: "Roboto-Bold", size: 16)
+           repcodeTextLabel.font = UIFont(name: "Roboto-Medium", size: 14)
+           emailLabelText.font = UIFont(name: "Roboto-Bold", size: 16)
+           emailTextLabel.font = UIFont(name: "Roboto-Medium", size: 14)
+           phoneNumberLabel.font = UIFont(name: "Roboto-Bold", size: 16)
+           phoneNumberTextLabel.font = UIFont(name: "Roboto-Medium", size: 14)
+           companyNameLAbel.font = UIFont(name: "Roboto-Bold", size: 16)
+           companyNameText.font = UIFont(name: "Roboto-Medium", size: 14)
+           companyAddressLAbel.font = UIFont(name: "Roboto-Bold", size: 16)
+           companyLAbelTextLAbel.font = UIFont(name: "Roboto-Medium", size: 14)
+       }
 
-}
+       // MARK: - Fetch User Data
+       func fetchUserData() {
+           AuthService.shared.fetchUserProfile { result in
+               DispatchQueue.main.async {
+                   switch result {
+                   case .success(let user):
+                       self.updateUI(with: user)
+                   case .failure(let error):
+                       print("Failed to fetch profile:", error.localizedDescription)
+                   }
+               }
+           }
+       }
+
+       // MARK: - Update UI
+       func updateUI(with user: User) {
+           usernameLabel.text = user.name
+           repcodeTextLabel.text = user.rep_code
+           emailTextLabel.text = user.email
+           phoneNumberTextLabel.text = user.mobile
+           companyNameText.text = user.company_name
+           companyLAbelTextLAbel.text = "\(user.address1), \(user.address2), \(user.city), \(user.country), \(user.postcode)"
+       }
+
+       // MARK: - CustomNavBarDelegate
+       func didTapBackButton() {
+           navigationController?.popViewController(animated: true)
+       }
+   }

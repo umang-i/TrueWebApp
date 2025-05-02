@@ -78,10 +78,6 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
            
            // AppBar View
            appBarView.backgroundColor = .white
-          // appBarView.layer.shadowColor = UIColor.black.cgColor
-           //appBarView.layer.shadowOpacity = 0.2
-           //appBarView.layer.shadowOffset = CGSize(width: 0, height: 2)
-          // appBarView.layer.shadowRadius = 3
            appBarView.translatesAutoresizingMaskIntoConstraints = false
            view.addSubview(appBarView)
            
@@ -200,89 +196,51 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
     }
     
     func updateAppBar(for index: Int) {
+        // Default values
+        appBarImageWidthConstraint.constant = 40
+        appBarImageHeightConstraint.constant = 30
+        appBarImageView.contentMode = .scaleAspectFit
+        appBarLabel.isHidden = false
+        appBarImageLeadingConstraint.isActive = true
+        appBarImageCenterConstraint.isActive = false
+        appBarImageView.tintColor = .customBlue
+
         switch index {
         case 0:
             appBarLabel.isHidden = true
-
             appBarImageLeadingConstraint.isActive = false
             appBarImageCenterConstraint.isActive = true
-
             appBarImageView.image = UIImage(named: "logo11")
             appBarImageView.contentMode = .scaleToFill
-
-            // Update image size to 60x60
             appBarImageWidthConstraint.constant = 70
             appBarImageHeightConstraint.constant = 50
-
             toggleShopElements(isVisible: false)
 
         case 1:
             appBarLabel.text = "Browse"
-            appBarLabel.isHidden = false
-
             appBarImageView.image = UIImage(named: "menub")?.withRenderingMode(.alwaysTemplate)
-            appBarImageView.contentMode = .scaleAspectFit
-            appBarImageView.tintColor = .customBlue
-
-            appBarImageLeadingConstraint.isActive = true
-            appBarImageCenterConstraint.isActive = false
-            
-            appBarImageWidthConstraint.constant = 40
-            appBarImageHeightConstraint.constant = 30
-
             toggleShopElements(isVisible: true)
 
         case 2:
             appBarLabel.text = "Cart"
-            appBarLabel.isHidden = false
-
             appBarImageView.image = resizeImage(named: "cart", size: CGSize(width: 25, height: 25))
-            appBarImageView.tintColor = .customBlue
-
-            appBarImageLeadingConstraint.isActive = true
-            appBarImageCenterConstraint.isActive = false
-            
-            appBarImageWidthConstraint.constant = 40
-            appBarImageHeightConstraint.constant = 30
-
             toggleShopElements(isVisible: false)
 
         case 3:
             appBarLabel.text = "Wallet"
-            appBarLabel.isHidden = false
-
             appBarImageView.image = resizeImage(named: "wallet", size: CGSize(width: 25, height: 25))
-            appBarImageView.tintColor = .customBlue
-
-            appBarImageLeadingConstraint.isActive = true
-            appBarImageCenterConstraint.isActive = false
-            
-            appBarImageWidthConstraint.constant = 40
-            appBarImageHeightConstraint.constant = 30
-
             toggleShopElements(isVisible: false)
 
         case 4:
             appBarLabel.text = "Account"
-            appBarLabel.isHidden = false
-
             appBarImageView.image = UIImage(named: "user")?.withRenderingMode(.alwaysTemplate)
-            appBarImageView.tintColor = .customBlue
-
-            appBarImageLeadingConstraint.isActive = true
-            appBarImageCenterConstraint.isActive = false
-            
-            appBarImageWidthConstraint.constant = 40
-            appBarImageHeightConstraint.constant = 30
-
             toggleShopElements(isVisible: false)
 
         default:
-            appBarImageWidthConstraint.constant = 40
-            appBarImageHeightConstraint.constant = 30
             break
         }
     }
+
 
 
     func toggleShopElements(isVisible: Bool) {

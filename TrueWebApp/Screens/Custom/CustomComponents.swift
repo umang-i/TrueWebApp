@@ -170,20 +170,32 @@ class CustomSectionLabel: UILabel {
 }
 
 func showLogoutAlert(on viewController: UIViewController) {
-    let alertController = UIAlertController(title: "Log Out",
-                                            message: "Are you sure you want to log out?",
-                                            preferredStyle: .alert)
-
-    let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+    let alert = UIAlertController(title: "Logout", message: "Are you sure you want to logout?", preferredStyle: .alert)
     
-    let logoutAction = UIAlertAction(title: "Log Out", style: .destructive) { _ in
-        handleLogout()
+    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+    
+    alert.addAction(UIAlertAction(title: "Logout", style: .destructive, handler: { _ in
+        logoutAndRedirectToLogin(from: viewController)
+    }))
+    
+    viewController.present(alert, animated: true, completion: nil)
+}
+
+func logoutAndRedirectToLogin(from viewController: UIViewController) {
+    // Clear all UserDefaults (or just the token if needed)
+    let defaults = UserDefaults.standard
+    defaults.removeObject(forKey: "authToken") 
+    defaults.synchronize()
+
+    // Navigate to login screen
+    let loginVC = LoginController()
+    let navController = UINavigationController(rootViewController: loginVC)
+
+    // Set as root view controller
+    if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+        sceneDelegate.window?.rootViewController = navController
+        sceneDelegate.window?.makeKeyAndVisible()
     }
-    
-    alertController.addAction(cancelAction)
-    alertController.addAction(logoutAction)
-
-    viewController.present(alertController, animated: true, completion: nil)
 }
 
 func handleLogout() {

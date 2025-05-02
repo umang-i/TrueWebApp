@@ -37,7 +37,7 @@ class DashboardController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.setNavigationBarHidden(true, animated: true)
+        self.navigationController?.setNavigationBarHidden(true, animated: true)
         setupUI()
         setupTableViews()
         setupTapGesture()
@@ -58,6 +58,7 @@ class DashboardController: UIViewController {
         notificationsTableView.dataSource = self
         notificationsTableView.register(UINib(nibName: "NotificationCell", bundle: nil), forCellReuseIdentifier: "NotificationCell")
     }
+    
     
     func setCollectionView() {
         bannerCollectionView.delegate = self

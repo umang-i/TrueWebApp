@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ProfileController" customModule="TrueApp" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ProfileController" customModule="TrueWebApp" customModuleProvider="target">
             <connections>
                 <outlet property="companyAddressLAbel" destination="R3c-mw-V1p" id="d5F-fp-ORM"/>
                 <outlet property="companyLAbelTextLAbel" destination="qWT-zV-qYK" id="oBd-Py-UeF"/>
@@ -36,11 +36,11 @@
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="31Y-2L-vrS">
                             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                             <subviews>
-                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gif" translatesAutoresizingMaskIntoConstraints="NO" id="PH4-dk-LCT">
-                                    <rect key="frame" x="0.0" y="10.000000000000007" width="393" height="127.66666666666669"/>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bnr1" translatesAutoresizingMaskIntoConstraints="NO" id="PH4-dk-LCT">
+                                    <rect key="frame" x="0.0" y="70" width="393" height="119.33333333333331"/>
                                 </imageView>
                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="abs.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="U2B-dz-36E">
-                                    <rect key="frame" x="10" y="158.33333333333331" width="100.33333333333333" height="99.333333333333314"/>
+                                    <rect key="frame" x="10" y="210" width="100.33333333333333" height="99"/>
                                     <color key="tintColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="number" keyPath="borderRadius">
@@ -49,67 +49,67 @@
                                     </userDefinedRuntimeAttributes>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ajaz Aehmad" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sLd-9Y-CUF">
-                                    <rect key="frame" x="130.33333333333337" y="157.66666666666666" width="242.66666666666663" height="100.66666666666666"/>
+                                    <rect key="frame" x="130.33333333333337" y="209.33333333333334" width="242.66666666666663" height="100.33333333333334"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="19"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Company Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b6R-Ab-BxR">
-                                    <rect key="frame" x="9.9999999999999929" y="278.33333333333331" width="126.33333333333331" height="20.333333333333314"/>
+                                    <rect key="frame" x="9.9999999999999929" y="329.66666666666669" width="126.33333333333331" height="20.333333333333314"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="17"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Impactmindz Tech Solutions" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cOF-Lh-m7g">
-                                    <rect key="frame" x="10" y="303.66666666666669" width="283" height="18.666666666666686"/>
+                                    <rect key="frame" x="10" y="355" width="283" height="18.666666666666686"/>
                                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="16"/>
                                     <color key="textColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Company Address" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R3c-mw-V1p">
-                                    <rect key="frame" x="10" y="342.33333333333331" width="145.33333333333334" height="20.333333333333314"/>
+                                    <rect key="frame" x="10" y="393.66666666666669" width="145.33333333333334" height="20.333333333333314"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="17"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sector 22 , Chandigarh" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qWT-zV-qYK">
-                                    <rect key="frame" x="10" y="367.66666666666669" width="174.33333333333334" height="18.666666666666686"/>
+                                    <rect key="frame" x="10" y="419" width="174.33333333333334" height="18.666666666666686"/>
                                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="16"/>
                                     <color key="textColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Phone Number" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bV9-UT-ErY">
-                                    <rect key="frame" x="10" y="406.33333333333331" width="118" height="20.333333333333314"/>
+                                    <rect key="frame" x="10" y="457.66666666666669" width="118" height="20.333333333333314"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="17"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="4564536736" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jFe-Tw-ebg">
-                                    <rect key="frame" x="10" y="431.66666666666669" width="283" height="18.666666666666686"/>
+                                    <rect key="frame" x="10" y="483" width="283" height="18.666666666666686"/>
                                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="16"/>
                                     <color key="textColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6O7-bB-SLd">
-                                    <rect key="frame" x="10" y="470.33333333333331" width="283" height="20.333333333333314"/>
+                                    <rect key="frame" x="10" y="521.66666666666663" width="283" height="20.333333333333371"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="17"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ajaz.impactmindz@gmail.com" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LcE-3v-K5M">
-                                    <rect key="frame" x="10" y="495.66666666666669" width="283" height="19.333333333333314"/>
+                                    <rect key="frame" x="10" y="547" width="283" height="19.333333333333371"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="16"/>
                                     <color key="textColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rep Code" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Tq8-Th-yGK">
-                                    <rect key="frame" x="10" y="535" width="283" height="20.333333333333371"/>
+                                    <rect key="frame" x="10" y="586.33333333333337" width="283" height="20.333333333333371"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="17"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="BQ84848" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qG3-bN-Prq">
-                                    <rect key="frame" x="10" y="560.33333333333337" width="283" height="19.333333333333371"/>
+                                    <rect key="frame" x="10" y="611.66666666666663" width="283" height="19.333333333333371"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="16"/>
                                     <color key="textColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
@@ -127,7 +127,7 @@
                                 <constraint firstItem="Tq8-Th-yGK" firstAttribute="leading" secondItem="LcE-3v-K5M" secondAttribute="leading" id="BtV-z6-afm"/>
                                 <constraint firstItem="U2B-dz-36E" firstAttribute="leading" secondItem="31Y-2L-vrS" secondAttribute="leading" constant="10" id="CXP-mM-1V0"/>
                                 <constraint firstItem="LcE-3v-K5M" firstAttribute="top" secondItem="6O7-bB-SLd" secondAttribute="bottom" constant="5" id="GxS-PC-RaK"/>
-                                <constraint firstItem="PH4-dk-LCT" firstAttribute="height" secondItem="31Y-2L-vrS" secondAttribute="height" multiplier="0.15" id="JtD-d5-diQ"/>
+                                <constraint firstItem="PH4-dk-LCT" firstAttribute="height" secondItem="31Y-2L-vrS" secondAttribute="height" multiplier="0.14" id="JtD-d5-diQ"/>
                                 <constraint firstItem="LcE-3v-K5M" firstAttribute="leading" secondItem="6O7-bB-SLd" secondAttribute="leading" id="KBn-sX-QGz"/>
                                 <constraint firstItem="Tq8-Th-yGK" firstAttribute="top" secondItem="LcE-3v-K5M" secondAttribute="bottom" constant="20" id="M5w-Fz-n7S"/>
                                 <constraint firstItem="sLd-9Y-CUF" firstAttribute="leading" secondItem="U2B-dz-36E" secondAttribute="trailing" constant="20" id="MIk-PJ-SDB"/>
@@ -145,7 +145,7 @@
                                 <constraint firstItem="U2B-dz-36E" firstAttribute="top" secondItem="PH4-dk-LCT" secondAttribute="bottom" constant="20" id="jCX-D5-0OW"/>
                                 <constraint firstItem="R3c-mw-V1p" firstAttribute="top" secondItem="cOF-Lh-m7g" secondAttribute="bottom" constant="20" id="jFm-am-CBj"/>
                                 <constraint firstItem="6O7-bB-SLd" firstAttribute="leading" secondItem="jFe-Tw-ebg" secondAttribute="leading" id="jxY-82-Drh"/>
-                                <constraint firstItem="PH4-dk-LCT" firstAttribute="top" secondItem="31Y-2L-vrS" secondAttribute="top" constant="10" id="mNT-zB-JQc"/>
+                                <constraint firstItem="PH4-dk-LCT" firstAttribute="top" secondItem="31Y-2L-vrS" secondAttribute="top" constant="70" id="mNT-zB-JQc"/>
                                 <constraint firstItem="R3c-mw-V1p" firstAttribute="leading" secondItem="cOF-Lh-m7g" secondAttribute="leading" id="mmi-d6-eBZ"/>
                                 <constraint firstItem="b6R-Ab-BxR" firstAttribute="leading" secondItem="U2B-dz-36E" secondAttribute="leading" id="p63-A4-Zj3"/>
                                 <constraint firstItem="6O7-bB-SLd" firstAttribute="top" secondItem="jFe-Tw-ebg" secondAttribute="bottom" constant="20" id="pKO-XC-3x6"/>
@@ -181,7 +181,7 @@
     </objects>
     <resources>
         <image name="abs.circle.fill" catalog="system" width="128" height="123"/>
-        <image name="gif" width="3480" height="2000"/>
+        <image name="bnr1" width="1080" height="360"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

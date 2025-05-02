@@ -75,7 +75,7 @@ class NotificationController: UIViewController, CustomNavBarDelegate {
     private func setupBannerView() {
         bannerView.backgroundColor = .white
         let bannerImageView = UIImageView()
-        bannerImageView.image = UIImage(named: "gif")
+        bannerImageView.image = UIImage(named: "bnr1")
         bannerImageView.contentMode = .scaleAspectFill
         bannerImageView.clipsToBounds = true
         bannerView.addSubview(bannerImageView)

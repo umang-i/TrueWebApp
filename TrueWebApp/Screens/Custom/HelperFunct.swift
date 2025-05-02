@@ -44,13 +44,54 @@ class HelperFunct {
             textField.leftView = container
         }
 
+        // If isSecure is true, add the toggle password visibility functionality
+        if isSecure {
+            let eyeButton = UIButton(type: .custom)
+            let eyeImage = UIImage(named: "eye_icon")  // Add your eye icon in assets
+            eyeButton.setImage(eyeImage, for: .normal)
+            eyeButton.addTarget(self, action: #selector(togglePasswordVisibility(sender:)), for: .touchUpInside)  // Add the toggle action
+            textField.rightView = eyeButton
+            textField.rightViewMode = .always
+        }
+
         return textField
     }
-    
+
+    // Toggle password visibility when the eye icon is tapped
+    @objc private func togglePasswordVisibility(sender: UIButton) {
+        if let textField = sender.superview?.superview as? UITextField {
+            textField.isSecureTextEntry.toggle()  // Toggle the secure text entry
+            let eyeImage = textField.isSecureTextEntry ? UIImage(named: "eye_icon") : UIImage(named: "eye_off_icon")
+            sender.setImage(eyeImage, for: .normal)  // Update the icon based on visibility
+        }
+    }
+
     static func createLabel(text: String) -> UILabel {
         let label = UILabel()
         label.text = text
         label.font = UIFont(name: "Roboto-Bold", size: 14)
         return label
+    }
+    static func createErrorLabel() -> UILabel {
+        let label = UILabel()
+        label.textColor = .red
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.numberOfLines = 0
+        label.isHidden = true
+        
+        return label
+    }
+    func showAlert(view : UIViewController , title: String, message: String, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            completion?()
+        })
+        view.present(alert, animated: true, completion: nil)
+    }
+    func makeFieldWithErrorStack(field: UITextField, errorLabel: UILabel) -> UIStackView {
+        let stack = UIStackView(arrangedSubviews: [field, errorLabel])
+        stack.axis = .vertical
+        stack.spacing = 4
+        return stack
     }
 }

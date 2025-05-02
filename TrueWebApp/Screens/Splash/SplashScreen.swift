@@ -67,7 +67,17 @@ class SplashScreen: UIViewController {
     }
     
     private func navigateToMainScreen() {
-        let mainVC = LoginController() // Change to your main screen
-        navigationController?.pushViewController(mainVC, animated: true)
+        // Check if authToken exists in UserDefaults
+        let defaults = UserDefaults.standard
+        if let authToken = defaults.string(forKey: "authToken"), !authToken.isEmpty {
+            // Navigate to Dashboard if authToken exists
+            let dashboardVC = TabBarController() // Your Dashboard screen
+            navigationController?.pushViewController(dashboardVC, animated: true)
+            self.navigationController?.setNavigationBarHidden(true, animated: true)
+        } else {
+            let loginController = LoginController()
+            self.navigationController?.pushViewController(loginController, animated: true)
+        }
     }
+
 }
