@@ -20,11 +20,12 @@ struct User: Codable {
     let mobile: String
     let company_name: String
     let address1: String
-    let address2: String
-    let city: String
-    let country: String
-    let postcode: String
-    let rep_code: String
+    let address2: String?
+    let city: String?
+    let country: String?
+    let postcode: String?
+    let rep_code: String?
     let created_at: String
     let updated_at: String
 }
+

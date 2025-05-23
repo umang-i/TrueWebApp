@@ -82,8 +82,20 @@ class LoginController: UIViewController, UITextViewDelegate {
     private let invoiceAddressPostcodeField = HelperFunct.createTextField(placeholder: "Postcode", leftImage: "location")
     private let mobileNumberField = HelperFunct.createTextField(placeholder: "Mobile number", leftImage: "call")
     private let emailField = HelperFunct.createTextField(placeholder: "Email", leftImage: "email")
-    private let passwordField = HelperFunct.createTextField(placeholder: "Password", isSecure: true, leftImage: "lock")
+    private let passwordField = HelperFunct.createPasswordField(placeholder: "Password", leftImage: "lock")
     private let repCodeField = HelperFunct.createTextField(placeholder: "Rep code", leftImage: "rep")
+    
+    private let termsTextView: UITextView = {
+        let textView = UITextView()
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.isEditable = false
+        textView.isScrollEnabled = false
+        textView.backgroundColor = .clear
+        textView.textAlignment = .center
+        textView.dataDetectorTypes = []
+        textView.isUserInteractionEnabled = true
+        return textView
+    }()
     
     var buttonHeightConstraint: NSLayoutConstraint!
     
@@ -100,24 +112,12 @@ class LoginController: UIViewController, UITextViewDelegate {
     
     var authButtonHeightConstraint: NSLayoutConstraint!
     
-    private let termsLabel: UITextView = {
-        let textView = UITextView()
-        textView.isEditable = false
-        textView.isScrollEnabled = false
-        textView.isUserInteractionEnabled = true
-        textView.backgroundColor = .clear
-        textView.textAlignment = .center
-        textView.textContainerInset = .zero
-        textView.textContainer.lineFragmentPadding = 0
-        return textView
-    }()
-    
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         updateUIForSegment()
-        termsLabel.delegate = self
+        setupTermsText(isLogin: isLogin)
         authButton.addTarget(self, action: #selector(authButtonTapped), for: .touchUpInside)
     }
     
@@ -126,6 +126,27 @@ class LoginController: UIViewController, UITextViewDelegate {
     }
     
     // MARK: - UI Setup
+    
+    private func setupTermsText(isLogin : Bool) {
+        let text = "By selecting \(isLogin == true ? "Login" : "Register"), you agree to our Terms and Conditions and Privacy Policy."
+        let attributedText = NSMutableAttributedString(string: text)
+
+        let termsRange = (text as NSString).range(of: "Terms and Conditions")
+        let privacyRange = (text as NSString).range(of: "Privacy Policy")
+
+        attributedText.addAttribute(.link, value: "app://terms", range: termsRange)
+        attributedText.addAttribute(.link, value: "app://privacy", range: privacyRange)
+        attributedText.addAttribute(.foregroundColor, value: UIColor.label, range: NSRange(location: 0, length: text.count))
+
+        termsTextView.attributedText = attributedText
+        termsTextView.linkTextAttributes = [
+            .foregroundColor: UIColor.blue,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        termsTextView.delegate = self
+        termsTextView.textAlignment = .center
+    }
+
     private func setupUI() {
         view.backgroundColor = .white
         view.addSubview(logoContainerView)
@@ -162,7 +183,7 @@ class LoginController: UIViewController, UITextViewDelegate {
         stackView = UIStackView(arrangedSubviews: [
             hstack, estack, mobileNumberField, mobileErrorLabel, emailField, emailErrorLabel, passwordField, passwordErrorLabel,
             repCodeField, companyNameField, companyErrorLabel, invoiceAddressLine1Field, address1ErrorLabel,
-            invoiceAddressLine2Field, hstack2, estack2, invoiceAddressCountyField, countryErrorLabel, authButton, termsLabel
+            invoiceAddressLine2Field, hstack2, estack2, invoiceAddressCountyField, countryErrorLabel, authButton, termsTextView
         ])
 
         stackView.axis = .vertical
@@ -216,6 +237,7 @@ class LoginController: UIViewController, UITextViewDelegate {
 
     private func updateUIForSegment() {
         let isLogin = segmentedControl.selectedSegmentIndex == AuthSegment.login.rawValue
+        setupTermsText(isLogin: isLogin)
 
         // Adjust stack view spacing for login segment
         stackView.spacing = isLogin ? 7 : 10 // Reduced space for login
@@ -257,13 +279,6 @@ class LoginController: UIViewController, UITextViewDelegate {
 
         // Change button text
         authButton.setTitle(isLogin ? "LOGIN" : "REGISTER", for: .normal)
-
-//        // Adjust the auth button height for register segment
-//        authButtonHeightConstraint.constant = isLogin ? 50 : 60
-
-        // Reduce height of the auth button in the login segment if needed
-      //  authButton.layer.cornerRadius = isLogin ? 4 : 6  // Optional: You can also adjust corner radius
-
         // Update the layout
         view.layoutIfNeeded() // Ensure layout changes are applied immediately
     }
@@ -271,23 +286,27 @@ class LoginController: UIViewController, UITextViewDelegate {
     // MARK: - Button Action
     @objc private func authButtonTapped() {
         if segmentedControl.selectedSegmentIndex == AuthSegment.login.rawValue {
-            // Login Validation
-            guard validateLoginFields() else { return }
+                // Login Validation
+                guard validateLoginFields() else { return }
 
-            let loginModel = LogInModel(email: emailField.text ?? "", password: passwordField.text ?? "")
-            AuthService.shared.loginUser(with: loginModel) { result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(_):
-                        let mainTabBarController = TabBarController(nibName: "TabBarController", bundle: nil)
-                        self.navigationController?.pushViewController(mainTabBarController, animated: true)
-                        self.navigationController?.setNavigationBarHidden(true, animated: true)
-                    case .failure(let error):
-                        HelperFunct().showAlert(view: self, title: "Login Failed", message: error.localizedDescription)
+                let loginModel = LogInModel(email: emailField.text ?? "", password: passwordField.text ?? "")
+                ApiService.shared.loginUser(with: loginModel, from: self) { result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success(_):
+                            self.clearAllFields()
+                            let mainTabBarController = TabBarController(nibName: "TabBarController", bundle: nil)
+                            self.navigationController?.pushViewController(mainTabBarController, animated: true)
+                            self.navigationController?.setNavigationBarHidden(true, animated: true)
+
+                        case .failure(let error):
+                            print("Login error: \(error.localizedDescription)")
+                            ApiService().showAlert(message: error.localizedDescription, from: self)
+                        }
                     }
                 }
             }
-        } else {
+         else {
             // Registration Validation
             guard validateRegisterFields() else { return }
 
@@ -306,7 +325,7 @@ class LoginController: UIViewController, UITextViewDelegate {
                 postcode: invoiceAddressPostcodeField.text ?? ""
             )
 
-            AuthService.shared.registerUser(with: registerModel) { result in
+            ApiService.shared.registerUser(with: registerModel) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let message):
@@ -426,6 +445,33 @@ class LoginController: UIViewController, UITextViewDelegate {
 
         return isValid
     }
+    
+    private func clearAllFields() {
+        emailField.text = ""
+        passwordField.text = ""
+        username.text = ""
+        userLastName.text = ""
+        mobileNumberField.text = ""
+        repCodeField.text = ""
+        companyNameField.text = ""
+        invoiceAddressLine1Field.text = ""
+        invoiceAddressLine2Field.text = ""
+        invoiceAddressCityField.text = ""
+        invoiceAddressCountyField.text = ""
+        invoiceAddressPostcodeField.text = ""
+    }
+
+
+func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        if URL.absoluteString == "app://terms" {
+            let vc = HTMLPageViewController()
+            vc.pageType = .terms // or .terms
+            navigationController?.pushViewController(vc, animated: true)
+        } else if URL.absoluteString == "app://privacy" {
+            let vc = HTMLPageViewController()
+            vc.pageType = .privacy // or .terms
+            navigationController?.pushViewController(vc, animated: true)
+        }
+        return false
+    }
 }
-
-

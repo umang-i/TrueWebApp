@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -174,8 +174,11 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="comparePriceLabel" destination="dfC-kJ-5PY" id="Hnn-vP-Xad"/>
+                <outlet property="costLabel" destination="CP9-VN-qGS" id="crh-rW-zH1"/>
                 <outlet property="deleteButton" destination="EtE-Lp-rwf" id="zV4-h3-27j"/>
                 <outlet property="favouriteButton" destination="wx1-nr-e5n" id="lKL-2J-U89"/>
+                <outlet property="itemImageView" destination="Nw3-uJ-KZo" id="Xzz-Lz-Cvl"/>
                 <outlet property="itemTextLabel" destination="QTj-ba-dRr" id="GtV-yU-svH"/>
                 <outlet property="minusButton" destination="EaV-am-dGF" id="q6N-II-MOk"/>
                 <outlet property="numberLabel" destination="Y96-OA-tc9" id="8CN-Qy-2hQ"/>

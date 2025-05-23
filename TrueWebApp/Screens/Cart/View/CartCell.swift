@@ -9,10 +9,14 @@ import UIKit
 
 protocol CartCellDelegate: AnyObject {
     func didTapDeleteButton(in cell: CartCell)
+    func didUpdateQuantity(in cell: CartCell, quantity: Int)
 }
 
 class CartCell: UITableViewCell {
     
+    @IBOutlet weak var comparePriceLabel: UILabel!
+    @IBOutlet weak var costLabel: UILabel!
+    @IBOutlet weak var itemImageView: UIImageView!
     @IBOutlet weak var starView: UIView!
     @IBOutlet weak var quantityView: UIView!
     @IBOutlet weak var favouriteButton: UIButton!
@@ -23,53 +27,97 @@ class CartCell: UITableViewCell {
     @IBOutlet weak var deleteButton: UIButton!
     
     weak var delegate: CartCellDelegate?
-    
-    var isFavourite = false {
-        didSet {
+        
+        var isFavourite = false {
+            didSet {
+                updateFavouriteButtonColor()
+            }
+        }
+        
+        private var currentCartItem: CartItem?
+        
+        override func awakeFromNib() {
+            super.awakeFromNib()
+            setupUI()
+        }
+        
+        private func setupUI() {
+            itemTextLabel.font = UIFont(name: "Roboto-Regular", size: 14)
+            deleteButton.titleLabel?.font = UIFont(name: "Roboto-Medium", size: 15)
+            numberLabel.text = "1"
+            contentView.layer.borderColor = UIColor.customBlue.cgColor
+            contentView.layer.borderWidth = 1
+            contentView.layer.cornerRadius = 4
+            
+            quantityView.layer.cornerRadius = 4
+            quantityView.layer.backgroundColor = UIColor.systemGray5.cgColor
+            starView.layer.borderWidth = 1
+            starView.layer.borderColor = UIColor.gray.cgColor
+            starView.layer.cornerRadius = starView.frame.height / 2
+            
+            favouriteButton.backgroundColor = .white
+            
             updateFavouriteButtonColor()
         }
-    }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        itemTextLabel.font = UIFont(name: "Roboto-Regular", size: 14)
-        deleteButton.titleLabel?.font = UIFont(name: "Roboto-Medium", size: 15)
-        numberLabel.text = "1"
-        contentView.layer.borderColor = UIColor.customBlue.cgColor
-        contentView.layer.borderWidth = 1
-        contentView.layer.cornerRadius = 4
         
-        quantityView.layer.cornerRadius = 4
-        quantityView.layer.backgroundColor = UIColor.systemGray5.cgColor
-        starView.layer.borderWidth = 1
-        starView.layer.borderColor = UIColor.gray.cgColor
-        starView.layer.cornerRadius = starView.frame.height / 2
+        func setCell(cartItem: CartItem) {
+            currentCartItem = cartItem
+            itemTextLabel.text = cartItem.product.mproduct_title
+            numberLabel.text = "\(cartItem.quantity)"
+            isFavourite = cartItem.product.user_info_wishlist
+            
+            starView.backgroundColor = isFavourite ? .yellow : .systemGray5
+            costLabel.text = "£\(String(format: "%.2f", cartItem.product.price))"
+            let comparePrice = cartItem.product.compare_price ?? 0.0
+            comparePriceLabel.isHidden = (comparePrice <= 0)
+            comparePriceLabel.text = "£\(String(format: "%.2f", comparePrice))"
+
+            
+            if let imageUrl = URL(string: "https://cdn.truewebpro.com/\(cartItem.product.mproduct_image ?? "")") {
+                loadImage(from: imageUrl)
+            } else {
+                itemImageView.image = UIImage(named: "noImage")
+            }
+            
+        }
         
-        updateFavouriteButtonColor()
-    }
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
-    
-    @IBAction func minusButtonAction(_ sender: Any) {
-        if let currentNumber = Int(numberLabel.text ?? "1"), currentNumber > 1 {
+        @IBAction func minusButtonAction(_ sender: Any) {
+            guard let currentNumber = Int(numberLabel.text ?? "1"), currentNumber > 1 else { return }
             numberLabel.text = "\(currentNumber - 1)"
+            delegate?.didUpdateQuantity(in: self, quantity: currentNumber - 1)
         }
-    }
-    @IBAction func plusButtonAction(_ sender: Any) {
-        if let currentNumber = Int(numberLabel.text ?? "1") {
+        
+        @IBAction func plusButtonAction(_ sender: Any) {
+            guard let currentNumber = Int(numberLabel.text ?? "1") else { return }
             numberLabel.text = "\(currentNumber + 1)"
+            delegate?.didUpdateQuantity(in: self, quantity: currentNumber + 1)
+        }
+        
+        @IBAction func favouriteButtonAction(_ sender: Any) {
+            isFavourite.toggle()
+            updateFavouriteButtonColor()
+        }
+        
+        @IBAction func deleteButtonAction(_ sender: Any) {
+            delegate?.didTapDeleteButton(in: self)
+        }
+        
+        private func updateFavouriteButtonColor() {
+            favouriteButton.tintColor = isFavourite ? .systemRed : .gray
+        }
+        
+        private func loadImage(from url: URL) {
+            URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
+                guard let self = self, let data = data, error == nil,
+                      let image = UIImage(data: data) else {
+                    DispatchQueue.main.async {
+                        self?.itemImageView.image = UIImage(named: "noImage")
+                    }
+                    return
+                }
+                DispatchQueue.main.async {
+                    self.itemImageView.image = image
+                }
+            }.resume()
         }
     }
-    @IBAction func favouriteButtonAction(_ sender: Any) {
-        isFavourite.toggle()
-    }
-    @IBAction func deleteButtonAction(_ sender: Any) {
-        delegate?.didTapDeleteButton(in: self)
-    }
-    
-    private func updateFavouriteButtonColor() {
-        favouriteButton.tintColor = isFavourite ? .customRed : .gray
-    }
-}

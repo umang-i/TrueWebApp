@@ -45,7 +45,7 @@ class AccountController: UIViewController {
             accDetailsTableView.register(UINib(nibName: "AccountCell", bundle: nil), forCellReuseIdentifier: "AccountCell")
             accDetailsTableView.separatorStyle = .none
         }
-        
+    
     private func setupRefreshControl() {
         refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
@@ -68,8 +68,7 @@ class AccountController: UIViewController {
             self.refreshControl.endRefreshing()
         }
     }
-    }
-
+}
 
 extension AccountController: UITableViewDelegate, UITableViewDataSource {
     // Number of sections
@@ -158,6 +157,10 @@ extension AccountController: UITableViewDelegate, UITableViewDataSource {
         }else if selectedItem.title == "Loyalty Rewards"{
             let rewardController = RewardsController(nibName: "RewardsController", bundle: nil)
             self.navigationController?.pushViewController(rewardController, animated: true)
+        }else if selectedItem.title == "Terms and Conditions" || selectedItem.title == "Privacy Policy" {
+            let vc = HTMLPageViewController()
+            vc.pageType = selectedItem.title == "Terms and Conditions" ? .terms : .privacy
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
 }

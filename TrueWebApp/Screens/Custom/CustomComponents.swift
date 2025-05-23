@@ -300,6 +300,7 @@ extension UIColor {
     static let customBlue = UIColor(red: 3/255, green: 43/255, blue: 95/255, alpha: 1)
     static let customRed  = UIColor(red: 187/255, green: 0/255, blue: 0/255, alpha: 1)
     static let customLightBlue  = UIColor(red: 62/255, green: 169/255, blue: 245/255, alpha: 1)
+    static let customGray = UIColor(hex: "#FDF6F6")
 }
 
 extension UIColor {

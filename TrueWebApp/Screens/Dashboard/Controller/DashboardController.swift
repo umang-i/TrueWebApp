@@ -24,7 +24,9 @@ class DashboardController: UIViewController {
     @IBOutlet weak var imgPageController: UIPageControl!
     @IBOutlet weak var itemsCollectionView: UICollectionView!
     var bannerImages = ["b1" , "b2","b3" , "b4","b5" , "b6","b7" ,"b8"]
-    var items = ["bnr1", "s6" ,"s3" , "s2" , "s1","s4","s5"]
+    var items = [
+        "bnr1", "s6" ,"s3" , "s2" , "s1","s4","s5"
+    ]
     var img = ["d1" , "d2" , "d3","d4","d5","d6"]
     var imgs = ["im1","im2","im3","im4","im5","im6"]
     var imgs1 = ["f1","f2","f3","f4","f5","f6"]
@@ -32,8 +34,9 @@ class DashboardController: UIViewController {
     var text = ["Hyaat","Oxva","Oreo","Fanta","Lost Mary","Coca Cola"]
     var timer : Timer?
     var currentIndex = 0
-    var item: [Product] = []
-    var categories: [Category] = []
+    var item: [Products] = []
+    var categories: [Categoryy] = []
+    var cartItems : [CartItem] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,8 +47,54 @@ class DashboardController: UIViewController {
         setCollectionView()
         gradientView.applyGradientBackground()
         
-        if let loadedCategories = loadCategoriesFromJSON() {
-            categories = loadedCategories
+        ApiService().fetchCategories(keyword: "") { result in
+            switch result {
+            case .success(let response):
+                // Flattening categories from all main categories
+                let allCategories = response.mainCategories.flatMap { $0.categories ?? [] }
+                print("Fetched \(allCategories.count) categories")
+
+                DispatchQueue.main.async {
+                    self.categories = allCategories
+                    self.cartCollectionView.reloadData()
+                    self.banner3CollectionView.reloadData()
+                }
+            case .failure(let error):
+                print("Error fetching categories: \(error.localizedDescription)")
+            }
+        }
+        
+        ApiService().fetchBrowseBanners { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    // Map full image URLs using cdnURL + image path
+//                    self?.items = response.browseBanners.map {
+//                        response.cdnURL + $0.browsebannerImage
+//                    }
+                    print("Fetched \(response.browseBanners.count) banners.")
+                case .failure(let error):
+                    print("Failed to fetch banners:", error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        ApiService().fetchCartItems { result in
+            switch result {
+            case .success(let cartResponse):
+                DispatchQueue.main.async {
+                    self.cartItems = cartResponse.cartItems
+                    self.cartCollectionView.reloadData()
+                    for item in cartResponse.cartItems {
+                        let price = Double(item.product.price)
+                        CartManager.shared.updateCartItem(productId: item.product.mproduct_id, quantity: item.quantity, price: price)
+                    }
+                }
+            case .failure(let error):
+                print("Error fetching cart items:", error.localizedDescription)
+            }
         }
     }
     
@@ -181,6 +230,11 @@ class DashboardController: UIViewController {
             tabBarController.selectedIndex = 1
         }
     }
+//    func presentModalShopViewController() {
+//        let modalShopVC = ModalShopViewController()
+//        modalShopVC.modalPresentationStyle = .pageSheet
+//        present(modalShopVC, animated: true, completion: nil)
+//    }
 }
 
 extension DashboardController: UITableViewDelegate, UITableViewDataSource {
@@ -223,12 +277,23 @@ extension DashboardController: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let detailVC = NotificationDetailController(nibName: "NotificationDetailController", bundle: nil)
-          
+        //  presentModalShopViewController()
             navigationController?.pushViewController(detailVC, animated: true)
     }
 }
 
 extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        if collectionView == banner3CollectionView {
+            return categories.count
+        }
+        if collectionView == cartCollectionView {
+            return categories.count
+        }
+        return 1
+    }
+
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
        if collectionView == circleCollectionView {
@@ -242,7 +307,10 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
             return imgs.count
         }
         else if collectionView == banner3CollectionView {
-            return categories[section].subCats.flatMap { $0.products }.count
+            guard section < categories.count else { return 0 }
+            let allProducts = categories[section].subcategories.flatMap { $0.products }
+            return allProducts.count
+
         }
         return 5
     }
@@ -280,16 +348,22 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? GridCell else {
                 return UICollectionViewCell()
             }
-            let allProducts = categories[indexPath.section].subCats.flatMap { $0.products }
-                    let product = allProducts[indexPath.row]
-
-                    cell.configure(title: product.title,
-                                   image: product.img,
-                                   price: product.price,
-                                   wallet: product.sku,
-                                   brand: "Lays") 
+            
+            // Safely access the products
+            let allProducts = categories[indexPath.section].subcategories.flatMap { $0.products }
+            
+            // Ensure the index is within range
+            guard indexPath.row < allProducts.count else {
+                print("Error: Index \(indexPath.row) is out of range for products in section \(indexPath.section)")
+                return cell
+            }
+            
+            let product = allProducts[indexPath.row]
+            cell.configure(item: product, cartItems: cartItems)
+            
             return cell
-        } else if collectionView == banner2CollectionView {
+        }
+        else if collectionView == banner2CollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
                 return UICollectionViewCell()
             }
@@ -300,16 +374,20 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? GridCell else {
                 return UICollectionViewCell()
             }
-            let allProducts = categories[indexPath.section].subCats.flatMap { $0.products }
-                    let product = allProducts[indexPath.row]
+            guard indexPath.section < categories.count else {
+                return UICollectionViewCell()
+            }
 
-                    cell.configure(title: product.title,
-                                   image: product.img,
-                                   price: product.price,
-                                   wallet: product.sku,
-                                   brand: "Lays")  // Modify brand logic if needed
-                    
-                    return cell
+            let allProducts = categories[indexPath.section].subcategories.flatMap { $0.products }
+
+            guard indexPath.row < allProducts.count else {
+                return UICollectionViewCell()
+            }
+
+            let product = allProducts[indexPath.row]
+            cell.configure(item: product, cartItems: cartItems)
+
+            return cell
         }
         return UICollectionViewCell()
     }
@@ -327,7 +405,7 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
         }else if collectionView == banner2CollectionView  {
             return CGSize(width: 150, height: collectionView.frame.height) // Fixed size for circle items
         }else if collectionView == banner3CollectionView  {
-            return CGSize(width: collectionView.frame.width * 0.4, height: collectionView.frame.height)
+            return CGSize(width: collectionView.frame.width * 0.45, height: collectionView.frame.height)
         }
         else{
             return CGSize(width: collectionView.frame.width, height: collectionView.frame.height)

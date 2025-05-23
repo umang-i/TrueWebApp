@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		3F6AC7A886D1C26636275BD1 /* Pods_TrueWebAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48806F766E5CF0E2D56A0502 /* Pods_TrueWebAppTests.framework */; };
 		B6573AC75AE24F1740DD22A1 /* Pods_TrueWebApp_TrueWebAppUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69C1EE5A199BC36997DA463E /* Pods_TrueWebApp_TrueWebAppUITests.framework */; };
+		DF87D9E52DC8CF6E00229AA9 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = DF87D9E42DC8CF6E00229AA9 /* SDWebImage */; };
+		DF87D9E72DC8CF6E00229AA9 /* SDWebImageMapKit in Frameworks */ = {isa = PBXBuildFile; productRef = DF87D9E62DC8CF6E00229AA9 /* SDWebImageMapKit */; };
+		DF87D9E92DC8CF8C00229AA9 /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = DF87D9E82DC8CF8C00229AA9 /* SDWebImage */; };
+		DF87D9EB2DC8CF8C00229AA9 /* SDWebImageMapKit in Frameworks */ = {isa = PBXBuildFile; productRef = DF87D9EA2DC8CF8C00229AA9 /* SDWebImageMapKit */; };
 		DF994BD62DB7659300D4F873 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = DF994BD52DB7659300D4F873 /* Lottie */; };
 		DF994CBD2DB7685300D4F873 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = DF994CBC2DB7685300D4F873 /* Lottie */; };
 		DF994CC22DB768F200D4F873 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = DF994CC12DB768F200D4F873 /* Lottie */; };
@@ -107,7 +111,11 @@
 				DF994BD62DB7659300D4F873 /* Lottie in Frameworks */,
 				DF994CC72DB76A4900D4F873 /* Pods_TrueWebApp.framework in Frameworks */,
 				DF994CBD2DB7685300D4F873 /* Lottie in Frameworks */,
+				DF87D9E92DC8CF8C00229AA9 /* SDWebImage in Frameworks */,
 				DF994CC22DB768F200D4F873 /* Lottie in Frameworks */,
+				DF87D9E72DC8CF6E00229AA9 /* SDWebImageMapKit in Frameworks */,
+				DF87D9EB2DC8CF8C00229AA9 /* SDWebImageMapKit in Frameworks */,
+				DF87D9E52DC8CF6E00229AA9 /* SDWebImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,6 +294,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				DF994CC02DB768F200D4F873 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				DF87D9E32DC8CF3100229AA9 /* XCRemoteSwiftPackageReference "SDWebImage" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DFEBCA5A2D562D5B00FA3E24 /* Products */;
@@ -771,6 +780,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		DF87D9E32DC8CF3100229AA9 /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.21.0;
+			};
+		};
 		DF994BD42DB763A600D4F873 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
@@ -798,6 +815,26 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		DF87D9E42DC8CF6E00229AA9 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DF87D9E32DC8CF3100229AA9 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		DF87D9E62DC8CF6E00229AA9 /* SDWebImageMapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DF87D9E32DC8CF3100229AA9 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImageMapKit;
+		};
+		DF87D9E82DC8CF8C00229AA9 /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DF87D9E32DC8CF3100229AA9 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		DF87D9EA2DC8CF8C00229AA9 /* SDWebImageMapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DF87D9E32DC8CF3100229AA9 /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImageMapKit;
+		};
 		DF994BD52DB7659300D4F873 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DF994BD42DB763A600D4F873 /* XCRemoteSwiftPackageReference "lottie-ios" */;

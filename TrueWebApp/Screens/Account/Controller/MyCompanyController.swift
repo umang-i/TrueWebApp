@@ -11,7 +11,8 @@ class MyCompanyController: UIViewController, CustomNavBarDelegate {
     func didTapBackButton() {
         navigationController?.popViewController(animated: true)
     }
-
+    
+    var user_company_address_id : Int
     var companyName: String
     var addressLine1: String
     var addressLine2: String
@@ -20,6 +21,9 @@ class MyCompanyController: UIViewController, CustomNavBarDelegate {
     var postcode: String
     var num: Int
 
+    var companyAddresses: [CompanyAddress]
+    
+    
     // MARK: - UI Elements
     let bannerImageView: UIImageView = {
         let imageView = UIImageView()
@@ -62,16 +66,18 @@ class MyCompanyController: UIViewController, CustomNavBarDelegate {
     }()
 
     // MARK: - Initializer
-    init(companyName: String, addressLine1: String, addressLine2: String, city: String, county: String, postcode: String, num: Int) {
-        self.companyName = companyName
-        self.addressLine1 = addressLine1
-        self.addressLine2 = addressLine2
-        self.city = city
-        self.county = county
-        self.postcode = postcode
-        self.num = num
-        super.init(nibName: nil, bundle: nil)
-    }
+    init( user_company_address_id : Int ,  companyName: String, addressLine1: String, addressLine2: String, city: String, county: String, postcode: String, num: Int, companyAddresses: [CompanyAddress]) {
+        self.user_company_address_id = user_company_address_id
+            self.companyName = companyName
+            self.addressLine1 = addressLine1
+            self.addressLine2 = addressLine2
+            self.city = city
+            self.county = county
+            self.postcode = postcode
+            self.num = num
+            self.companyAddresses = companyAddresses
+            super.init(nibName: nil, bundle: nil)
+        }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -194,11 +200,97 @@ class MyCompanyController: UIViewController, CustomNavBarDelegate {
         county = countyField.text ?? ""
         postcode = postcodeField.text ?? ""
 
-        print("Company details updated.")
+        let updatedAddress: [String: Any] = [
+            "user_company_address_id": user_company_address_id,
+            "user_company_name": companyName,
+            "company_address1": addressLine1,
+            "company_address2": addressLine2,
+            "company_city": city,
+            "company_country": county,
+            "company_postcode": postcode
+        ]
+
+        // Check if we're updating an existing address
+        var updatedAddresses: [[String: Any]] = []
+        var found = false
+
+        for address in companyAddresses {
+            if address.user_company_address_id == user_company_address_id {
+                updatedAddresses.append(updatedAddress)
+                found = true
+            } else {
+                updatedAddresses.append([
+                    "user_company_address_id": address.user_company_address_id,
+                    "user_company_name": address.user_company_name,
+                    "company_address1": address.company_address1,
+                    "company_address2": address.company_address2 ?? "",
+                    "company_city": address.company_city,
+                    "company_country": address.company_country,
+                    "company_postcode": address.company_postcode
+                ])
+            }
+        }
+
+        // If not found, we're adding a new one
+        if !found {
+            updatedAddresses.append(updatedAddress)
+        }
+
+        let requestBody: [String: Any] = [
+            "addresses": updatedAddresses
+        ]
+
+        ApiService().postCompanyAddresses(requestBody: requestBody) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    print("Success:", response)
+                    self.navigationController?.popViewController(animated: true)
+                case .failure(let error):
+                    print("Error:", error.localizedDescription)
+                    self.showAlert(message: "Failed to update address: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+
+    // Alert for Error Handling
+    func showAlert(message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 
     @objc func deleteCompanyTapped() {
-        print("Company deleted.")
-        navigationController?.popViewController(animated: true)
+        // Filter out the address to delete
+        let updatedAddresses = companyAddresses.filter { $0.user_company_address_id != user_company_address_id }
+            .map { address in
+                return [
+                    "user_company_address_id": address.user_company_address_id,
+                    "user_company_name": address.user_company_name,
+                    "company_address1": address.company_address1,
+                    "company_address2": address.company_address2 ?? "",
+                    "company_city": address.company_city,
+                    "company_country": address.company_country,
+                    "company_postcode": address.company_postcode
+                ]
+            }
+        
+        let requestBody: [String: Any] = [
+            "addresses": updatedAddresses
+        ]
+        
+        ApiService().postCompanyAddresses(requestBody: requestBody) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    print("Deleted address ID: \(self.user_company_address_id)")
+                    self.navigationController?.popViewController(animated: true)
+                case .failure(let error):
+                    print("Error:", error.localizedDescription)
+                    self.showAlert(message: "Failed to delete address: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 }

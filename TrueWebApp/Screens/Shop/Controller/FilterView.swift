@@ -7,15 +7,22 @@
 import UIKit
 
 class FilterView: UIView {
+    weak var delegate: FilterViewDelegate!
     
     var collectionView: UICollectionView!
     var selectedBrands: Set<String> = []
     
-    let brands = ["d1" ,"d2" , "d3" , "d4","d5","d6","d1" ,"d2" , "d3" , "d4","d5","d6" , "s6" ,"s3" , "s2" , "s1","s4","s5"]
+    var selectedBrandCallback: ((Set<String>) -> Void)?
+
+    var brands : [Brand] = []
+    var wishlistBrands : [Brand] = []
+    var wishlistBrandIds: Set<String> = []
+    var filteredBrands: [Brand] = []
+    var selectedBrandIds: Set<String> = []
     
     var selectedProductOption: String = "All"
     var selectedStockOption: String = "All"
-
+    var endChar : String = ""
     
     private let contentView = UIView()
     
@@ -27,6 +34,35 @@ class FilterView: UIView {
         setupFilters()
         setupCollectionView()
         setupBottomButtons()
+        fetchBrands()
+    }
+    
+    func fetchBrands() {
+        ApiService().fetchBrands { result in
+            switch result {
+            case .success(let brandResponse):
+                print("Brands fetched successfully: \(brandResponse.mbrands)")
+                DispatchQueue.main.async {
+                    self.brands = brandResponse.mbrands
+                    self.wishlistBrands = brandResponse.wishlistbrand
+                    self.filteredBrands = self.brands // Display all by default
+                    
+                    // Store wishlist brand IDs as a set for efficient handling
+                    self.wishlistBrandIds = Set(self.wishlistBrands.map { "\($0.mbrandID)" })
+                    
+                    // If "Favorites" is selected, pre-fill selectedBrandIds with wishlist brands
+                    if self.selectedProductOption == "Favorites" {
+                        self.selectedBrandIds = self.wishlistBrandIds
+                    } else {
+                        self.selectedBrandIds.removeAll() // Ensure clean slate for "All"
+                    }
+                    
+                    self.collectionView.reloadData()
+                }
+            case .failure(let error):
+                print("Failed to fetch brands: \(error.localizedDescription)")
+            }
+        }
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -34,27 +70,42 @@ class FilterView: UIView {
     private func setupOverlay() {
         self.backgroundColor = UIColor.black.withAlphaComponent(0.5) // Dimmed background
 
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(scrollView)
+
+        // Setting up scrollView constraints
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor)
+        ])
+
+        // Content view setup
         contentView.backgroundColor = .white
         contentView.layer.cornerRadius = 4
         contentView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(contentView)
-        contentView.centerYAnchor.constraint(equalTo: self.centerYAnchor).priority = .defaultLow // Make centerY optional
+        scrollView.addSubview(contentView)
 
+        // Setting contentView constraints within scrollView
         NSLayoutConstraint.activate([
-            contentView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor), // Or self.topAnchor
-            contentView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            contentView.bottomAnchor.constraint(lessThanOrEqualTo: self.safeAreaLayoutGuide.bottomAnchor), // Allow it to grow
-
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor) // Ensures horizontal scroll is disabled
         ])
     }
     
     private func setupFilters() {
         let productLabel = createSectionLabel(text: "All Brands")
+        
         let productAll = createRadioButton(title: "All", selector: #selector(productOptionChanged(_:)))
         let productFavorites = createRadioButton(title: "Favorites", selector: #selector(productOptionChanged(_:)))
+        
         let productStack = createHorizontalStack(views: [productAll, productFavorites])
-//        
+        
         let stack = UIStackView(arrangedSubviews: [productLabel, productStack])
         stack.axis = .vertical
         stack.spacing = 12
@@ -66,7 +117,59 @@ class FilterView: UIView {
             stack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             stack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10)
         ])
+        
+        // Set "All" as the default selected
+        selectedProductOption = "All"
+        updateRadioButtons(in: stack, selectedOption: selectedProductOption)
+        filteredBrands = brands
+        collectionView?.reloadData()
     }
+
+    // Modify the createRadioButton method
+    private func createRadioButton(title: String, selector: Selector) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
+        button.setImage(UIImage(systemName: "circle"), for: .normal)
+        button.setImage(UIImage(systemName: "largecircle.fill.circle"), for: .selected)
+        button.tintColor = .red
+        button.contentHorizontalAlignment = .left
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 8)
+        button.addTarget(self, action: selector, for: .touchUpInside)
+        button.tag = title == "All" ? 1 : 2 // 1 for All, 2 for Favorites
+        return button
+    }
+    
+    @objc func productOptionChanged(_ sender: UIButton) {
+        selectedProductOption = sender.title(for: .normal) ?? "All"
+        
+        if selectedProductOption == "Favorites" {
+            collectionView.isUserInteractionEnabled = true
+            wishlistBrandIds = Set(wishlistBrands.map { "\($0.mbrandID)" })
+            selectedBrandIds = wishlistBrandIds
+        } else {
+            selectedBrandIds.removeAll() // Clear selection for "All"
+            collectionView.isUserInteractionEnabled = false
+        }
+        
+        filteredBrands = brands
+        collectionView.reloadData() // Update the collection view
+
+        // Update radio buttons visually
+        if let stackView = sender.superview?.superview {
+            updateRadioButtons(in: stackView, selectedOption: selectedProductOption)
+        }
+    }
+
+    // Improved updateRadioButtons method
+    func updateRadioButtons(in stackView: UIView, selectedOption: String) {
+        for case let button as UIButton in stackView.subviews.flatMap({ $0.subviews }) {
+            let isSelected = button.title(for: .normal) == selectedOption
+            button.setImage(UIImage(systemName: isSelected ? "largecircle.fill.circle" : "circle"), for: .normal)
+        }
+    }
+
     private func createSectionLabel(text: String) -> UILabel {
         let label = UILabel()
         label.text = text
@@ -101,16 +204,12 @@ class FilterView: UIView {
         
         // Apply Constraints
         NSLayoutConstraint.activate([
-//            brandsLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 170),
-//            brandsLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-//            
             collectionView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 100),
             collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            collectionView.heightAnchor.constraint(equalToConstant: 380)
+            collectionView.heightAnchor.constraint(equalToConstant: 450)
         ])
     }
-    
     
     private func setupBottomButtons() {
         let closeButton = UIButton(type: .system)
@@ -133,15 +232,15 @@ class FilterView: UIView {
         buttonStack.axis = .horizontal
         buttonStack.spacing = 10
         buttonStack.distribution = .fillEqually
-        buttonStack.backgroundColor = .white
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
         
         contentView.addSubview(buttonStack)
         
         NSLayoutConstraint.activate([
-            buttonStack.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 10),
+            buttonStack.topAnchor.constraint(equalTo: collectionView.bottomAnchor),
             buttonStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             buttonStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            buttonStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             buttonStack.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
@@ -151,115 +250,79 @@ class FilterView: UIView {
     }
     
     @objc private func applyFilters() {
-        print("Filters applied: \(selectedBrands)")
-        dismissView()
-    }
-    
-    func createRadioButton(title: String, selector: Selector) -> UIView {
-        let container = UIStackView()
-        container.axis = .horizontal
-        container.spacing = 8
-        container.alignment = .center
-        container.isUserInteractionEnabled = true
-
-        // Circle Image View as a radio button
-        let circleImageView = UIImageView()
-        circleImageView.image = UIImage(systemName: "circle")
-        circleImageView.tintColor = .red
-        circleImageView.contentMode = .scaleAspectFit
-        circleImageView.layer.cornerRadius = 12
-        circleImageView.layer.borderColor = UIColor.red.cgColor
-        circleImageView.clipsToBounds = true
-        circleImageView.tag = 100 // Tag for updates
-
-        // Button for selecting
-        let button = UIButton(type: .system)
-        button.setTitle(title, for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        button.contentHorizontalAlignment = .left
-        button.addTarget(self, action: selector, for: .touchUpInside)
-
-        container.addArrangedSubview(circleImageView)
-        container.addArrangedSubview(button)
-
-        // Constraints for circle image
-        NSLayoutConstraint.activate([
-            circleImageView.widthAnchor.constraint(equalToConstant: 24),
-            circleImageView.heightAnchor.constraint(equalToConstant: 24)
-        ])
-
-        // Tap gesture for entire row
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(radioButtonTapped(_:)))
-        container.addGestureRecognizer(tapGesture)
-
-        return container
-    }
-    
-    @objc func productOptionChanged(_ sender: UIButton) {
-        selectedProductOption = sender.title(for: .normal) ?? "All"
-        updateRadioButtons(in: sender.superview!.superview!, selectedOption: selectedProductOption)
-    }
-    
-    @objc func stockOptionChanged(_ sender: UIButton) {
-        selectedStockOption = sender.title(for: .normal) ?? "All"
-        updateRadioButtons(in: sender.superview!.superview!, selectedOption: selectedStockOption)
-    }
-    
-    @objc func clearAllFilters() {
-        selectedBrands.removeAll()
-        collectionView.reloadData()
-    }
-  
-    func updateRadioButtons(in stackView: UIView, selectedOption: String) {
-        for case let container as UIStackView in stackView.subviews {
-            guard let button = container.arrangedSubviews.last as? UIButton,
-                  let circleImageView = container.arrangedSubviews.first as? UIImageView else { continue }
-
-            let isSelected = button.title(for: .normal) == selectedOption
-            circleImageView.image = UIImage(systemName: isSelected ? "largecircle.fill.circle" : "circle")
-            circleImageView.tintColor = isSelected ? .red : .lightGray
-            circleImageView.layer.borderColor = isSelected ? UIColor.red.cgColor : UIColor.lightGray.cgColor
+         if selectedProductOption == "All" && selectedBrandIds.isEmpty {
+            selectedBrandIds.removeAll()
+            self.endChar = ""
         }
-    }
-
-    // **New Function to Handle Tap Gesture**
-    @objc func radioButtonTapped(_ sender: UITapGestureRecognizer) {
-        guard let tappedView = sender.view as? UIStackView,
-              let button = tappedView.arrangedSubviews.last as? UIButton,
-              let title = button.title(for: .normal) else { return }
         
-        updateRadioButtons(in: tappedView.superview!, selectedOption: title)
+        let brandIdArray = selectedBrandIds.joined(separator: ",")
+        print("Selected Brands: \(brandIdArray)") // For debugging
+        
+        // Notify the delegate (ShopViewController)
+        delegate?.didApplyFilter(selectedBrandIds: selectedBrandIds , endchar: endChar)
     }
 }
 
-extension FilterView: UICollectionViewDelegate, UICollectionViewDataSource {
+extension FilterView: UICollectionViewDelegate, UICollectionViewDataSource, BrandCell.BrandCellDelegate {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return brands.count
+        return filteredBrands.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BrandCell", for: indexPath) as! BrandCell
-        let brand = brands[indexPath.item] // ✅ Fix: Retrieve brand correctly
+        let brand = filteredBrands[indexPath.item]
         
-        let isSelected = selectedBrands.contains(brand) // ✅ Now `brand` is defined
-        cell.setSelectedState(isSelected: isSelected) // ✅ Update border color
-        cell.setImage(img: brands[indexPath.row])
+        // Determine if this brand is selected
+        let isSelected = selectedBrandIds.contains("\(brand.mbrandID)")
+        
+        // Determine if this brand is a favorite (exists in wishlistBrands)
+        let isFavorite = wishlistBrands.contains { $0.mbrandID == brand.mbrandID }
+        
+        // Configure the cell with brand data, selection state, and favorite status
+        cell.configure(with: brand, isSelected: isSelected, isFavorite: (selectedProductOption == "Favorites" && isFavorite))
+        cell.delegate = self
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let brand = brands[indexPath.item]
+    // BrandCellDelegate methods
+    func didSelectBrand(withId brandId: String) {
+            if selectedBrandIds.contains(brandId) {
+                // If it's a wishlist brand, remove from both sets
+                selectedBrandIds.remove(brandId)
+                wishlistBrandIds.remove(brandId)
+            } else {
+                // Add the selected brand
+                selectedBrandIds.insert(brandId)
+            }
         
-        // Toggle selection
-        if selectedBrands.contains(brand) {
-            selectedBrands.remove(brand)
-        } else {
-            selectedBrands.insert(brand)
+        print("Selected Brand IDs: \(selectedBrandIds)")
+        print("Wishlist Brand IDs: \(wishlistBrandIds)")
+        updateCellSelection(forBrandId: brandId)
+    }
+    
+    func didDeselectBrand(withId brandId: String) {
+        // Prevent deselection of wishlist brands
+     //   if selectedProductOption == "Favorites" {
+            if wishlistBrands.contains(where: { "\($0.mbrandID)" == brandId }) {
+                wishlistBrandIds.remove(brandId)
+                selectedBrandIds.remove(brandId)
+                return
+            }
+       // }
+        selectedBrandIds.remove(brandId)
+        updateCellSelection(forBrandId: brandId)
+    }
+    
+    
+    // Helper method to reload only the tapped cell
+    private func updateCellSelection(forBrandId brandId: String) {
+        if let index = filteredBrands.firstIndex(where: { "\($0.mbrandID)" == brandId }) {
+            let indexPath = IndexPath(item: index, section: 0)
+            if collectionView.indexPathsForVisibleItems.contains(indexPath) {
+                collectionView.reloadItems(at: [indexPath])
+            }
         }
-        
-        // Reload only the selected cell instead of the entire collection view
-        collectionView.reloadItems(at: [indexPath])
     }
 }
 

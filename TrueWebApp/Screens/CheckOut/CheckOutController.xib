@@ -60,15 +60,15 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r6j-PK-mX2">
-                                    <rect key="frame" x="10" y="1026" width="373" height="40"/>
+                                    <rect key="frame" x="10" y="1026" width="373" height="50"/>
                                     <constraints>
-                                        <constraint firstAttribute="height" constant="40" id="859-Iv-4h0"/>
+                                        <constraint firstAttribute="height" constant="50" id="859-Iv-4h0"/>
                                     </constraints>
                                     <color key="tintColor" red="1" green="0.1960784314" blue="0.062745098040000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <state key="normal" title="Button"/>
                                     <buttonConfiguration key="configuration" style="filled" title="Continue to Payment">
                                         <fontDescription key="titleFontDescription" type="boldSystem" pointSize="14"/>
-                                        <color key="baseBackgroundColor" red="1" green="0.1058823529" blue="0.062745098040000002" alpha="1" colorSpace="calibratedRGB"/>
+                                        <color key="baseBackgroundColor" red="0.73333333329999995" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     </buttonConfiguration>
                                     <connections>
                                         <action selector="paymentButtonAction:" destination="-1" eventType="touchUpInside" id="w2p-WA-y30"/>

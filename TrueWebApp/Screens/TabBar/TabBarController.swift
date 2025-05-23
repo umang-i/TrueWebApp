@@ -22,14 +22,104 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
     var appBarImageWidthConstraint: NSLayoutConstraint!
     var appBarImageHeightConstraint: NSLayoutConstraint!
     
+    var cartCount : Int?
+    var price : Double?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
         
         setupTabBar()
         setupAppBar()
+        // FetchCart()
         updateAppBar(for: selectedIndex)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(updateCartBadge(notification:)), name: .cartUpdated, object: nil)
     }
+    
+    
+    //    @objc private func updateCartBadge(notification: Notification? = nil) {
+    //        let totalCartCount = CartManager.shared.getTotalQuantity()
+    //        let totalPrice = CartManager.shared.getTotalPrice()
+    //
+    //        badgeLabel.text = totalCartCount > 0 ? "\(totalCartCount)" : nil
+    //        badgeLabel.isHidden = totalCartCount == 0
+    //        badgeLabel.backgroundColor = .customRed
+    //        balanceLabel.text = "£\(String(format: "%.2f", totalPrice))"
+    //    }
+    
+//    @objc private func updateCartBadge(notification: Notification? = nil) {
+//        let initialCount = cartCount ?? 0
+//        let initialPrice = price ?? 0.0
+//        
+//        let currentCount = CartManager.shared.getTotalQuantity()
+//        let currentPrice = CartManager.shared.getTotalPrice()
+//        
+//        // Calculate the final values
+//        let finalCount = initialCount + (currentCount - initialCount)
+//        let finalPrice = initialPrice + (currentPrice - initialPrice)
+//        
+//        // Update labels
+//        badgeLabel.text = finalCount > 0 ? "\(finalCount)" : nil
+//        badgeLabel.isHidden = finalCount == 0
+//        badgeLabel.backgroundColor = .customRed
+//        balanceLabel.text = "£\(String(format: "%.2f", finalPrice))"
+//        
+//        // Update stored values
+//        cartCount = finalCount
+//        price = finalPrice
+//    }
+    
+    @objc private func updateCartBadge(notification: Notification? = nil) {
+        let totalCartCount = CartManager.shared.getTotalQuantity()
+        let totalPrice = CartManager.shared.getTotalPrice()
+        
+        // Hide badge and balance if on the first tab
+        let shouldHide = (selectedIndex == 0 || totalCartCount == 0)
+        badgeLabel.isHidden = shouldHide
+        balanceLabel.isHidden = shouldHide
+        
+        if !shouldHide {
+            // Update Badge Label
+            badgeLabel.text = "\(totalCartCount)"
+            badgeLabel.backgroundColor = .customRed
+            
+            // Update Balance Label
+            balanceLabel.text = "£\(String(format: "%.2f", totalPrice))"
+        } else {
+            badgeLabel.text = nil
+            balanceLabel.text = nil
+        }
+    }
+
+ 
+    func FetchCart() {
+        ApiService().fetchCartItems { [weak self] result in
+            switch result {
+            case .success(let cartResponse):
+                print("Fetched Cart Items:", cartResponse.cartItems)
+                
+                
+                // Sync CartManager with fetched cart data
+                DispatchQueue.main.async {
+                    CartManager.shared.clearCart() // Clear existing cart
+                    for item in cartResponse.cartItems {
+                        let price = Double(item.product.price)
+                        CartManager.shared.updateCartItem(
+                            productId: item.product.mproduct_id,
+                            quantity: item.quantity,
+                            price: price
+                        )
+                    }
+                    // Trigger badge update
+                    self?.updateCartBadge()
+                }
+            case .failure(let error):
+                print("Error fetching cart items:", error.localizedDescription)
+            }
+        }
+    }
+
     
     func setupTabBar() {
         tabBar.barTintColor = .white
@@ -39,9 +129,8 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         tabBar.heightAnchor.constraint(equalToConstant: 70).isActive = true
         
         let homeVC = DashboardController()
-        let shopVC = ShopViewController()
+        let shopVC = ShopController()
         let walletVc = WalletViewController()
-       // let rewardVc = RewardsController(nibName: "RewardsController", bundle: nil)
         let accountVC = AccountController()
         let cartVc = CartController(nibName: "CartController", bundle: nil)
         
@@ -69,8 +158,6 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         
         viewControllers = [homeVC, shopVC,cartVc, walletVc, accountVC]
     }
-    
-    
     
     func setupAppBar() {
            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -147,9 +234,9 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
 
         // Badge Label
         
-        badgeLabel.text = "5"  // Dynamic number
+    //    badgeLabel.text = "0"
         badgeLabel.textColor = .white
-        badgeLabel.backgroundColor = .customRed
+      //  badgeLabel.backgroundColor = .customRed
         badgeLabel.textAlignment = .center
         badgeLabel.font = UIFont.systemFont(ofSize: 12, weight: .bold)
         badgeLabel.layer.cornerRadius = 12 // Half of width/height
@@ -174,7 +261,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         ])
         
         // Balance Label
-        balanceLabel.text = "£200.50"
+        balanceLabel.text = "£0.0"
         balanceLabel.font = UIFont(name: "Roboto-Medium", size: 16)
         balanceLabel.textColor = .customBlue
         balanceLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -220,6 +307,9 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
             appBarLabel.text = "Browse"
             appBarImageView.image = UIImage(named: "menub")?.withRenderingMode(.alwaysTemplate)
             toggleShopElements(isVisible: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                   self?.FetchCart()
+               }
 
         case 2:
             appBarLabel.text = "Cart"
@@ -240,8 +330,6 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
             break
         }
     }
-
-
 
     func toggleShopElements(isVisible: Bool) {
         cartImageView.isHidden = !isVisible

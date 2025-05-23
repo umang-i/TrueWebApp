@@ -7,6 +7,26 @@
 
 import UIKit
 
+struct CompanyAddressResponse: Codable {
+    let status: Bool
+    let message: String
+    let company_addresses: [CompanyAddress]?
+}
+
+struct CompanyAddress: Codable {
+    let user_company_address_id: Int
+    let user_id: Int
+    let user_company_name: String
+    let company_address1: String
+    let company_address2: String?
+    let company_city: String
+    let company_country: String
+    let company_postcode: String
+    let created_at: String
+    let updated_at: String
+}
+
+
 class ListCompanyController: UIViewController, CustomNavBarDelegate {
     func didTapBackButton() {
         navigationController?.popViewController(animated: true)
@@ -15,25 +35,43 @@ class ListCompanyController: UIViewController, CustomNavBarDelegate {
     @IBOutlet weak var newBranchButton: UIButton!
     @IBOutlet weak var listTableView: UITableView!
     
-    let companyAddresses = [
-            "Immzy  LTd 78 , Stockport Road , Ashton-under-lyne,Greater Manchester , OL7 , Ol8",
-            "456 OImmzy  LTd 78 , Stockport Road , Ashton-under-lyne,Greater Manchester , OL7 , Ol8 ak Avenue, Los Angeles, CA",
-            "Immzy  LTd 78 , Stockport Road , Ashton-under-lyne,Greater Manchester , OL7 , Ol8 " ,
-            "Immzy  LTd 78 , Stockport Road , Ashton-under-lyne,Greater Manchester , OL7 , Ol8",
-            "Immzy  LTd 78 , Stockport Road , Ashton-under-lyne,Greater Manchester , OL7 , Ol8",]
+    var companyAddresses: [CompanyAddress] = []
     
     override func viewDidLoad() {
             super.viewDidLoad()
 
             // Register the cell with XIB
             listTableView.register(UINib(nibName: "ListCompanyCell", bundle: nil), forCellReuseIdentifier: "ListCompanyCell")
-
             listTableView.delegate = self
             listTableView.dataSource = self
         
         newBranchButton.titleLabel?.font = UIFont(name: "Roboto-Bold", size: 17)!
         setnavBar()
+    
         }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        loadCompanyAddresses()
+    }
+    
+    func loadCompanyAddresses() {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
+            print("User not logged in.")
+            return
+        }
+
+        ApiService().fetchCompanyAddresses(authToken: authToken) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let addresses):
+                    self.companyAddresses = addresses
+                    self.listTableView.reloadData()
+                case .failure(let error):
+                    print("Failed to fetch addresses:", error.localizedDescription)
+                }
+            }
+        }
+    }
     
     func setnavBar() {
         let topBackgroundView = UIView()
@@ -62,7 +100,17 @@ class ListCompanyController: UIViewController, CustomNavBarDelegate {
     }
     
     @IBAction func newBranchButton(_ sender: Any) {
-        let companyController = MyCompanyController(companyName: "", addressLine1: "", addressLine2: "", city: "", county: "", postcode: "" , num: 0)
+        let companyController = MyCompanyController(
+            user_company_address_id: 0,
+            companyName: "",
+            addressLine1: "",
+            addressLine2: "",
+            city: "",
+            county: "",
+            postcode: "",
+            num: 0,
+            companyAddresses: self.companyAddresses // Pass existing addresses
+        )
         self.navigationController?.pushViewController(companyController, animated: true)
     }
 }
@@ -80,8 +128,17 @@ extension ListCompanyController: UITableViewDataSource, UITableViewDelegate {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "ListCompanyCell", for: indexPath) as? ListCompanyCell else {
             return UITableViewCell()
         }
-        // Set the address for each cell
-        cell.configure(with: companyAddresses[indexPath.section])
+
+        let company = companyAddresses[indexPath.section]
+
+        // Build the full address string safely
+        var fullAddress = company.company_address1
+        if let addr2 = company.company_address2 {
+            fullAddress += ", \(addr2)"
+        }
+        fullAddress += ", \(company.company_city), \(company.company_country), \(company.company_postcode)"
+
+        cell.configure(with: fullAddress)
         return cell
     }
 
@@ -96,16 +153,15 @@ extension ListCompanyController: UITableViewDataSource, UITableViewDelegate {
     
     // Handle cell tap to navigate to MyCompanyController
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let addressComponents = companyAddresses[indexPath.section].components(separatedBy: ", ")
-        
+        let company = companyAddresses[indexPath.section]
         let companyController = MyCompanyController(
-            companyName: addressComponents[safe: 0] ?? "", // You can modify this to get the actual company name
-            addressLine1: addressComponents[safe: 0] ?? "",
-            addressLine2: addressComponents[safe: 1] ?? "",
-            city: addressComponents[safe: 2] ?? "",
-            county: addressComponents[safe: 3] ?? "",
-            postcode: addressComponents[safe: 4] ?? "",
-            num: 1 
+            user_company_address_id: company.user_company_address_id, companyName: company.user_company_name,
+            addressLine1: company.company_address1,
+            addressLine2: company.company_address2 ?? "",
+            city: company.company_city,
+            county: company.company_country,
+            postcode: company.company_postcode,
+            num: 1, companyAddresses: companyAddresses
         )
         self.navigationController?.pushViewController(companyController, animated: true)
     }
