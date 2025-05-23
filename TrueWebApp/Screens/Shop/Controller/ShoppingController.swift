@@ -171,10 +171,13 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
     func setupBannerCollectionView() {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 0
+//        layout.minimumLineSpacing = 0
+        layout.minimumLineSpacing = 10
+        layout.minimumInteritemSpacing = 0
         layout.itemSize = CGSize(width: containerView.frame.width - 20, height: 127) // Account for leading and trailing constraints
         
         bannerCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        bannerCollectionView.showsHorizontalScrollIndicator = false
         bannerCollectionView.translatesAutoresizingMaskIntoConstraints = false
         bannerCollectionView.isPagingEnabled = true // Keep this for clean swipe-based scrolling
         bannerCollectionView.delegate = self
@@ -197,13 +200,17 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
         bannerCollectionView.layoutIfNeeded()
         layout.itemSize = CGSize(width: bannerCollectionView.frame.width, height: 127)
         bannerCollectionView.collectionViewLayout = layout
+    
     }
+    
+    
     
     func startBannerAutoScroll() {
         // Invalidate any existing timer
         bannerTimer?.invalidate()
         bannerTimer = Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(scrollBanner), userInfo: nil, repeats: true)
     }
+    
     
     @objc func scrollBanner() {
         if bannerImages.isEmpty {
@@ -790,7 +797,7 @@ extension ShopController : UITableViewDelegate , UITableViewDataSource{
                                 let bannerHeight: CGFloat = shouldShowBanner ? 60 : 0
                                 let spacing: CGFloat = 5
 
-                                return CGFloat(rows * 258) + bannerHeight + spacing
+                                return CGFloat(rows * 260) + bannerHeight + spacing
                             }
                             currentRow += 1
                         }

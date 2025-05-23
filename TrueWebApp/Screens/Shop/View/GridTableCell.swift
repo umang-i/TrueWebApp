@@ -70,12 +70,14 @@ class GridTableCell: UITableViewCell, UICollectionViewDelegate, UICollectionView
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 180, height: 250)
-        layout.scrollDirection = .horizontal
+        layout.scrollDirection = .vertical
+        layout.minimumInteritemSpacing = 10  // horizontal space between items
+        layout.minimumLineSpacing = 10
 
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
+        collectionView.isScrollEnabled = false
         collectionView.register(GridCell.self, forCellWithReuseIdentifier: "GridCell")
         collectionView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -101,6 +103,21 @@ class GridTableCell: UITableViewCell, UICollectionViewDelegate, UICollectionView
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
+
+        let numberOfColumns: CGFloat = 2
+        let spacing: CGFloat = layout.minimumInteritemSpacing
+        let totalSpacing = (numberOfColumns - 1) * spacing
+        let contentWidth = collectionView.bounds.width - layout.sectionInset.left - layout.sectionInset.right
+        let itemWidth = (contentWidth - totalSpacing) / numberOfColumns
+
+        layout.itemSize = CGSize(width: floor(itemWidth), height: 250)
+    }
+
 
     func configure(items: [Products], name: String, offerName: String? = nil, offerStartTime: String? = nil, offerEndTime: String? = nil , cart: [CartItem]) {
         self.item = items
@@ -185,7 +202,6 @@ class GridTableCell: UITableViewCell, UICollectionViewDelegate, UICollectionView
         countdownTimer = nil
         countdownHeightConstraint?.constant = 0
     }
-
 
     // UICollectionView DataSource methods
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

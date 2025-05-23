@@ -69,7 +69,7 @@ class CartController: UIViewController, CustomNavBarDelegate {
                 var combinedCartItems = cartResponse.cartItems
 
                 for localItem in localCartItems {
-                    if let localProductId = localItem["mproduct_id"] as? Int {
+                    if let localProductId = localItem["mproduct_id"] as? Int ?? localItem["productId"] as? Int {
                         if let index = combinedCartItems.firstIndex(where: { $0.mproductID == localProductId }) {
                             // Update quantity if the product already exists in the server cart
                             combinedCartItems[index].quantity = localItem["quantity"] as? Int ?? 1
