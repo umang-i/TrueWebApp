@@ -21,8 +21,9 @@ class HTMLPageViewController: UIViewController, CustomNavBarDelegate, WKNavigati
     private var webView: WKWebView!
     private var topBackgroundView: UIView!
     private var navBar: CustomNavBar!
-    private var activityIndicator: UIActivityIndicatorView!
+  //  private var activityIndicator: UIActivityIndicatorView!
     private var whiteOverlayView: UIView!
+    private var shimmerView: ShimmerVieww!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +31,8 @@ class HTMLPageViewController: UIViewController, CustomNavBarDelegate, WKNavigati
         setupNavBar()
         setupWhiteOverlay()
         setupWebView()
-        setupActivityIndicator()
+       // setupActivityIndicator()
+        setupShimmerView()
         fetchPageContent()
     }
 
@@ -58,6 +60,21 @@ class HTMLPageViewController: UIViewController, CustomNavBarDelegate, WKNavigati
         ])
     }
 
+    private func setupShimmerView() {
+        shimmerView = ShimmerVieww()
+        shimmerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(shimmerView)
+
+        NSLayoutConstraint.activate([
+            shimmerView.topAnchor.constraint(equalTo: navBar.bottomAnchor),
+            shimmerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            shimmerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            shimmerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        shimmerView.isHidden = true
+    }
+    
     private func setupWhiteOverlay() {
         whiteOverlayView = UIView()
         whiteOverlayView.backgroundColor = .white
@@ -86,20 +103,25 @@ class HTMLPageViewController: UIViewController, CustomNavBarDelegate, WKNavigati
         ])
     }
 
-    private func setupActivityIndicator() {
-        activityIndicator = UIActivityIndicatorView(style: .large)
-        activityIndicator.center = view.center
-        activityIndicator.hidesWhenStopped = true
-        view.addSubview(activityIndicator)
-    }
+//    private func setupActivityIndicator() {
+//        activityIndicator = UIActivityIndicatorView(style: .large)
+//        activityIndicator.center = view.center
+//        activityIndicator.hidesWhenStopped = true
+//        view.addSubview(activityIndicator)
+//    }
 
     private func fetchPageContent() {
-        activityIndicator.startAnimating()
+       // activityIndicator.startAnimating()
+        shimmerView.isHidden = false
+               shimmerView.startAnimating()
+               whiteOverlayView.isHidden = false
 
         ApiService().fetchPageContent { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else { return }
-                self.activityIndicator.stopAnimating()
+                self.shimmerView.stopAnimating()
+                               self.shimmerView.isHidden = true
+             //   self.activityIndicator.stopAnimating()
 
                 switch result {
                 case .success(let pageResponse):
@@ -130,14 +152,21 @@ class HTMLPageViewController: UIViewController, CustomNavBarDelegate, WKNavigati
     }
 
     // MARK: - WKNavigationDelegate
+//    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+//        // Hide the white overlay when content is fully loaded
+//        UIView.animate(withDuration: 0.3) {
+//            self.whiteOverlayView.alpha = 0
+//        } completion: { _ in
+//            self.whiteOverlayView.isHidden = true
+//        }
+//    }
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        // Hide the white overlay when content is fully loaded
-        UIView.animate(withDuration: 0.3) {
-            self.whiteOverlayView.alpha = 0
-        } completion: { _ in
-            self.whiteOverlayView.isHidden = true
-        }
-    }
+           UIView.animate(withDuration: 0.3) {
+               self.whiteOverlayView.alpha = 0
+           } completion: { _ in
+               self.whiteOverlayView.isHidden = true
+           }
+       }
 
     private func showError(message: String) {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
@@ -147,5 +176,81 @@ class HTMLPageViewController: UIViewController, CustomNavBarDelegate, WKNavigati
 
     func didTapBackButton() {
         navigationController?.popViewController(animated: true)
+    }
+}
+
+
+import UIKit
+
+class ShimmerVieww: UIView {
+    private var shimmerLineLayers: [CAGradientLayer] = []
+    private let lineHeight: CGFloat = 16
+    private let lineSpacing: CGFloat = 12
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        backgroundColor = .white
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        backgroundColor = .white
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        setupShimmerLines()
+    }
+
+    private func setupShimmerLines() {
+        // Remove old lines
+        shimmerLineLayers.forEach { $0.removeFromSuperlayer() }
+        shimmerLineLayers.removeAll()
+
+        let totalLineHeight = lineHeight + lineSpacing
+        let numberOfLines = Int(bounds.height / totalLineHeight)
+
+        var yOffset: CGFloat = 20
+
+        for _ in 0..<numberOfLines {
+            let shimmerLayer = CAGradientLayer()
+            shimmerLayer.colors = [
+                UIColor.lightGray.withAlphaComponent(0.3).cgColor,
+                UIColor.lightGray.withAlphaComponent(0.1).cgColor,
+                UIColor.lightGray.withAlphaComponent(0.3).cgColor
+            ]
+            shimmerLayer.startPoint = CGPoint(x: 0.0, y: 0.5)
+            shimmerLayer.endPoint = CGPoint(x: 1.0, y: 0.5)
+            shimmerLayer.locations = [0, 0.5, 1]
+
+            let randomWidth = CGFloat.random(in: 0.6...1.0)
+            let lineWidth = bounds.width * randomWidth
+
+            shimmerLayer.frame = CGRect(x: 20, y: yOffset, width: lineWidth, height: lineHeight)
+            shimmerLayer.cornerRadius = 4
+            layer.addSublayer(shimmerLayer)
+            shimmerLineLayers.append(shimmerLayer)
+
+            yOffset += totalLineHeight
+        }
+
+        startAnimating()
+    }
+
+    func startAnimating() {
+        for shimmerLayer in shimmerLineLayers {
+            let animation = CABasicAnimation(keyPath: "locations")
+            animation.fromValue = [-1, -0.5, 0]
+            animation.toValue = [1, 1.5, 2]
+            animation.duration = 1.5
+            animation.repeatCount = .infinity
+            shimmerLayer.add(animation, forKey: "shimmer")
+        }
+    }
+
+    func stopAnimating() {
+        for shimmerLayer in shimmerLineLayers {
+            shimmerLayer.removeAnimation(forKey: "shimmer")
+        }
     }
 }

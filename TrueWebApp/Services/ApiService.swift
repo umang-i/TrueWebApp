@@ -333,9 +333,9 @@ class ApiService {
             }
             
             // Optional debug log
-            if let jsonString = String(data: data, encoding: .utf8) {
-                  print("🔵 Raw JSON:\n\(jsonString)")
-            }
+//            if let jsonString = String(data: data, encoding: .utf8) {
+//                  print("🔵 Raw JSON:\n\(jsonString)")
+//            }
             
             do {
                 let decodedResponse = try JSONDecoder().decode(APIResponseCat.self, from: data)
@@ -590,10 +590,9 @@ class ApiService {
             return
         }
 
-        // Retrieve locally stored cart items
         let existingCartItems = UserDefaults.standard.array(forKey: "cart") as? [[String: Any]] ?? []
-        print("Existing Cart Items from UserDefaults:", existingCartItems)
-        
+
+
         let url = URL(string: "https://goappadmin.zapto.org/api/cart-item/update")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -602,7 +601,13 @@ class ApiService {
 
         let requestBody: [String: Any] = ["cart": existingCartItems]
         print("Updating Cart on Server with:", requestBody)
-        request.httpBody = try? JSONSerialization.data(withJSONObject: requestBody)
+
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
+        } catch {
+            completion(false, "Failed to serialize cart data.")
+            return
+        }
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
@@ -610,19 +615,28 @@ class ApiService {
                 return
             }
 
+            if let data = data {
+                print("Server response body:", String(data: data, encoding: .utf8) ?? "No readable data")
+            }
+
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode == 200 {
                     print("Cart updated successfully on server.")
                     completion(true, nil)
                 } else {
-                    completion(false, "Failed to update cart. Status code: \(httpResponse.statusCode)")
+                    var errorMessage = "Failed to update cart. Status code: \(httpResponse.statusCode)"
+                    if let data = data,
+                       let responseJSON = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                       let serverMessage = responseJSON["message"] as? String {
+                        errorMessage = serverMessage
+                    }
+                    completion(false, errorMessage)
                 }
             } else {
                 completion(false, "Unexpected server response.")
             }
         }.resume()
     }
-
     
     func fetchCompanyAddresses(authToken: String, completion: @escaping (Result<[CompanyAddress], Error>) -> Void) {
             guard let url = URL(string: "https://goappadmin.zapto.org/api/company-address") else {

@@ -119,6 +119,10 @@ class ExpandableCell: UITableViewCell {
     func configure(title: String, imageUrl: String?, isExpanded: Bool, isSubCell: Bool = false, offerName: String, isCategoryCell: Bool = false) {
         titleLabel.text = title
         
+        UIView.animate(withDuration: 0.25) {
+               self.arrowImageView.transform = isExpanded ? CGAffineTransform(rotationAngle: .pi * 2 ) : .identity
+           }
+        
         // Highest priority: DEALS & OFFERS cell
         if !isSubCell && title.uppercased() == "DEALS & OFFERS" {
             backgroundColor = .customRed
@@ -140,16 +144,6 @@ class ExpandableCell: UITableViewCell {
             arrowImageView.tintColor = isSubCell ? .black : .white
             iconImageView.tintColor = isSubCell ? .black : .white
         }
-        
-        // Offer Label Logic
-//        if offerName.isEmpty {
-//            offrLabel.isHidden = true
-//            offrLabel.backgroundColor = .clear
-//        } else {
-//            offrLabel.isHidden = false
-//            offrLabel.text = offerName.capitalized
-//            offrLabel.backgroundColor = .customRed
-//        }
         
         offerLabelRed.isHidden = true
         offerLabelGreen.isHidden = true

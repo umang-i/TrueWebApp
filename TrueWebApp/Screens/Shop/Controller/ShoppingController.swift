@@ -13,8 +13,11 @@ protocol FilterViewDelegate: AnyObject {
     func didApplyFilter(selectedBrandIds: Set<String> , endchar : String)
 }
 
-class ShopController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UITextFieldDelegate , FilterViewDelegate {
-    
+class ShopController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UITextFieldDelegate , FilterViewDelegate, UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+
     var mainCategory : [MainCategory] = []
     var category : [Categoryy] = []
     var filteredCategories: [Categoryy] = []
@@ -51,8 +54,16 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     var cartItems : [CartItem] = []
     
+    var isLoading = true
+    var isLoadingBanners = true
+    var isRefreshing = true
+    var isCartLoading = false
+
+    let refreshControl = UIRefreshControl()
+    let loaderView = CustomLoaderView()
+
     override func viewDidLoad() {
-       
+        super.viewDidLoad()
         setupScrollView()
         setupSearchAndSortBar()
         setupBannerCollectionView()
@@ -61,40 +72,112 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
         startBannerAutoScroll()
         setupTableView()
         setupOverlayView()
+        setupLoaderView()
+        
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleBannerPan(_:)))
+        panGesture.delegate = self
+        scrollView.addGestureRecognizer(panGesture)
         
         fetchCategories()
         searchTextField.addTarget(self, action: #selector(searchTextChanged), for: .editingChanged)
-        
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
         fetchCategories()
-        
+
+        isLoading = true
+        tableView.reloadData() // Show shimmer rows
+
         ApiService().fetchCartItems { [weak self] result in
             guard let self = self else { return }
-            
             DispatchQueue.main.async {
+                self.isLoading = false
+
                 switch result {
                 case .success(let cartResponse):
-                    DispatchQueue.main.async {
-                        self.cartItems = cartResponse.cartItems
-                        self.tableView.reloadData()
-                        for item in cartResponse.cartItems {
-                            let price = Double(item.product.price)
-                            print("price = \(price)")
-                            CartManager.shared.updateCartItem(productId: item.product.mproduct_id, quantity: item.quantity, price: price)
-                        }
+                    self.cartItems = cartResponse.cartItems
+                    for item in cartResponse.cartItems {
+                        let price = Double(item.product.price)
+                        CartManager.shared.updateCartItem(productId: item.product.mproduct_id, quantity: item.quantity, price: price)
                     }
+
                 case .failure(let error):
                     print("Error fetching cart items:", error.localizedDescription)
                 }
+
+                self.tableView.reloadData() // Refresh actual data or empty state
             }
         }
     }
+
     
-    func fetchCategories(keyword: String = "") {
-        ApiService().fetchCategories(keyword: searchTextField.text ?? "") { result in
+    private func setupLoaderView() {
+            loaderView.translatesAutoresizingMaskIntoConstraints = false
+            loaderView.isHidden = true
+            loaderView.isUserInteractionEnabled = false
+
+        view.addSubview(loaderView)
+
+        NSLayoutConstraint.activate([
+            loaderView.centerXAnchor.constraint(equalTo: bannerCollectionView.centerXAnchor),
+            loaderView.centerYAnchor.constraint(equalTo: bannerCollectionView.centerYAnchor),
+            loaderView.widthAnchor.constraint(equalToConstant: 50),
+            loaderView.heightAnchor.constraint(equalToConstant: 50)
+        ])
+        }
+    
+    @objc func handleBannerPan(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: scrollView)
+
+        // Ensure it's a downward pull from the top of the scrollView
+        if translation.y > 30 && scrollView.contentOffset.y <= 0 {
+            if gesture.state == .ended && !isRefreshing {
+                isRefreshing = true
+                print("Pull down detected on scrollView - trigger refresh")
+                showLoader()
+                handleRefresh()
+            }
+        }
+    }
+
+    func showLoader() {
+        loaderView.isHidden = false
+        loaderView.startAnimating()
+    }
+
+    func hideLoader() {
+        loaderView.stopAnimating()
+        loaderView.isHidden = true
+    }
+    
+    func handleRefresh() {
+        isLoading = true
+        isLoadingBanners = true
+
+        tableView.reloadData()
+        bannerCollectionView.reloadData() // Show shimmer in bannerCollectionView
+
+        // Simulate fetching categories
+        fetchCategories() { [weak self] in
+            guard let self = self else { return }
+            self.isLoading = false
+            hideLoader()
+            self.tableView.reloadData()
+            
+            // Now load banner data after categories
+            self.loadBannerData(completion: {
+                self.isLoadingBanners = false
+                self.bannerCollectionView.reloadData()
+                self.refreshControl.endRefreshing()
+            })
+        }
+    }
+    
+    func fetchCategories(keyword: String = "", completion: (() -> Void)? = nil) {
+        ApiService().fetchCategories(keyword: keyword.isEmpty ? (searchTextField.text ?? "") : keyword) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):
@@ -102,6 +185,7 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     print("Fetched \(allCategories.count) categories")
                     self.mainCategory = response.mainCategories
                     self.category = allCategories
+                    self.isLoading = false
                     self.tableView.reloadData()
                     self.tableView.layoutIfNeeded()
                     self.scrollView.layoutIfNeeded()
@@ -109,6 +193,7 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 case .failure(let error):
                     print("Failed to fetch categories:", error.localizedDescription)
                 }
+                completion?()  // ✅ Always call the completion at the end
             }
         }
     }
@@ -124,20 +209,27 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
         }
     }
     
-    func loadBannerData() {
+    func loadBannerData(completion: (() -> Void)? = nil) {
+        isLoadingBanners = true
+        bannerCollectionView.reloadData()
+        
         ApiService().fetchBrowseBanners { [weak self] result in
             DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.isLoadingBanners = false
+                self.isRefreshing = false
                 switch result {
                 case .success(let response):
-                    self?.bannerImages = response.browseBanners.map { response.cdnURL + $0.browsebannerImage }
-                    self?.banners = response.browseBanners
-                    print("loadBannerData - Success: bannerImages count - \(self?.bannerImages.count ?? 0)")
-                    self?.bannerCollectionView.reloadData()
-                    print("loadBannerData - Success: bannerCollectionView item count after reload - \(self?.bannerCollectionView.numberOfItems(inSection: 0) ?? 0)")
-                    self?.startBannerAutoScroll()
+                    self.bannerImages = response.browseBanners.map { response.cdnURL + $0.browsebannerImage }
+                    self.banners = response.browseBanners
+                    print("loadBannerData - Success: bannerImages count - \(self.bannerImages.count)")
+                    self.bannerCollectionView.reloadData()
+                    print("loadBannerData - Success: bannerCollectionView item count after reload - \(self.bannerCollectionView.numberOfItems(inSection: 0))")
+                    self.startBannerAutoScroll()
                 case .failure(let error):
                     print("Failed to fetch banners:", error.localizedDescription)
                 }
+                completion?()
             }
         }
     }
@@ -145,6 +237,8 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
     func setupScrollView() {
         scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.bounces = false
+        scrollView.isScrollEnabled = true
         view.addSubview(scrollView)
         
         containerView.translatesAutoresizingMaskIntoConstraints = false
@@ -165,13 +259,13 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
             containerView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             containerView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor), // Allows container to grow with content
             containerView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+            
         ])
     }
     
     func setupBannerCollectionView() {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-//        layout.minimumLineSpacing = 0
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 0
         layout.itemSize = CGSize(width: containerView.frame.width - 20, height: 127) // Account for leading and trailing constraints
@@ -186,6 +280,7 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
         bannerCollectionView.register(BannerImageCelll.self, forCellWithReuseIdentifier: "BannerImageCelll")
         bannerCollectionView.layer.cornerRadius = 10
         bannerCollectionView.contentMode = .scaleAspectFill
+        bannerCollectionView.register(ShimmerBannerCell.self, forCellWithReuseIdentifier: "ShimmerBannerCell")
         
         containerView.addSubview(bannerCollectionView) // Add to containerView
         
@@ -400,6 +495,7 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
         tableView.isScrollEnabled = false // Important: Disable scrolling on the tableView
         tableView.register(ExpandableCell.self, forCellReuseIdentifier: "ExpandableCell")
         tableView.register(GridTableCell.self, forCellReuseIdentifier: "GridCell")
+        tableView.register(ShimmerCell.self, forCellReuseIdentifier: "ShimmerCell")
         
         containerView.addSubview(tableView)
         
@@ -481,21 +577,22 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
 
 extension ShopController : UITableViewDelegate , UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if isLoading { return 10 }
         let mainCat = mainCategory[section]
         let categoryList = mainCat.categories ?? []
-
+        
         // Always count 1 for the main category row at the top of the section
         var totalRows = 1
-
+        
         if expandedMainCategories.contains(section) {
             for (catIndex, category) in categoryList.enumerated() {
                 totalRows += 1 // Category row
-
+                
                 let categoryIndexPath = IndexPath(row: catIndex, section: section)
                 if expandedCategories.contains(categoryIndexPath) {
                     for (subIdx, subcat) in category.subcategories.enumerated() {
                         totalRows += 1 // Subcategory title
-
+                        
                         let subcategoryIndexPath = IndexPath(row: subIdx, section: section)
                         if expandedSubcategories[subcategoryIndexPath] == true {
                             totalRows += 1 // Grid row
@@ -504,69 +601,24 @@ extension ShopController : UITableViewDelegate , UITableViewDataSource{
                 }
             }
         }
-
+        
         return totalRows
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        print(mainCategory.count)
-        return mainCategory.count
+        return isLoading ? 10 : mainCategory.count
     }
     
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cat = category[indexPath.section]
-//        var expandedSubcategoryCounter = -1 // To track the index of expanded subcategories
-//
-//        if indexPath.row == 0 {
-//            // Category Cell
-//            let cell = tableView.dequeueReusableCell(withIdentifier: "ExpandableCell", for: indexPath) as! ExpandableCell
-//            cell.selectionStyle = .none
-//            cell.configure(title: cat.mcat_name, imageUrl: nil, isExpanded: expandedCategories.contains(indexPath.section), offerName: "")
-//            return cell
-//        } else {
-//            var currentRow = 1
-//            for (index, subcat) in cat.subcategories.enumerated() {
-//                let subcategoryTitleIndexPath = IndexPath(row: currentRow, section: indexPath.section)
-//
-//                if currentRow == indexPath.row {
-//                    // Subcategory Title Cell
-//                    let cell = tableView.dequeueReusableCell(withIdentifier: "ExpandableCell", for: indexPath) as! ExpandableCell
-//                    let isExpanded = expandedSubcategories[subcategoryTitleIndexPath] ?? false
-//                    cell.configure(title: subcat.msubcat_name, imageUrl: "https://cdn.truewebpro.com/\(subcat.msubcat_image)", isExpanded: isExpanded, isSubCell: true, offerName: subcat.msubcat_tag  ?? "")
-//                    cell.backgroundColor = UIColor.systemGray6
-//                    return cell
-//                }
-//                currentRow += 1
-//
-//                if expandedSubcategories[subcategoryTitleIndexPath] == true {
-//                    if currentRow == indexPath.row {
-//                        // Product Grid Cell
-//                        expandedSubcategoryCounter += 1
-//                        let cell = tableView.dequeueReusableCell(withIdentifier: "GridCell", for: indexPath) as! GridTableCell
-//                        cell.configure(items: subcat.products, name: subcat.msubcat_name, offerName: subcat.offer_name ?? "" , offerStartTime: subcat.start_time ?? "", offerEndTime: subcat.end_time ?? "" , cart: cartItems)
-//                        
-//                        return cell
-//                    }
-//                    currentRow += 1
-//                }
-//            }
-//        }
-//        return UITableViewCell()
-//    }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if isLoading {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ShimmerCell", for: indexPath) as! ShimmerCell
+            return cell
+        }
         let mainCat = mainCategory[indexPath.section]
         let categories = mainCat.categories ?? []
         
         var currentRow = 0
-
-        // Row 0: Main Category Cell
-        //        if indexPath.row == currentRow {
-        //            let cell = tableView.dequeueReusableCell(withIdentifier: "ExpandableCell", for: indexPath) as! ExpandableCell
-        //            cell.selectionStyle = .none
-        //            cell.configure(title: mainCat.mainMcatName, imageUrl: nil, isExpanded: expandedMainCategories.contains(indexPath.section), isSubCell: false, offerName: "" , isCategoryCell: false)
-        //            return cell
-        //        }
+        
         if indexPath.row == currentRow {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ExpandableCell", for: indexPath) as! ExpandableCell
             cell.selectionStyle = .none
@@ -583,9 +635,9 @@ extension ShopController : UITableViewDelegate , UITableViewDataSource{
             )
             return cell
         }
-
+        
         currentRow += 1
-
+        
         // Only proceed if main category is expanded
         if expandedMainCategories.contains(indexPath.section) {
             for (catIndex, category) in categories.enumerated() {
@@ -597,7 +649,7 @@ extension ShopController : UITableViewDelegate , UITableViewDataSource{
                     return cell
                 }
                 currentRow += 1
-
+                
                 let categoryExpanded = expandedCategories.contains(IndexPath(row: catIndex, section: indexPath.section))
                 if categoryExpanded {
                     for (subIndex, subcat) in category.subcategories.enumerated() {
@@ -611,7 +663,7 @@ extension ShopController : UITableViewDelegate , UITableViewDataSource{
                             return cell
                         }
                         currentRow += 1
-
+                        
                         // Subcategory Grid Cell
                         if expandedSubcategories[subcatIndexPath] == true {
                             if indexPath.row == currentRow {
@@ -625,48 +677,9 @@ extension ShopController : UITableViewDelegate , UITableViewDataSource{
                 }
             }
         }
-
+        
         return UITableViewCell()
     }
-
-    
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        print("Tapped section: \(indexPath.section), row: \(indexPath.row)")
-//
-//        let category = category[indexPath.section]
-//
-//        if indexPath.row == 0 {
-//            // Tapping category to expand/collapse all its immediate subcategories' titles
-//            let shouldExpand = !expandedCategories.contains(indexPath.section)
-//            if shouldExpand {
-//                expandedCategories.insert(indexPath.section)
-//                // Only expand the subcategory *titles* initially
-//                for i in 0..<category.subcategories.count {
-//                    let subcategoryIndexPath = IndexPath(row: i + 1, section: indexPath.section)
-//                    // We are expanding the *title* row, so set its expansion state
-//                    expandedSubcategories[subcategoryIndexPath] = expandedSubcategories[subcategoryIndexPath] ?? false
-//                }
-//                let selectedCellRect = tableView.rectForRow(at: indexPath)
-//                let targetOffsetY = selectedCellRect.origin.y - 2
-//                
-//                // Ensure the offset stays within the bounds of the content
-//                let targetContentOffset = CGPoint(x: 0, y: max(targetOffsetY, 0))
-//                scrollView.setContentOffset(targetContentOffset, animated: false)
-//            } else {
-//                expandedCategories.remove(indexPath.section)
-//                // When collapsing the main category, also collapse all its subcategories' grids
-//                expandedSubcategories = expandedSubcategories.filter { key, _ in
-//                    key.section != indexPath.section || key.row == 0 // Keep category row state
-//                }
-//            }
-//            tableView.reloadSections([indexPath.section], with: .automatic)
-//        } else {
-//            // Tapping a specific subcategory title to expand/collapse its product grid
-//            let subcategoryIndexPath = IndexPath(row: indexPath.row, section: indexPath.section)
-//            expandedSubcategories[subcategoryIndexPath] = !(expandedSubcategories[subcategoryIndexPath] ?? false)
-//            tableView.reloadSections([indexPath.section], with: .automatic)
-//        }
-//    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("Tapped section: \(indexPath.section), row: \(indexPath.row)")
@@ -674,92 +687,138 @@ extension ShopController : UITableViewDelegate , UITableViewDataSource{
         let mainCat = mainCategory[indexPath.section]
         let categoryList = mainCat.categories ?? []
         var currentRow = 0
-
-        // 1. Handle Main Category row tap (row 0)
+        
+        tableView.beginUpdates()
+        
+        // 1. Tapped Main Category Title
         if indexPath.row == currentRow {
             if expandedMainCategories.contains(indexPath.section) {
+                // Collapse all expanded rows under this section
                 expandedMainCategories.remove(indexPath.section)
-                
-                // Collapse all expanded categories and subcategories under this main category
                 expandedCategories = expandedCategories.filter { $0.section != indexPath.section }
                 expandedSubcategories = expandedSubcategories.filter { $0.key.section != indexPath.section }
+                
+                let totalRows = tableView.numberOfRows(inSection: indexPath.section)
+                let indexPathsToDelete = (1..<totalRows).map { IndexPath(row: $0, section: indexPath.section) }
+                tableView.deleteRows(at: indexPathsToDelete, with: .fade)
             } else {
+                // Expand main category
                 expandedMainCategories.insert(indexPath.section)
+                let indexPathsToInsert = categoryList.enumerated().map { offset, _ in
+                    IndexPath(row: currentRow + 1 + offset, section: indexPath.section)
+                }
+                tableView.insertRows(at: indexPathsToInsert, with: .fade)
             }
-            tableView.reloadSections([indexPath.section], with: .automatic)
+            
+            tableView.reloadRows(at: [indexPath], with: .none)
+            tableView.endUpdates()
             return
         }
+        
         currentRow += 1
-
-        // 2. Loop through categories under the expanded main category
-        if expandedMainCategories.contains(indexPath.section) {
-            for (catIndex, category) in categoryList.enumerated() {
-                let categoryIndexPath = IndexPath(row: catIndex, section: indexPath.section)
-
-                // Category title row
-                if indexPath.row == currentRow {
-                    if expandedCategories.contains(categoryIndexPath) {
-                        expandedCategories.remove(categoryIndexPath)
-                        
-                        // Collapse all subcategory grids under this category
-                        expandedSubcategories = expandedSubcategories.filter { !($0.key.section == indexPath.section && $0.key.row == catIndex) }
-                    } else {
-                        expandedCategories.insert(categoryIndexPath)
-                        // Initialize subcategory expansion states if needed
-                        for (subIdx, _) in category.subcategories.enumerated() {
-                            let subIndexPath = IndexPath(row: subIdx, section: indexPath.section)
-                            if expandedSubcategories[subIndexPath] == nil {
-                                expandedSubcategories[subIndexPath] = false
-                            }
-                        }
-                    }
-                    tableView.reloadSections([indexPath.section], with: .automatic)
-                    return
-                }
-                currentRow += 1
-
-                // 3. Loop through subcategories if category is expanded
+        
+        // 2. Tapped Category or Subcategory Row
+        for (catIndex, category) in categoryList.enumerated() {
+            let categoryIndexPath = IndexPath(row: catIndex, section: indexPath.section)
+            
+            // Tapped category title
+            if indexPath.row == currentRow {
+                var indexPaths: [IndexPath] = []
+                let subcategories = category.subcategories
+                
                 if expandedCategories.contains(categoryIndexPath) {
-                    for (subIdx, subcat) in category.subcategories.enumerated() {
-                        let subcategoryTitleIndexPath = IndexPath(row: subIdx, section: indexPath.section)
-
-                        // Subcategory title row
+                    // Collapse subcategories (and their grids if expanded)
+                    expandedCategories.remove(categoryIndexPath)
+                    var row = currentRow + 1
+                    
+                    for (subIdx, _) in subcategories.enumerated() {
+                        indexPaths.append(IndexPath(row: row, section: indexPath.section))
+                        let subKey = IndexPath(row: subIdx, section: indexPath.section)
+                        if expandedSubcategories[subKey] == true {
+                            row += 1
+                            indexPaths.append(IndexPath(row: row, section: indexPath.section))
+                        }
+                        expandedSubcategories.removeValue(forKey: subKey)
+                        row += 1
+                    }
+                    
+                    tableView.deleteRows(at: indexPaths, with: .fade)
+                } else {
+                    // Expand subcategories
+                    expandedCategories.insert(categoryIndexPath)
+                    var row = currentRow + 1
+                    
+                    for (subIdx, _) in subcategories.enumerated() {
+                        let subIndexPath = IndexPath(row: row, section: indexPath.section)
+                        indexPaths.append(subIndexPath)
+                        expandedSubcategories[IndexPath(row: subIdx, section: indexPath.section)] = false
+                        row += 1
+                    }
+                    
+                    tableView.insertRows(at: indexPaths, with: .fade)
+                }
+                
+                tableView.reloadRows(at: [indexPath], with: .none)
+                tableView.endUpdates()
+                return
+            }
+            
+            currentRow += 1
+            
+            // Handle subcategory tap
+            if expandedCategories.contains(categoryIndexPath) {
+                for (subIdx, subcat) in category.subcategories.enumerated() {
+                    let subTitleRow = currentRow
+                    let subKey = IndexPath(row: subIdx, section: indexPath.section)
+                    let gridRow = IndexPath(row: currentRow + 1, section: indexPath.section)
+                    
+                    if indexPath.row == subTitleRow {
+                        let isExpanded = expandedSubcategories[subKey] ?? false
+                        expandedSubcategories[subKey] = !isExpanded
+                        
+                        if isExpanded {
+                            tableView.deleteRows(at: [gridRow], with: .fade)
+                        } else {
+                            tableView.insertRows(at: [gridRow], with: .fade)
+                        }
+                        
+                        tableView.reloadRows(at: [indexPath], with: .none)
+                        tableView.endUpdates()
+                        return
+                    }
+                    
+                    currentRow += 1
+                    
+                    if expandedSubcategories[subKey] == true {
                         if indexPath.row == currentRow {
-                            let currentlyExpanded = expandedSubcategories[subcategoryTitleIndexPath] ?? false
-                            expandedSubcategories[subcategoryTitleIndexPath] = !currentlyExpanded
-                            tableView.reloadSections([indexPath.section], with: .automatic)
+                            print("Tapped grid for subcategory: \(subcat.msubcat_name)")
+                            tableView.endUpdates()
                             return
                         }
                         currentRow += 1
-
-                        // Product grid row if subcategory is expanded
-                        if expandedSubcategories[subcategoryTitleIndexPath] == true {
-                            if indexPath.row == currentRow {
-                                // Optional: handle grid tap if needed
-                                print("Tapped grid for subcategory: \(subcat.msubcat_name)")
-                                return
-                            }
-                            currentRow += 1
-                        }
                     }
                 }
             }
         }
+        
+        tableView.endUpdates()
     }
-
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if isLoading {
+            return 60 // Match this to your actual cell height
+        }
         let mainCat = mainCategory[indexPath.section]
         let categories = mainCat.categories ?? []
-
+        
         var currentRow = 0
-
+        
         // Main Category row
         if indexPath.row == currentRow {
             return 60
         }
         currentRow += 1
-
+        
         if expandedMainCategories.contains(indexPath.section) {
             for (catIndex, category) in categories.enumerated() {
                 // Category row
@@ -767,7 +826,7 @@ extension ShopController : UITableViewDelegate , UITableViewDataSource{
                     return 60
                 }
                 currentRow += 1
-
+                
                 // Subcategories if category expanded
                 if expandedCategories.contains(IndexPath(row: catIndex, section: indexPath.section)) {
                     for (subIdx, subcategory) in category.subcategories.enumerated() {
@@ -776,16 +835,16 @@ extension ShopController : UITableViewDelegate , UITableViewDataSource{
                             return 60
                         }
                         currentRow += 1
-
+                        
                         // Subcategory grid if expanded
                         if expandedSubcategories[IndexPath(row: subIdx, section: indexPath.section)] == true {
                             if indexPath.row == currentRow {
                                 let rows = ceil(Double(subcategory.products.count) / 2.0)
-
+                                
                                 let dateFormatter = DateFormatter()
                                 dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
                                 dateFormatter.timeZone = TimeZone(identifier: "Asia/Kolkata")
-
+                                
                                 let shouldShowBanner: Bool
                                 if let endTimeString = subcategory.end_time,
                                    let endTime = dateFormatter.date(from: endTimeString) {
@@ -793,10 +852,10 @@ extension ShopController : UITableViewDelegate , UITableViewDataSource{
                                 } else {
                                     shouldShowBanner = false
                                 }
-
+                                
                                 let bannerHeight: CGFloat = shouldShowBanner ? 60 : 0
                                 let spacing: CGFloat = 5
-
+                                
                                 return CGFloat(rows * 260) + bannerHeight + spacing
                             }
                             currentRow += 1
@@ -805,25 +864,30 @@ extension ShopController : UITableViewDelegate , UITableViewDataSource{
                 }
             }
         }
-
+        
         return UITableView.automaticDimension
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        bannerImages.count
+        return isLoadingBanners ? 3 : bannerImages.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BannerImageCelll", for: indexPath) as! BannerImageCelll
+        if isLoadingBanners {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ShimmerBannerCell", for: indexPath) as! ShimmerBannerCell
+            return cell
+        }
+        else {  let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BannerImageCelll", for: indexPath) as! BannerImageCelll
         let imageUrlString = bannerImages[indexPath.row]
-
-          if let url = URL(string: imageUrlString) {
-              cell.imageView.load(url: url) // Use your custom image loading method
-       } else {
-           cell.imageView.image = UIImage(named: "noImage") // Default placeholder
-       }
+        
+        if let url = URL(string: imageUrlString) {
+            cell.imageView.load(url: url) // Use your custom image loading method
+        } else {
+            cell.imageView.image = UIImage(named: "noImage") // Default placeholder
+        }
         return cell
     }
+}
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.row < banners.count {
             print("Tapped cat id \(String(describing: banners[indexPath.row].mcatId)) \(String(describing: banners[indexPath.row].msubcatId)) \(String(describing: banners[indexPath.row].mproductId)) ")

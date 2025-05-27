@@ -97,7 +97,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         ApiService().fetchCartItems { [weak self] result in
             switch result {
             case .success(let cartResponse):
-                print("Fetched Cart Items:", cartResponse.cartItems)
+                print("Fetched Cart Items ")
                 
                 
                 // Sync CartManager with fetched cart data

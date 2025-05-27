@@ -25,6 +25,19 @@ class CartController: UIViewController, CustomNavBarDelegate {
     @IBOutlet weak var cartTableView: UITableView!
     
     var cartItemss : [CartItem] = []
+    var cartNeedsUpdate = false
+    
+    private let emptyCartLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Cart Empty"
+        label.textAlignment = .center
+        label.textColor = .gray
+        label.font = UIFont.systemFont(ofSize: 20, weight: .medium)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = true
+        return label
+    }()
+
  
     private var postCartItems: [[String: Any]] {
            get {
@@ -37,6 +50,12 @@ class CartController: UIViewController, CustomNavBarDelegate {
         setTableView()
         setnavBar()
         CartManager.shared.loadCartFromLocalStorage()
+        
+        view.addSubview(emptyCartLabel)
+            NSLayoutConstraint.activate([
+                emptyCartLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                emptyCartLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -50)
+            ])
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -63,7 +82,7 @@ class CartController: UIViewController, CustomNavBarDelegate {
         ApiService().fetchCartItems { result in
             switch result {
             case .success(let cartResponse):
-                print("Fetched Server Cart Items:", cartResponse.cartItems)
+                print("Fetched Server Cart Items:", cartResponse.cartItems.count)
                 
                 // Create a dictionary of existing cart items by product ID for easy lookup
                 var combinedCartItems = cartResponse.cartItems
@@ -125,6 +144,14 @@ class CartController: UIViewController, CustomNavBarDelegate {
 
         let requestBody: [String: Any] = ["cart": cartItemsDict]
         print("Updating Cart on Server:", requestBody)
+        
+        if let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) {
+            UserDefaults.standard.set(cartItemsDict, forKey: "cart")
+                print("✅ Saved requestBody to local storage")
+            } else {
+                print("❌ Failed to serialize requestBody for local storage")
+            }
+        
         request.httpBody = try? JSONSerialization.data(withJSONObject: requestBody)
 
         URLSession.shared.dataTask(with: request) { data, response, error in
@@ -134,7 +161,6 @@ class CartController: UIViewController, CustomNavBarDelegate {
             }
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
                 print("Cart updated successfully on server.")
-                UserDefaults.standard.removeObject(forKey: "cart")
                 DispatchQueue.main.async {
                     self.fetchCartItems()
                     self.refreshCartData()
@@ -226,7 +252,6 @@ extension CartController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         cell.delegate = self
-        print("Fetched Cart Item:", cartItemss[indexPath.section])
         cell.setCell(cartItem: cartItemss[indexPath.section])
         return cell
     }
@@ -241,9 +266,6 @@ extension CartController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         return UIView()
     }
-//    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-//        return 10
-//    }
 }
 
 extension CartController: CartCellDelegate {
@@ -266,6 +288,7 @@ extension CartController: CartCellDelegate {
 
     private func updateCartSummary() {
       //  let totalUnits = cartItemss.reduce(0) { $0 + $1.quantity }
+        emptyCartLabel.isHidden = !cartItemss.isEmpty
         let totalUnits = cartItemss.count
         let totalPrice = cartItemss.reduce(into: 0.0) { $0 += ($1.product.price * Double($1.quantity)) }
         let comparedPrice = cartItemss.reduce(into: 0.0) { $0 += (($1.product.compare_price ?? 0.0) * Double($1.quantity)) }
@@ -308,13 +331,18 @@ extension CartController: CartCellDelegate {
         }
     }
 
+  //  var cartNeedsUpdate = false
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
+      //  guard cartNeedsUpdate else { return } // skip if no changes
+
         ApiService().updateCartOnServer { success, errorMessage in
             DispatchQueue.main.async {
                 if success {
                     print("Cart successfully updated on server.")
+                    self.cartNeedsUpdate = false // reset flag
                 } else {
                     print("Failed to update cart:", errorMessage ?? "Unknown error")
                 }
@@ -329,7 +357,7 @@ extension CartController {
         ApiService().fetchCartItems { [weak self] result in
             switch result {
             case .success(let cartResponse):
-                print("Fetched Cart Items:", cartResponse.cartItems)
+                print("Fetched Cart Items ")
                 DispatchQueue.main.async {
                     self?.cartItemss = cartResponse.cartItems
                     self?.cartTableView.reloadData()
