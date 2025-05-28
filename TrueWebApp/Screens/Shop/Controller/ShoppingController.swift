@@ -80,7 +80,6 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
         
         fetchCategories()
         searchTextField.addTarget(self, action: #selector(searchTextChanged), for: .editingChanged)
-
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -297,8 +296,6 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
         bannerCollectionView.collectionViewLayout = layout
     
     }
-    
-    
     
     func startBannerAutoScroll() {
         // Invalidate any existing timer
