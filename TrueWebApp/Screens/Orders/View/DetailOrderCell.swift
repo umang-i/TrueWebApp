@@ -26,4 +26,8 @@ class DetailOrderCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    func setCell(order : OrderItems){
+        priceLabel.text = "£\(order.unitPrice)"
+        quantityLabel.text = "\(order.quantity)"
+    }
 }

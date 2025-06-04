@@ -50,6 +50,24 @@ class OrderConfirmationViewController: UIViewController {
     
     @objc private func continueShoppingTapped() {
         print("Continue Shopping tapped!")
-        navigationController?.popViewController(animated: true)
+        DispatchQueue.main.async {
+            CartManager.shared.clearCart()
+            ApiService().updateCartOnServer { success, errorMessage in
+                DispatchQueue.main.async {
+                    if success {
+                        print("Cart successfully updated on server.")
+                    } else {
+                        print("Failed to update cart:", errorMessage ?? "Unknown error")
+                    }
+                }
+            }
+        }
+        
+        if let nav = self.navigationController,
+           let tabBarVC = nav.viewControllers.first(where: { $0 is TabBarController }) {
+            nav.popToViewController(tabBarVC, animated: true)
+        } else {
+            self.navigationController?.popToRootViewController(animated: true)
+        }
     }
 }

@@ -83,43 +83,29 @@ class CartController: UIViewController, CustomNavBarDelegate {
             switch result {
             case .success(let cartResponse):
                 print("Fetched Server Cart Items:", cartResponse.cartItems.count)
-                
-                // Create a dictionary of existing cart items by product ID for easy lookup
-                var combinedCartItems = cartResponse.cartItems
+
+                // Create a dictionary of server cart items by mvariantID
+                var existingCartDict = Dictionary(uniqueKeysWithValues: cartResponse.cartItems.map { ($0.mvariantID, $0) })
 
                 for localItem in localCartItems {
-                    if let localProductId = localItem["mproduct_id"] as? Int ?? localItem["productId"] as? Int {
-                        if let index = combinedCartItems.firstIndex(where: { $0.mproductID == localProductId }) {
-                            // Update quantity if the product already exists in the server cart
-                            combinedCartItems[index].quantity = localItem["quantity"] as? Int ?? 1
-                        } else {
-                            let newProduct = Products(
-                                mproduct_id: localProductId,
-                                mproduct_title: localItem["title"] as? String ?? "",
-                                price: localItem["price"] as? Double ?? 0.0
-                            )
+                    guard let variantID = localItem["mvariant_id"] as? Int,
+                          let quantity = localItem["quantity"] as? Int else {
+                        continue
+                    }
 
-                            // Create a new CartItem and append
-                            if let quantity = localItem["quantity"] as? Int {
-                                let newItem = CartItem(
-                                    cartItemID: 0, // New item, no ID yet
-                                    userID: 0, // Will be set on the server
-                                    mproductID: localProductId,
-                                    quantity: quantity,
-                                    status: "active",
-                                    createdAt: "",
-                                    updatedAt: "",
-                                    product: newProduct
-                                )
-                                combinedCartItems.append(newItem)
-                            }
-                        }
+                    if existingCartDict[variantID] != nil {
+                        // Update quantity if item exists
+                        existingCartDict[variantID]?.quantity = quantity
+                    } else {
+                        // Create a new item
+                        let newItem = CartItem(cartItemID: 0, mvariantID: variantID, quantity: quantity, status: "active", product: Products(mproduct_id: 0, mproduct_title: "", price: 0.0))
+                        existingCartDict[variantID] = newItem
                     }
                 }
 
-                // Send combined cart to server
-                self.sendUpdatedCartToServer(cartItems: combinedCartItems, authToken: authToken)
-                
+                let combinedItems = Array(existingCartDict.values)
+                self.sendUpdatedCartToServer(cartItems: combinedItems, authToken: authToken)
+
             case .failure(let error):
                 print("Error fetching cart items:", error.localizedDescription)
             }
@@ -137,7 +123,7 @@ class CartController: UIViewController, CustomNavBarDelegate {
         // Convert CartItem model array to dictionary array
         let cartItemsDict = cartItems.map { item in
             return [
-                "mproduct_id": item.mproductID,
+                "mvariant_id": item.mvariantID,
                 "quantity": item.quantity,
             ]
         }
@@ -322,7 +308,7 @@ extension CartController: CartCellDelegate {
         } else {
             let cartData = cartItemss.map { cartItem in
                 [
-                    "mproduct_id": cartItem.mproductID,
+                    "mvariant_id": cartItem.mvariantID,
                     "quantity": cartItem.quantity
                 ]
             }
@@ -336,7 +322,8 @@ extension CartController: CartCellDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-      //  guard cartNeedsUpdate else { return } // skip if no changes
+        let requestBody = CartManager.shared.getCartRequestBody()
+        print("🧪 Final cart payload:", requestBody)
 
         ApiService().updateCartOnServer { success, errorMessage in
             DispatchQueue.main.async {

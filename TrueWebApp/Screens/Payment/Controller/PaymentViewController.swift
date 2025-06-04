@@ -13,6 +13,9 @@ class PaymentViewController: UIViewController, CustomNavBarDelegate {
     @IBOutlet weak var cardNameTextField: UITextField!
     @IBOutlet weak var cardholderNameTf: UITextField!
     
+    var deliveryId : Int!
+    var addressId : Int!
+    
     func didTapBackButton() {
         navigationController?.popViewController(animated: true)
     }
@@ -153,8 +156,41 @@ class PaymentViewController: UIViewController, CustomNavBarDelegate {
         ])
     }
     @IBAction func completePaymentAction(_ sender: Any) {
-        let vc = OrderConfirmationViewController()
-        navigationController?.pushViewController(vc, animated: true)
+        CartManager.shared.loadCartFromLocalStorage()
+
+           let cartItems = CartManager.shared.getAllCartItems()
+
+           // Convert to array of OrderItem
+           let items: [OrderItem] = cartItems.map { (mvariantId, item) in
+               return OrderItem(mvariant_id: mvariantId, quantity: item.quantity, unit_price: item.price)
+           }
+
+           guard !items.isEmpty else {
+               print("❌ Cannot submit order: cart is empty.")
+               // Optionally show an alert here
+               return
+           }
+        
+        let order = OrderRequest(
+               items: items,
+               user_company_address_id: addressId,
+               delivery_method_id: deliveryId
+           )
+        
+        ApiService.shared.submitOrder(order: order) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    print("Order submitted:", response)
+                    let vc = OrderConfirmationViewController()
+                    self.navigationController?.pushViewController(vc, animated: true)
+                    
+                case .failure(let error):
+                    print("Order failed:", error.localizedDescription)
+                    // Optionally show alert
+                }
+            }
+        }
     }
 }
 

@@ -89,7 +89,7 @@ class DashboardController: UIViewController {
                     self.cartCollectionView.reloadData()
                     for item in cartResponse.cartItems {
                         let price = Double(item.product.price)
-                        CartManager.shared.updateCartItem(productId: item.product.mproduct_id, quantity: item.quantity, price: price)
+                        CartManager.shared.updateCartItem(mVariantId: item.product.mvariant_id, quantity: item.quantity, price: price)
                     }
                 }
             case .failure(let error):

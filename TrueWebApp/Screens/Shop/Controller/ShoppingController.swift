@@ -89,7 +89,11 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
 
         isLoading = true
         tableView.reloadData() // Show shimmer rows
-
+        fetchCart()
+    }
+    
+    func fetchCart(){
+        
         ApiService().fetchCartItems { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
@@ -100,7 +104,7 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     self.cartItems = cartResponse.cartItems
                     for item in cartResponse.cartItems {
                         let price = Double(item.product.price)
-                        CartManager.shared.updateCartItem(productId: item.product.mproduct_id, quantity: item.quantity, price: price)
+                        CartManager.shared.updateCartItem(mVariantId: item.product.mvariant_id, quantity: item.quantity, price: price)
                     }
 
                 case .failure(let error):
@@ -111,7 +115,6 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
             }
         }
     }
-
     
     private func setupLoaderView() {
             loaderView.translatesAutoresizingMaskIntoConstraints = false
@@ -173,6 +176,8 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 self.refreshControl.endRefreshing()
             })
         }
+        
+        fetchCart()
     }
     
     func fetchCategories(keyword: String = "", completion: (() -> Void)? = nil) {

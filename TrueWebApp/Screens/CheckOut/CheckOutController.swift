@@ -11,12 +11,28 @@ class CheckOutController: UIViewController, CustomNavBarDelegate, MethodDelivery
     
     @IBOutlet weak var couponTextField: UITextField!
     @IBOutlet weak var deliveryTextField: UITextField!
+    
+    private var selectedDeliveryMethodID: Int?
+    private var selectedCompanyAddressID: Int?
+
+//    func didSelectDeliveryOption(_ cell: MethodDeliveryCell) {
+//        if let indexPath = methodTableView.indexPath(for: cell) {
+//            selectedMethodIndex = indexPath.row
+//            methodTableView.reloadData()
+//        } else if let indexPath = locationTableView.indexPath(for: cell) {
+//            selectedLocationIndex = indexPath.row
+//            locationTableView.reloadData()
+//        }
+//    }
+    
     func didSelectDeliveryOption(_ cell: MethodDeliveryCell) {
         if let indexPath = methodTableView.indexPath(for: cell) {
             selectedMethodIndex = indexPath.row
+            selectedDeliveryMethodID = deliveryMethods[indexPath.row].delivery_method_id
             methodTableView.reloadData()
         } else if let indexPath = locationTableView.indexPath(for: cell) {
             selectedLocationIndex = indexPath.row
+            selectedCompanyAddressID = companyAddresses[indexPath.row].user_company_address_id
             locationTableView.reloadData()
         }
     }
@@ -25,14 +41,8 @@ class CheckOutController: UIViewController, CustomNavBarDelegate, MethodDelivery
         navigationController?.popViewController(animated: true)
     }
     
-    private let deliveryOptions = [
-            ("Next Working Day Delivery - Estimated: Tomorrow (£5.00)"),
-            ("Standard Delivery - Estimated: 2-4 Working Days (£3.00)")
-        ]
-    private let deliveryLocation = [
-        ("Immyz Ltd - 123 Main Street , Ashton under layne LS12 3AB"),
-        ("Immyz Ltd - 123 Main Street ,Ashton under layne LS12 3AB 2 3")
-    ]
+    private var deliveryMethods: [MethodDelivery] = []
+    var companyAddresses: [CompanyAddress] = []
     
     @IBOutlet weak var locationTableView: UITableView!
     @IBOutlet weak var methodTableView: UITableView!
@@ -47,6 +57,8 @@ class CheckOutController: UIViewController, CustomNavBarDelegate, MethodDelivery
         setnavBar()
         setupTableView()
         setUi()
+        fetchMethods()
+        loadCompanyAddresses()
     }
     
     func setUi(){
@@ -69,6 +81,40 @@ class CheckOutController: UIViewController, CustomNavBarDelegate, MethodDelivery
         couponTextField.layer.borderWidth = 1
         couponTextField.layer.borderColor = UIColor.customBlue.cgColor
         couponTextField.layer.cornerRadius = 4
+    }
+    
+    func loadCompanyAddresses() {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
+            print("User not logged in.")
+            return
+        }
+
+        ApiService().fetchCompanyAddresses(authToken: authToken) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let addresses):
+                    self.companyAddresses = addresses
+                    self.locationTableView.reloadData()
+                case .failure(let error):
+                    print("Failed to fetch addresses:", error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func fetchMethods() {
+        ApiService().fetchDeliveryMethods { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let methods):
+                    self?.deliveryMethods = methods
+                    self?.methodTableView.reloadData()
+                case .failure(let error):
+                    print("Failed to fetch methods:", error.localizedDescription)
+                    // Optional: Show an alert to the user
+                }
+            }
+        }
     }
     
     func setnavBar() {
@@ -111,8 +157,21 @@ class CheckOutController: UIViewController, CustomNavBarDelegate, MethodDelivery
     
     
     @IBAction func paymentButtonAction(_ sender: Any) {
-        print("hi")
+        guard let methodID = selectedDeliveryMethodID,
+                  let addressID = selectedCompanyAddressID else {
+                // Optionally show an alert if selection is incomplete
+                let alert = UIAlertController(title: "Selection Required", message: "Please select a delivery method and address.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                present(alert, animated: true)
+                return
+            }
+
+            print("Selected delivery method ID: \(methodID)")
+            print("Selected address ID: \(addressID)")
+        
         let vc = PaymentViewController()
+        vc.deliveryId = methodID
+        vc.addressId = addressID
         navigationController?.pushViewController(vc, animated: true)
     }
 }
@@ -120,7 +179,7 @@ class CheckOutController: UIViewController, CustomNavBarDelegate, MethodDelivery
 extension CheckOutController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tableView == methodTableView ? deliveryOptions.count : deliveryLocation.count
+        return tableView == methodTableView ? deliveryMethods.count : companyAddresses.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -129,11 +188,13 @@ extension CheckOutController: UITableViewDelegate, UITableViewDataSource {
         }
         
         if tableView == methodTableView {
-            let title = deliveryOptions[indexPath.row]
+            let method = deliveryMethods[indexPath.row]
+            let title = "\(method.delivery_method_name) - £\(method.delivery_method_amount)"
             let isSelected = selectedMethodIndex == indexPath.row
             cell.configure(with: title, isSelected: isSelected)
         } else {
-            let title = deliveryLocation[indexPath.row]
+            let address = companyAddresses[indexPath.row]
+            let title = "\(address.company_address1),\(address.company_address2 ?? ""),\(address.company_city),\(address.company_postcode)"
             let isSelected = selectedLocationIndex == indexPath.row
             cell.configure(with: title , isSelected: isSelected)
         }
@@ -143,6 +204,6 @@ extension CheckOutController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50
+        return tableView == methodTableView ? 40 : 50
     }
 }

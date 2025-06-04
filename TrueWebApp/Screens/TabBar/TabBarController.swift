@@ -31,44 +31,10 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         
         setupTabBar()
         setupAppBar()
-        // FetchCart()
         updateAppBar(for: selectedIndex)
         
         NotificationCenter.default.addObserver(self, selector: #selector(updateCartBadge(notification:)), name: .cartUpdated, object: nil)
     }
-    
-    
-    //    @objc private func updateCartBadge(notification: Notification? = nil) {
-    //        let totalCartCount = CartManager.shared.getTotalQuantity()
-    //        let totalPrice = CartManager.shared.getTotalPrice()
-    //
-    //        badgeLabel.text = totalCartCount > 0 ? "\(totalCartCount)" : nil
-    //        badgeLabel.isHidden = totalCartCount == 0
-    //        badgeLabel.backgroundColor = .customRed
-    //        balanceLabel.text = "£\(String(format: "%.2f", totalPrice))"
-    //    }
-    
-//    @objc private func updateCartBadge(notification: Notification? = nil) {
-//        let initialCount = cartCount ?? 0
-//        let initialPrice = price ?? 0.0
-//        
-//        let currentCount = CartManager.shared.getTotalQuantity()
-//        let currentPrice = CartManager.shared.getTotalPrice()
-//        
-//        // Calculate the final values
-//        let finalCount = initialCount + (currentCount - initialCount)
-//        let finalPrice = initialPrice + (currentPrice - initialPrice)
-//        
-//        // Update labels
-//        badgeLabel.text = finalCount > 0 ? "\(finalCount)" : nil
-//        badgeLabel.isHidden = finalCount == 0
-//        badgeLabel.backgroundColor = .customRed
-//        balanceLabel.text = "£\(String(format: "%.2f", finalPrice))"
-//        
-//        // Update stored values
-//        cartCount = finalCount
-//        price = finalPrice
-//    }
     
     @objc private func updateCartBadge(notification: Notification? = nil) {
         let totalCartCount = CartManager.shared.getTotalQuantity()
@@ -106,7 +72,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
                     for item in cartResponse.cartItems {
                         let price = Double(item.product.price)
                         CartManager.shared.updateCartItem(
-                            productId: item.product.mproduct_id,
+                            mVariantId: item.product.mvariant_id,
                             quantity: item.quantity,
                             price: price
                         )

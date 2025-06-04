@@ -118,7 +118,7 @@ struct Products: Codable, Hashable {
     let mproduct_slug: String
     let mproduct_desc: String?
     let status: String
-    let saleschannel: String
+    let saleschannel: [String]
     let product_type: String?
     let product_deal_tag: String?
     let product_offer: String?
@@ -133,9 +133,16 @@ struct Products: Codable, Hashable {
     let barcode: String?
     let options: [String]?
     let option_value: [String : String]?
-    let quantity: Int
+   // let quantity: Int
     let mlocation_id: Int
     var user_info_wishlist: Bool
+    
+    enum CodingKeys: String, CodingKey {
+        case mproduct_id, mproduct_title, mproduct_image, mproduct_slug, mproduct_desc, status
+        case saleschannel, product_type, product_deal_tag, product_offer, brand_name
+        case mvariant_id, sku, image, price, compare_price, cost_price, taxable, barcode
+        case options, option_value, mlocation_id, user_info_wishlist
+    }
 
     // Custom Decoder with Safe Decoding
     init(from decoder: Decoder) throws {
@@ -149,12 +156,12 @@ struct Products: Codable, Hashable {
         status = try container.decode(String.self, forKey: .status)
         
         // Safe decoding for saleschannel (String or Array)
-        if let channelString = try? container.decode(String.self, forKey: .saleschannel) {
-            saleschannel = channelString
-        } else if let channelArray = try? container.decode([String].self, forKey: .saleschannel) {
-            saleschannel = channelArray.joined(separator: ", ")
+        if let channelArray = try? container.decode([String].self, forKey: .saleschannel) {
+            saleschannel = channelArray
+        } else if let channelString = try? container.decode(String.self, forKey: .saleschannel) {
+            saleschannel = [channelString]
         } else {
-            saleschannel = ""
+            saleschannel = []
         }
 
         product_type = try? container.decodeIfPresent(String.self, forKey: .product_type)
@@ -171,7 +178,7 @@ struct Products: Codable, Hashable {
         barcode = try? container.decodeIfPresent(String.self, forKey: .barcode)
         options = try? container.decodeIfPresent([String].self, forKey: .options)
         option_value = try? container.decodeIfPresent([String: String].self, forKey: .option_value)
-        quantity = try container.decode(Int.self, forKey: .quantity)
+       // quantity = try container.decode(Int.self, forKey: .quantity)
         mlocation_id = try container.decode(Int.self, forKey: .mlocation_id)
         user_info_wishlist = try container.decode(Bool.self, forKey: .user_info_wishlist)
     }
@@ -240,7 +247,7 @@ extension Products {
         self.mproduct_slug = ""
         self.mproduct_desc = nil
         self.status = ""
-        self.saleschannel = ""
+        self.saleschannel = []
         self.product_type = nil
         self.product_deal_tag = nil
         self.product_offer = nil
@@ -255,137 +262,8 @@ extension Products {
         self.barcode = nil
         self.options = nil
         self.option_value = nil
-        self.quantity = 0
+      //  self.quantity = 0
         self.mlocation_id = 0
         self.user_info_wishlist = false
     }
 }
-
-// MARK: New Modal
-
-//import Foundation
-//
-//struct APIResponseCat: Codable {
-//    let status: Bool
-//    let message: String
-//    let cdnURL: String
-//    let mainCategories: [MainCategory]
-//
-//    enum CodingKeys: String, CodingKey {
-//        case status, message
-//        case cdnURL = "cdnURL"
-//        case mainCategories = "main_categories"
-//    }
-//}
-//
-//struct MainCategory: Codable {
-//    let mainMcatID: Int
-//    let mainMcatName: String
-//    let mainMcatPosition: Int
-//    let categories: [Category]
-//
-//    enum CodingKeys: String, CodingKey {
-//        case mainMcatID = "main_mcat_id"
-//        case mainMcatName = "main_mcat_name"
-//        case mainMcatPosition = "main_mcat_position"
-//        case categories
-//    }
-//}
-//
-//struct Category: Codable {
-//    let mcatID: Int
-//    let mcatName: String
-//    let subcategories: [Subcategory]
-//
-//    enum CodingKeys: String, CodingKey {
-//        case mcatID = "mcat_id"
-//        case mcatName = "mcat_name"
-//        case subcategories
-//    }
-//}
-//
-//struct Subcategory: Codable {
-//    let msubcatID: Int
-//    let msubcatName: String
-//    let msubcatSlug: String
-//    let msubcatTag: String?
-//    let msubcatImage: String
-//    let msubcatPublish: [String]
-//    let msubcatType: String
-//    let logicalOperator: String
-//    let products: [Product]
-//
-//    enum CodingKeys: String, CodingKey {
-//        case msubcatID = "msubcat_id"
-//        case msubcatName = "msubcat_name"
-//        case msubcatSlug = "msubcat_slug"
-//        case msubcatTag = "msubcat_tag"
-//        case msubcatImage = "msubcat_image"
-//        case msubcatPublish = "msubcat_publish"
-//        case msubcatType = "msubcat_type"
-//        case logicalOperator = "logical_operator"
-//        case products
-//    }
-//}
-//
-//struct Product: Codable {
-//    let mproductID: Int
-//    let mproductTitle: String
-//    let mproductImage: String?
-//    let mproductSlug: String
-//    let mproductDesc: String?
-//    let status: String
-//    let saleschannel: [String]
-//    let brandID: Int
-//    let brandName: String
-//    let typeID: Int
-//    let productType: String
-//    let tagIDs: [Int]
-//    let tagNames: [String]
-//    let mvariantID: Int
-//    let sku: String
-//    let image: String?
-//    let price: Double
-//    let quantity: Int
-//    let comparePrice: Double
-//    let costPrice: Double
-//    let taxable: Int
-//    let barcode: String
-//    let options: [String]
-//    let optionValue: [String]
-//    let mlocationID: Int
-//    let productDealTag: String?
-//    let productOffer: String?
-//    let userInfoWishlist: Bool
-//
-//    enum CodingKeys: String, CodingKey {
-//        case mproductID = "mproduct_id"
-//        case mproductTitle = "mproduct_title"
-//        case mproductImage = "mproduct_image"
-//        case mproductSlug = "mproduct_slug"
-//        case mproductDesc = "mproduct_desc"
-//        case status
-//        case saleschannel
-//        case brandID = "brand_id"
-//        case brandName = "brand_name"
-//        case typeID = "type_id"
-//        case productType = "product_type"
-//        case tagIDs = "tag_ids"
-//        case tagNames = "tag_names"
-//        case mvariantID = "mvariant_id"
-//        case sku
-//        case image
-//        case price
-//        case quantity
-//        case comparePrice = "compare_price"
-//        case costPrice = "cost_price"
-//        case taxable
-//        case barcode
-//        case options
-//        case optionValue = "option_value"
-//        case mlocationID = "mlocation_id"
-//        case productDealTag = "product_deal_tag"
-//        case productOffer = "product_offer"
-//        case userInfoWishlist = "user_info_wishlist"
-//    }
-//}

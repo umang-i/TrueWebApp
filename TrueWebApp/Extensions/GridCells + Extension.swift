@@ -10,10 +10,10 @@ import Foundation
 // MARK: - Cart Management
 extension GridCell {
     
-    func saveCartItem(productId: Int, quantity: Int, unitPrice: Double) {
+    func saveCartItem(mvariantId: Int, quantity: Int, unitPrice: Double) {
         var cart = fetchCartItems()
 
-        if let index = cart.firstIndex(where: { $0["mproduct_id"] as? Int == productId }) {
+        if let index = cart.firstIndex(where: { $0["mvariant_id"] as? Int == mvariantId }) {
             if quantity > 0 {
                 cart[index]["quantity"] = quantity
                 cart[index]["unitPrice"] = unitPrice
@@ -22,7 +22,7 @@ extension GridCell {
             }
         } else if quantity > 0 {
             cart.append([
-                "mproduct_id": productId,
+                "mvariant_id": mvariantId,
                 "quantity": quantity,
                 "unitPrice": unitPrice
             ])

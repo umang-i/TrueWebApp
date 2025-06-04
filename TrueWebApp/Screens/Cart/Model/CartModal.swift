@@ -15,7 +15,7 @@ struct CartResponse: Codable {
 
     enum CodingKeys: String, CodingKey {
         case status, message
-        case cdnURL = "cdnURL"
+        case cdnURL
         case cartItems = "cart_item"
     }
 }
@@ -23,22 +23,26 @@ struct CartResponse: Codable {
 // MARK: - CartItem
 struct CartItem: Codable {
     let cartItemID: Int
-    let userID: Int
-    let mproductID: Int
+    let mvariantID: Int
     var quantity: Int
     let status: String
-    let createdAt: String
-    let updatedAt: String
     let product: Products
 
     enum CodingKeys: String, CodingKey {
         case cartItemID = "cart_item_id"
-        case userID = "user_id"
-        case mproductID = "mproduct_id"
-        case quantity, status
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
-        case product = "product"
+        case mvariantID = "mvariant_id"
+        case quantity, status, product
     }
 }
+
+// MARK: - CartItem Upload
+//
+//struct CartUpdateRequest: Codable {
+//    let cart: [CartItemPayload]
+//}
+//
+//struct CartItemPayload: Codable {
+//    let mvariant_id: Int
+//    let quantity: Int
+//}
 

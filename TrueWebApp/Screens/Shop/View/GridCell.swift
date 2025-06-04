@@ -324,7 +324,7 @@ class GridCell: UICollectionViewCell {
         }
         
         // Check if the product is in cart and set quantity
-        if let cartItem = cartItems.first(where: { $0.product.mproduct_id == item.mproduct_id }) {
+        if let cartItem = cartItems.first(where: { $0.product.mvariant_id == item.mvariant_id }) {
                quantitySelector.isHidden = false
                addButton.isHidden = true
                quantitySelector.count = cartItem.quantity
@@ -334,7 +334,7 @@ class GridCell: UICollectionViewCell {
                quantitySelector.count = 0
            }
         
-        if let cartItem = cartItems.first(where: { $0.product.mproduct_id == item.mproduct_id }) {
+        if let cartItem = cartItems.first(where: { $0.product.mvariant_id == item.mvariant_id }) {
                quantitySelector.isHidden = false
                addButton.isHidden = true
                quantitySelector.count = cartItem.quantity
@@ -346,13 +346,13 @@ class GridCell: UICollectionViewCell {
            // Add this to handle quantity changes:
         quantitySelector.quantityChanged = { [weak self] newCount in
                guard let self = self, let product = self.product else { return }
-               print("Quantity changed for product ID: \(product.mproduct_id), new count: \(newCount)")
+               print("Quantity changed for variant ID: \(product.mvariant_id), new count: \(newCount)")
                
                if newCount > 0 {
-                   CartManager.shared.updateCartItem(productId: product.mproduct_id, quantity: newCount, price: product.price)
-                   self.saveCartItem(productId: product.mproduct_id, quantity: newCount, unitPrice: product.price)
+                   CartManager.shared.updateCartItem(mVariantId: product.mvariant_id, quantity: newCount, price: product.price)
+                   self.saveCartItem(mvariantId: product.mvariant_id, quantity: newCount, unitPrice: product.price)
                } else {
-                   CartManager.shared.updateCartItem(productId: product.mproduct_id, quantity: 0, price: 0)
+                   CartManager.shared.updateCartItem(mVariantId: product.mvariant_id, quantity: 0, price: 0)
                    self.quantitySelector.isHidden = true
                    self.addButton.isHidden = false
                }
@@ -363,7 +363,7 @@ class GridCell: UICollectionViewCell {
             bottomPriceLabel.text = offersLabel.capitalized
             offerBackGroundView.backgroundColor = UIColor(hex: "#BB0000", alpha: 0.2)
             offerBackGroundView.isHidden = false
-        }else if item.quantity == 0 {
+        }else if cartItems.first(where: { $0.product.mvariant_id == item.mvariant_id })?.quantity == 0  {
             bottomPriceLabel.text = "Out of Stock"
             titleLabel.textColor = .lightGray
             priceLabel.textColor = .lightGray
@@ -443,8 +443,8 @@ class GridCell: UICollectionViewCell {
             return
         }
         
-        let productId = "\(product.mproduct_id)"
-        print("Handling Favourite API - UserID: \(userId), ProductID: \(productId), IsFavourite: \(isFavourite)")
+        let productId = "\(product.mvariant_id)"
+        print("Handling Favourite API - UserID: \(userId), VariantId: \(productId), IsFavourite: \(isFavourite)")
         
         let apiService = ApiService()
         
@@ -468,13 +468,13 @@ class GridCell: UICollectionViewCell {
         guard let product = product else { return }
         
         // Set product ID and price for QuantitySelector
-        quantitySelector.productId = product.mproduct_id
+        quantitySelector.mvariantId = product.mvariant_id
         quantitySelector.unitPrice = product.price
         print(product.price)
         
         // Add product to cart with initial quantity
-        CartManager.shared.updateCartItem(productId: product.mproduct_id, quantity: 1, price: product.price)
-        saveCartItem(productId: product.mproduct_id, quantity: 1, unitPrice: product.price) // Save locally
+        CartManager.shared.updateCartItem(mVariantId: product.mvariant_id, quantity: 1, price: product.price)
+        saveCartItem(mvariantId: product.mvariant_id, quantity: 1, unitPrice: product.price) // Save locally
         
         // Handle quantity changes dynamically
         quantitySelector.quantityChanged = { [weak self] count in
@@ -484,12 +484,12 @@ class GridCell: UICollectionViewCell {
             if count > 0 {
                 // Update cart with the new quantity
                 print(product.price)
-                CartManager.shared.updateCartItem(productId: product.mproduct_id, quantity: count, price: product.price)
-                self.saveCartItem(productId: product.mproduct_id, quantity: count, unitPrice: product.price) // Save locally
+                CartManager.shared.updateCartItem(mVariantId: product.mvariant_id, quantity: count, price: product.price)
+                self.saveCartItem(mvariantId: product.mvariant_id, quantity: count, unitPrice: product.price) // Save locally
             } else {
                 print(product.price)
                 // Remove item from cart and show add button
-                CartManager.shared.updateCartItem(productId: product.mproduct_id, quantity: 0, price: 0)
+                CartManager.shared.updateCartItem(mVariantId: product.mvariant_id, quantity: 0, price: 0)
                 self.quantitySelector.isHidden = true
                 self.addButton.isHidden = false
             }
@@ -500,7 +500,8 @@ class GridCell: UICollectionViewCell {
 
 class QuantitySelectorView: UIView {
     
-    var productId: Int!
+ //   var productId: Int!
+    var mvariantId : Int!
     var unitPrice: Double = 0.0
     
     var count: Int = 1 {
@@ -521,13 +522,13 @@ class QuantitySelectorView: UIView {
     
     // MARK: - Cart Update
     private func updateCart() {
-        guard let productId = productId else { return }
+        guard let mvariantId = mvariantId else { return }
         
         // Calculate total price based on unit price * quantity
         let totalPrice = Double(count) * unitPrice
         
         // Update CartManager with unit price, but calculate total dynamically
-        CartManager.shared.updateCartItem(productId: productId, quantity: count, price: unitPrice)
+        CartManager.shared.updateCartItem(mVariantId: mvariantId, quantity: count, price: unitPrice)
         
     }
 

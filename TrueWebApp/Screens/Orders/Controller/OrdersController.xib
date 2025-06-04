@@ -12,6 +12,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OrdersController" customModule="TrueWebApp" customModuleProvider="target">
             <connections>
                 <outlet property="ordersTableView" destination="FoX-jg-iY2" id="Q5G-OP-aSw"/>
+                <outlet property="tableViewHeightConstraint" destination="ZDh-8N-4EO" id="WbN-uc-i3U"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -24,13 +25,13 @@
                     <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="483-7R-W3k">
-                            <rect key="frame" x="0.0" y="0.0" width="393" height="1922.3333333333333"/>
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="213.66666666666666"/>
                             <subviews>
                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bnr1" translatesAutoresizingMaskIntoConstraints="NO" id="ocE-yt-rg0">
                                     <rect key="frame" x="0.0" y="59.999999999999993" width="393" height="102.33333333333331"/>
                                 </imageView>
-                                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="FoX-jg-iY2">
-                                    <rect key="frame" x="10" y="182.33333333333326" width="373" height="1730"/>
+                                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="FoX-jg-iY2">
+                                    <rect key="frame" x="10" y="182.33333333333334" width="373" height="21.333333333333343"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 </tableView>
                             </subviews>
@@ -40,7 +41,7 @@
                                 <constraint firstAttribute="bottom" secondItem="FoX-jg-iY2" secondAttribute="bottom" constant="10" id="If5-JY-0eQ"/>
                                 <constraint firstItem="ocE-yt-rg0" firstAttribute="leading" secondItem="483-7R-W3k" secondAttribute="leading" id="JTF-bf-Cyn"/>
                                 <constraint firstAttribute="trailing" secondItem="FoX-jg-iY2" secondAttribute="trailing" constant="10" id="Uz8-zo-rQT"/>
-                                <constraint firstItem="FoX-jg-iY2" firstAttribute="height" secondItem="483-7R-W3k" secondAttribute="height" multiplier="0.9" id="ZDh-8N-4EO"/>
+                                <constraint firstItem="FoX-jg-iY2" firstAttribute="height" secondItem="483-7R-W3k" secondAttribute="height" multiplier="0.1" id="ZDh-8N-4EO"/>
                                 <constraint firstItem="ocE-yt-rg0" firstAttribute="top" secondItem="483-7R-W3k" secondAttribute="top" constant="60" id="jb7-OM-kho"/>
                                 <constraint firstAttribute="trailing" secondItem="ocE-yt-rg0" secondAttribute="trailing" id="pew-xV-HPQ"/>
                                 <constraint firstItem="FoX-jg-iY2" firstAttribute="leading" secondItem="483-7R-W3k" secondAttribute="leading" constant="10" id="pqO-SK-cmW"/>

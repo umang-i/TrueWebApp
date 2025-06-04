@@ -21,7 +21,6 @@ class DetailOrderController: UIViewController, CustomNavBarDelegate {
     @IBOutlet weak var deliveryPriceLabel: UILabel!
     @IBOutlet weak var walletDiscNumLabel: UILabel!
     @IBOutlet weak var subtotalNumLabel: UILabel!
-    @IBOutlet weak var paymentTotalTextLAbel: UILabel!
     @IBOutlet weak var paymentTotalLabel: UILabel!
     @IBOutlet weak var vatTextLabel: UILabel!
     @IBOutlet weak var vatLabel: UILabel!
@@ -41,7 +40,10 @@ class DetailOrderController: UIViewController, CustomNavBarDelegate {
     @IBOutlet weak var orderBackgroundView: UIView!
     @IBOutlet weak var orderListTableView: UITableView!
     
-    var isPaid: Bool = true
+    var isPaid: Bool!
+    var orderId : Int!
+    var order: Order?
+    @IBOutlet weak var tableviewHeightConstraint: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,6 +57,7 @@ class DetailOrderController: UIViewController, CustomNavBarDelegate {
         setnavBar()
         updateUIForPaymentStatus()
         setUI()
+        fetchOrder()
         
     }
     
@@ -108,12 +111,20 @@ class DetailOrderController: UIViewController, CustomNavBarDelegate {
         ])
     }
     
+    func updateTableViewHeight() {
+        let cellHeight: CGFloat = 80
+        let footerHeight: CGFloat = 10
+        let totalHeight = CGFloat(order?.items.count ?? 0) * (cellHeight + footerHeight)
+        tableviewHeightConstraint.constant = totalHeight
+        view.layoutIfNeeded()
+    }
+    
     func updateUIForPaymentStatus() {
             if isPaid {
                 cancelOrderButton.isHidden = true
                 completePaymentButton.backgroundColor = UIColor.customBlue // Replace with your custom blue color
                 completePaymentButton.setTitle("Reorder Items", for: .normal)
-                completePaymentButton.titleLabel?.font = UIFont(name: "Roboto-Regular", size: 15)
+                completePaymentButton.titleLabel?.font = UIFont(name: "Roboto-Bold", size: 16)
                 // Increase button height (if using Auto Layout)
                 if let heightConstraint = (completePaymentButton.constraints.filter { $0.firstAttribute == .height }.first) {
                     heightConstraint.constant = 55 // Adjust height as needed
@@ -125,7 +136,7 @@ class DetailOrderController: UIViewController, CustomNavBarDelegate {
                 cancelOrderButton.isHidden = false
                 completePaymentButton.backgroundColor = .systemBlue // Or your default color
                 completePaymentButton.setTitle("Complete Payment", for: .normal)
-                completePaymentButton.titleLabel?.font = UIFont(name: "Roboto-Regular", size: 15)
+                completePaymentButton.titleLabel?.font = UIFont(name: "Roboto-Bold", size: 16)
                 // Reset height if you changed it
                 if let heightConstraint = (completePaymentButton.constraints.filter { $0.firstAttribute == .height }.first) {
                     heightConstraint.constant = 44 // Or your default height
@@ -133,18 +144,99 @@ class DetailOrderController: UIViewController, CustomNavBarDelegate {
             }
             completePaymentButton.layoutIfNeeded() //update layout
         }
+    
+    func fetchOrder() {
+        guard let orderId = orderId else { return }
+
+        ApiService.shared.fetchSingleOrder(orderId: "\(orderId)") { result in
+            switch result {
+            case .success(let order):
+                DispatchQueue.main.async {
+                    self.order = order
+                    self.paymentTotalPriceLabel.text = "£\(order.totalAmount)"
+                    self.orderListTableView.reloadData()
+                }
+            case .failure(let error):
+                print("❌ Error fetching order: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    @IBAction func completePaymentButtonAction(_ sender: Any) {
+        guard let orderId = orderId else { return }
+            
+            ApiService().updateOrderStatus(orderId: orderId, status: "paid") { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let message):
+                        print("✅", message)
+                        self.isPaid = true
+                        self.updateUIForPaymentStatus()
+                        self.fetchOrder()
+                    case .failure(let error):
+                        print("❌ Failed to update order: \(error.localizedDescription)")
+                        self.showSimplePopup(title: "Error", message: "Failed to complete payment. Please try again.")
+                    }
+                }
+            }
+    }
+    
+    @IBAction func cancelButtonAction(_ sender: Any) {
+        let alert = UIAlertController(title: "Cancel Order",
+                                      message: "Are you sure you want to cancel this order?",
+                                      preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "No", style: .cancel))
+        
+        alert.addAction(UIAlertAction(title: "Yes", style: .destructive, handler: { [weak self] _ in
+            guard let self = self else { return }
+            self.cancelOrder()
+        }))
+        
+        present(alert, animated: true)
+    }
+    
+    private func cancelOrder() {
+        guard let orderId = orderId else { return }
+        
+        ApiService().deleteOrder(orderId: "\(orderId)") { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let message):
+                    print("✅ Success: \(message)")
+                    self?.showSimplePopup(title: "Cancelled", message: "Order has been cancelled.") {
+                        self?.navigationController?.popViewController(animated: true)
+                    }
+                case .failure(let error):
+                    print("❌ Error: \(error.localizedDescription)")
+                    self?.showSimplePopup(title: "Error", message: "Failed to cancel the order. Please try again.")
+                }
+            }
+        }
+    }
+    
+    func showSimplePopup(title: String, message: String, completion: (() -> Void)? = nil) {
+        let popup = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        popup.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            completion?()
+        }))
+        present(popup, animated: true)
+    }
 };
 
 extension DetailOrderController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 6
+        return order?.items.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailOrderCell") as? DetailOrderCell else {
-            return UITableViewCell()
-        }
-        return cell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailOrderCell") as? DetailOrderCell,
+                  let item = order?.items[indexPath.row] else {
+                return UITableViewCell()
+            }
+
+        cell.setCell(order: item) 
+            return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80

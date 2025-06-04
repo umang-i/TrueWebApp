@@ -67,7 +67,7 @@ class MethodDeliveryCell: UITableViewCell {
             innerCircle.heightAnchor.constraint(equalToConstant: 10),
             
             titleLabel.leadingAnchor.constraint(equalTo: outerCircle.trailingAnchor, constant: 10),
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
             
         ])

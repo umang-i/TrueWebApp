@@ -27,13 +27,10 @@ class OrderCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         applyCustomFont()
-        
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        
     }
     
     @IBAction func reorderButtonAction(_ sender: Any) {
@@ -56,4 +53,38 @@ class OrderCell: UITableViewCell {
                 label?.textColor = .black
             }
         }
+    
+    func setCell(order: Order) {
+        // Order number
+        orderNumber.text = "#\(order.orderId)"
+        
+        let inputFormatter = ISO8601DateFormatter()
+        inputFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+        if let date = inputFormatter.date(from: order.createdAt) {
+            let outputFormatter = DateFormatter()
+            outputFormatter.dateFormat = "dd-MM-yyyy 'at' h:mm a"
+            orderedOnLabel.text = outputFormatter.string(from: date)
+        } else {
+            orderedOnLabel.text = order.createdAt
+        }
+        
+        // Payment and Fulfillment status
+        paymentStatus.text = order.status.capitalized // Assuming status means payment here
+        fulfilmentStatusLabel.text = "Pending" // You can change this based on your API
+
+        // SKU count (unique mvariant_id count)
+        let uniqueSKUs = Set(order.items.map { $0.mvariantId })
+        skuNumLabel.text = "\(uniqueSKUs.count)"
+
+        // Units (sum of quantities)
+        let totalUnits = order.items.reduce(0) { $0 + $1.quantity }
+        unitsNumberLabel.text = "\(totalUnits)"
+
+        // Total paid
+        totalPaidNum.text = "£\(order.totalAmount)"
+
+        // Optional: If you want to show user name
+       // orderedNameLabel.text = order.user.name
+    }
 }

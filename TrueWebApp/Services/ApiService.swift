@@ -333,9 +333,9 @@ class ApiService {
             }
             
             // Optional debug log
-//            if let jsonString = String(data: data, encoding: .utf8) {
-//                  print("🔵 Raw JSON:\n\(jsonString)")
-//            }
+            //            if let jsonString = String(data: data, encoding: .utf8) {
+            //                  print("🔵 Raw JSON:\n\(jsonString)")
+            //            }
             
             do {
                 let decodedResponse = try JSONDecoder().decode(APIResponseCat.self, from: data)
@@ -554,71 +554,71 @@ class ApiService {
     }
     
     func fetchCartItems(completion: @escaping (Result<CartResponse, Error>) -> Void) {
-            guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
-                completion(.failure(NSError(domain: "Auth Error", code: 401, userInfo: [NSLocalizedDescriptionKey: "User not logged in."])))
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
+            completion(.failure(NSError(domain: "Auth Error", code: 401, userInfo: [NSLocalizedDescriptionKey: "User not logged in."])))
+            return
+        }
+        let cartURL = URL(string: "https://goappadmin.zapto.org/api/cart-item")!
+        var request = URLRequest(url: cartURL)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
                 return
             }
-         let cartURL = URL(string: "https://goappadmin.zapto.org/api/cart-item")!
-            var request = URLRequest(url: cartURL)
-            request.httpMethod = "GET"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-
-            URLSession.shared.dataTask(with: request) { data, response, error in
-                if let error = error {
-                    completion(.failure(error))
-                    return
-                }
-
-                guard let data = data else {
-                    completion(.failure(NSError(domain: "Data Error", code: 400, userInfo: [NSLocalizedDescriptionKey: "No data received."])))
-                    return
-                }
-
-                do {
-                    let decodedResponse = try JSONDecoder().decode(CartResponse.self, from: data)
-                    completion(.success(decodedResponse))
-                } catch {
-                    completion(.failure(error))
-                }
-            }.resume()
-        }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "Data Error", code: 400, userInfo: [NSLocalizedDescriptionKey: "No data received."])))
+                return
+            }
+            
+            do {
+                let decodedResponse = try JSONDecoder().decode(CartResponse.self, from: data)
+                completion(.success(decodedResponse))
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
     
     func updateCartOnServer(completion: @escaping (Bool, String?) -> Void) {
         guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
             completion(false, "Error: User not logged in.")
             return
         }
-
+        
         let existingCartItems = UserDefaults.standard.array(forKey: "cart") as? [[String: Any]] ?? []
-
-
+        
+        
         let url = URL(string: "https://goappadmin.zapto.org/api/cart-item/update")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-
+        
         let requestBody: [String: Any] = ["cart": existingCartItems]
         print("Updating Cart on Server with:", requestBody)
-
+        
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
         } catch {
             completion(false, "Failed to serialize cart data.")
             return
         }
-
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(false, "Error updating cart: \(error.localizedDescription)")
                 return
             }
-
+            
             if let data = data {
                 print("Server response body:", String(data: data, encoding: .utf8) ?? "No readable data")
             }
-
+            
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode == 200 {
                     print("Cart updated successfully on server.")
@@ -639,86 +639,358 @@ class ApiService {
     }
     
     func fetchCompanyAddresses(authToken: String, completion: @escaping (Result<[CompanyAddress], Error>) -> Void) {
-            guard let url = URL(string: "https://goappadmin.zapto.org/api/company-address") else {
-                completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/company-address") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data", code: 0)))
+                return
+            }
+            
+            do {
+                let decodedResponse = try JSONDecoder().decode(CompanyAddressResponse.self, from: data)
+                if decodedResponse.status {
+                    // Return the addresses or empty array if nil
+                    completion(.success(decodedResponse.company_addresses ?? []))
+                } else {
+                    let apiError = NSError(domain: "API Error", code: 0, userInfo: [NSLocalizedDescriptionKey: "API returned status = false"])
+                    completion(.failure(apiError))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+    
+    func postCompanyAddresses(requestBody: [String: Any], completion: @escaping (Result<[String: Any], Error>) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
+            completion(.failure(NSError(domain: "User not logged in.", code: 401, userInfo: nil)))
+            return
+        }
+        
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/company-address/update") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
+            return
+        }
+        print("token \(authToken)")
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: requestBody, options: [])
+            request.httpBody = jsonData
+        } catch {
+            completion(.failure(error))
+            return
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data in response", code: 500, userInfo: nil)))
+                return
+            }
+            
+            do {
+                if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                    completion(.success(jsonResponse))
+                } else {
+                    completion(.failure(NSError(domain: "Invalid response format", code: 500, userInfo: nil)))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+    
+    func fetchDeliveryMethods(completion: @escaping (Result<[MethodDelivery], Error>) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
+            completion(.failure(NSError(domain: "User not logged in.", code: 401, userInfo: nil)))
+            return
+        }
+        
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/delivery-methods") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data", code: 0)))
+                return
+            }
+            
+            do {
+                let decodedResponse = try JSONDecoder().decode(MethodDeliveryResponse.self, from: data)
+                if decodedResponse.status {
+                    completion(.success(decodedResponse.delivery_methods ?? []))
+                } else {
+                    let apiError = NSError(domain: "API Error", code: 0, userInfo: [NSLocalizedDescriptionKey: "API returned status = false"])
+                    completion(.failure(apiError))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+    
+    func submitOrder(order: OrderRequest, completion: @escaping (Result<[String: Any], Error>) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
+            completion(.failure(NSError(domain: "AuthError", code: 401, userInfo: [NSLocalizedDescriptionKey: "User not logged in."])))
+            return
+        }
+
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/orders") else {
+            completion(.failure(NSError(domain: "URLError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL."])))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        do {
+            let jsonData = try JSONEncoder().encode(order)
+            request.httpBody = jsonData
+        } catch {
+            completion(.failure(NSError(domain: "EncodingError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to encode order."])))
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
                 return
             }
 
-            var request = URLRequest(url: url)
-            request.httpMethod = "GET"
-            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(NSError(domain: "NoResponse", code: 0, userInfo: [NSLocalizedDescriptionKey: "No HTTP response received."])))
+                return
+            }
 
-            URLSession.shared.dataTask(with: request) { data, response, error in
-                if let error = error {
-                    completion(.failure(error))
-                    return
-                }
+            guard (200...299).contains(httpResponse.statusCode) else {
+                let message = HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode)
+                completion(.failure(NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])))
+                return
+            }
 
-                guard let data = data else {
-                    completion(.failure(NSError(domain: "No data", code: 0)))
-                    return
-                }
+            guard let data = data else {
+                completion(.failure(NSError(domain: "NoData", code: 0, userInfo: [NSLocalizedDescriptionKey: "No data received from server."])))
+                return
+            }
 
-                do {
-                    let decodedResponse = try JSONDecoder().decode(CompanyAddressResponse.self, from: data)
-                    if decodedResponse.status {
-                        // Return the addresses or empty array if nil
-                        completion(.success(decodedResponse.company_addresses ?? []))
-                    } else {
-                        let apiError = NSError(domain: "API Error", code: 0, userInfo: [NSLocalizedDescriptionKey: "API returned status = false"])
-                        completion(.failure(apiError))
-                    }
-                } catch {
-                    completion(.failure(error))
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    completion(.success(json))
+                } else {
+                    completion(.failure(NSError(domain: "ParseError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse response."])))
                 }
-            }.resume()
-        }
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+
     
-    func postCompanyAddresses(requestBody: [String: Any], completion: @escaping (Result<[String: Any], Error>) -> Void) {
-           guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
-               completion(.failure(NSError(domain: "User not logged in.", code: 401, userInfo: nil)))
-               return
-           }
-           
-           guard let url = URL(string: "https://goappadmin.zapto.org/api/company-address/update") else {
-               completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
-               return
-           }
-        print("token \(authToken)")
+    func fetchOrders(completion: @escaping (Result<[Order], Error>) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
+            completion(.failure(NSError(domain: "User not logged in.", code: 401)))
+            return
+        }
 
-           var request = URLRequest(url: url)
-           request.httpMethod = "POST"
-           request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-           request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/orders") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+            return
+        }
 
-           do {
-               let jsonData = try JSONSerialization.data(withJSONObject: requestBody, options: [])
-               request.httpBody = jsonData
-           } catch {
-               completion(.failure(error))
-               return
-           }
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
 
-           URLSession.shared.dataTask(with: request) { data, response, error in
-               if let error = error {
-                   completion(.failure(error))
-                   return
-               }
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
 
-               guard let data = data else {
-                   completion(.failure(NSError(domain: "No data in response", code: 500, userInfo: nil)))
-                   return
-               }
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data", code: 0)))
+                return
+            }
 
-               do {
-                   if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                       completion(.success(jsonResponse))
-                   } else {
-                       completion(.failure(NSError(domain: "Invalid response format", code: 500, userInfo: nil)))
-                   }
-               } catch {
-                   completion(.failure(error))
-               }
-           }.resume()
-       }
-   }
+            do {
+                let decoder = JSONDecoder()
+                let response = try decoder.decode(FetchOrdersResponse.self, from: data)
+                if response.status {
+                    completion(.success(response.orders ?? []))
+                } else {
+                    completion(.failure(NSError(domain: "API Error", code: 0, userInfo: [NSLocalizedDescriptionKey: response.message])))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+
+    func deleteOrder(orderId: String, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
+            completion(.failure(NSError(domain: "User not logged in.", code: 401)))
+            return
+        }
+
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/orders/\(orderId)") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            if let httpResponse = response as? HTTPURLResponse {
+                if httpResponse.statusCode == 204 {
+                    // No content, but successful deletion
+                    completion(.success("Order deleted successfully."))
+                    return
+                }
+
+                // If it's another success code with content
+                if let data = data {
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                        let message = json?["message"] as? String ?? "Order deleted successfully."
+                        completion(.success(message))
+                    } catch {
+                        completion(.failure(error))
+                    }
+                } else {
+                    completion(.failure(NSError(domain: "Unexpected response", code: httpResponse.statusCode)))
+                }
+            } else {
+                completion(.failure(NSError(domain: "Invalid response", code: 0)))
+            }
+        }.resume()
+    }
+    
+    func fetchSingleOrder(orderId: String, completion: @escaping (Result<Order, Error>) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken") else {
+            completion(.failure(NSError(domain: "No auth token", code: 401)))
+            return
+        }
+
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/orders/\(orderId)") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data", code: 0)))
+                return
+            }
+
+            do {
+                let decoder = JSONDecoder()
+                let response = try decoder.decode(SingleOrderResponse.self, from: data)
+                completion(.success(response.order))
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+
+    func updateOrderStatus(orderId: Int, status: String, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken") else {
+            completion(.failure(NSError(domain: "No auth token", code: 401)))
+            return
+        }
+        
+        let urlString = "https://goappadmin.zapto.org/api/orders/\(orderId)"
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "Invalid URL", code: -1)))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "PUT"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        // Include this if API requires auth
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+
+        let body: [String: String] = ["status": status]
+
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
+        } catch {
+            completion(.failure(error))
+            return
+        }
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(NSError(domain: "No HTTP response", code: -1)))
+                return
+            }
+
+            if (200...299).contains(httpResponse.statusCode) {
+                completion(.success("Order updated to '\(status)' successfully."))
+            } else {
+                let message = HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode)
+                completion(.failure(NSError(domain: message, code: httpResponse.statusCode)))
+            }
+        }
+
+        task.resume()
+    }
+
+}

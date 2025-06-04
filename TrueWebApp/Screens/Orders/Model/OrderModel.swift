@@ -7,27 +7,67 @@
 
 import Foundation
 
-struct Order {
-    let units: Int
-    let sku: String
-    let deliveryAddress: String
-    let subtotal: Double
-    let walletDiscount: Double
-    let couponDiscount: Double
-    let deliveryCharge: Double
-    let vat: Double // 20% of subtotal
-    let paymentTotal: Double
+struct FetchOrdersResponse: Codable {
+    let status: Bool
+    let message: String
+    let orders: [Order]?
+}
 
-    init(units: Int, sku: String, deliveryAddress: String, subtotal: Double, walletDiscount: Double, couponDiscount: Double, deliveryCharge: Double) {
-        self.units = units
-        self.sku = sku
-        self.deliveryAddress = deliveryAddress
-        self.subtotal = subtotal
-        self.walletDiscount = walletDiscount
-        self.couponDiscount = couponDiscount
-        self.deliveryCharge = deliveryCharge
-        self.vat = subtotal * 0.20 // VAT 20%
-        self.paymentTotal = (subtotal + self.vat + deliveryCharge) - (walletDiscount + couponDiscount)
+struct Order: Codable {
+    let orderId: Int
+    let userId: Int
+    let totalAmount: String
+    let status: String
+    let userCompanyAddressId: Int
+    let deliveryMethodId: Int
+    let createdAt: String
+    let updatedAt: String
+    let items: [OrderItems]
+    let user: OrderUser
+
+    enum CodingKeys: String, CodingKey {
+        case orderId = "order_id"
+        case userId = "user_id"
+        case totalAmount = "total_amount"
+        case status
+        case userCompanyAddressId = "user_company_address_id"
+        case deliveryMethodId = "delivery_method_id"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case items
+        case user
     }
 }
 
+struct OrderItems: Codable {
+    let orderItemId: Int
+    let orderId: Int
+    let mvariantId: Int
+    let quantity: Int
+    let unitPrice: String
+    let createdAt: String
+    let updatedAt: String
+
+    enum CodingKeys: String, CodingKey {
+        case orderItemId = "order_item_id"
+        case orderId = "order_id"
+        case mvariantId = "mvariant_id"
+        case quantity
+        case unitPrice = "unit_price"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
+}
+
+struct OrderUser: Codable {
+    let id: Int
+    let name: String
+    let email: String
+}
+
+
+struct SingleOrderResponse: Codable {
+    let status: Bool
+    let message: String
+    let order: Order
+}

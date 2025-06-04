@@ -26,12 +26,12 @@
                 <outlet property="ordersummaryLabel" destination="fHo-Yp-7Gf" id="yIz-hl-t2C"/>
                 <outlet property="paymentTotalLabel" destination="4Pc-Vq-7Gj" id="ZcC-yp-lyx"/>
                 <outlet property="paymentTotalPriceLabel" destination="2vj-Z8-PZr" id="epz-I9-GdW"/>
-                <outlet property="paymentTotalTextLAbel" destination="2vj-Z8-PZr" id="1gh-Bx-TMU"/>
                 <outlet property="skuNumberLabel" destination="ASD-9c-v3h" id="7Gr-Rf-Shh"/>
                 <outlet property="skulabel" destination="7jg-xv-fjN" id="REl-9Z-5HM"/>
                 <outlet property="subtotalLabel" destination="9n9-E3-sKe" id="T2i-xH-AMb"/>
                 <outlet property="subtotalNumLabel" destination="RoY-3h-OdY" id="ZFG-cS-7pD"/>
                 <outlet property="summaryLabel" destination="VUn-Qn-yjQ" id="XAh-ub-cJr"/>
+                <outlet property="tableviewHeightConstraint" destination="nv1-dy-c27" id="7g7-06-ZNa"/>
                 <outlet property="unitLabel" destination="mUU-Es-PIg" id="Mx4-Go-VAc"/>
                 <outlet property="unitquantityLabel" destination="lHZ-45-Idb" id="bif-TF-kTt"/>
                 <outlet property="vatLabel" destination="dJF-Q9-Gh4" id="y6b-f9-H9m"/>
@@ -68,8 +68,8 @@
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="0KH-jc-g4b">
-                                    <rect key="frame" x="10" y="679" width="373" height="468.33333333333326"/>
+                                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="0KH-jc-g4b">
+                                    <rect key="frame" x="10" y="679" width="373" height="426"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 </tableView>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nsy-1I-a4p">
@@ -312,6 +312,9 @@ Immyz Ltd, 78 Stockport Road, Ashton-under-Lyne, Greater Manchester, OL70LH</str
                                         <fontDescription key="titleFontDescription" type="boldSystem" pointSize="14"/>
                                         <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </buttonConfiguration>
+                                    <connections>
+                                        <action selector="cancelButtonAction:" destination="-1" eventType="touchUpInside" id="wCt-y8-3Mg"/>
+                                    </connections>
                                 </button>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Order Items" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hpp-GB-Uoq">
                                     <rect key="frame" x="10" y="652" width="183" height="21"/>
@@ -330,6 +333,9 @@ Immyz Ltd, 78 Stockport Road, Ashton-under-Lyne, Greater Manchester, OL70LH</str
                                         <fontDescription key="titleFontDescription" type="boldSystem" pointSize="14"/>
                                         <color key="baseBackgroundColor" red="0.01176470588" green="0.16862745100000001" blue="0.37254901959999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </buttonConfiguration>
+                                    <connections>
+                                        <action selector="completePaymentButtonAction:" destination="-1" eventType="touchUpInside" id="X47-n1-VDJ"/>
+                                    </connections>
                                 </button>
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -363,7 +369,7 @@ Immyz Ltd, 78 Stockport Road, Ashton-under-Lyne, Greater Manchester, OL70LH</str
                         <constraint firstAttribute="bottom" secondItem="FR5-yU-Zdg" secondAttribute="bottom" id="2ob-xK-7KQ"/>
                         <constraint firstAttribute="trailing" secondItem="FR5-yU-Zdg" secondAttribute="trailing" id="6ku-Ge-GaS"/>
                         <constraint firstItem="FR5-yU-Zdg" firstAttribute="leading" secondItem="7wC-kJ-afv" secondAttribute="leading" id="Zyq-8w-TpZ"/>
-                        <constraint firstItem="0KH-jc-g4b" firstAttribute="height" secondItem="7wC-kJ-afv" secondAttribute="height" multiplier="0.55" id="nv1-dy-c27"/>
+                        <constraint firstItem="0KH-jc-g4b" firstAttribute="height" secondItem="7wC-kJ-afv" secondAttribute="height" multiplier="0.5" id="nv1-dy-c27"/>
                         <constraint firstItem="FR5-yU-Zdg" firstAttribute="top" secondItem="7wC-kJ-afv" secondAttribute="top" id="yJf-4O-PYO"/>
                     </constraints>
                 </scrollView>

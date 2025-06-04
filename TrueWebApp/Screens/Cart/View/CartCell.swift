@@ -103,7 +103,8 @@ class CartCell: UITableViewCell {
         }
         
         private func updateFavouriteButtonColor() {
-            favouriteButton.tintColor = isFavourite ? .systemRed : .gray
+            favouriteButton.tintColor = isFavourite ? .customRed : .gray
+            favouriteButton.layer.borderColor = isFavourite ? UIColor.customRed.cgColor : UIColor.gray.cgColor
         }
         
         private func loadImage(from url: URL) {
