@@ -12,18 +12,26 @@ class CheckOutController: UIViewController, CustomNavBarDelegate, MethodDelivery
     @IBOutlet weak var couponTextField: UITextField!
     @IBOutlet weak var deliveryTextField: UITextField!
     
+    @IBOutlet weak var paymentLabel: UILabel!
+    @IBOutlet weak var vatLabel: UILabel!
+    @IBOutlet weak var deliveryLabel: UILabel!
+    @IBOutlet weak var couponDiscount: UILabel!
+    @IBOutlet weak var discountLabel: UILabel!
+    @IBOutlet weak var subtotalLabel: UILabel!
+    @IBOutlet weak var addressLabel: UILabel!
+    @IBOutlet weak var unitLabel: UILabel!
+    @IBOutlet weak var skuLabel: UILabel!
+    @IBOutlet weak var applyButton: UIButton!
+    
     private var selectedDeliveryMethodID: Int?
     private var selectedCompanyAddressID: Int?
-
-//    func didSelectDeliveryOption(_ cell: MethodDeliveryCell) {
-//        if let indexPath = methodTableView.indexPath(for: cell) {
-//            selectedMethodIndex = indexPath.row
-//            methodTableView.reloadData()
-//        } else if let indexPath = locationTableView.indexPath(for: cell) {
-//            selectedLocationIndex = indexPath.row
-//            locationTableView.reloadData()
-//        }
-//    }
+    
+    var vat : String!
+    var subtotal : String!
+    var discount : String!
+    var payment: String!
+    var units : String!
+    var skus : String!
     
     func didSelectDeliveryOption(_ cell: MethodDeliveryCell) {
         if let indexPath = methodTableView.indexPath(for: cell) {
@@ -81,6 +89,13 @@ class CheckOutController: UIViewController, CustomNavBarDelegate, MethodDelivery
         couponTextField.layer.borderWidth = 1
         couponTextField.layer.borderColor = UIColor.customBlue.cgColor
         couponTextField.layer.cornerRadius = 4
+        
+        vatLabel.text = vat
+        paymentLabel.text = payment
+        subtotalLabel.text = subtotal
+        discountLabel.text = discount
+        unitLabel.text = units
+        skuLabel.text = skus
     }
     
     func loadCompanyAddresses() {
@@ -174,6 +189,25 @@ class CheckOutController: UIViewController, CustomNavBarDelegate, MethodDelivery
         vc.addressId = addressID
         navigationController?.pushViewController(vc, animated: true)
     }
+    
+    @IBAction func applyButtonAction(_ sender: Any) {
+        if couponTextField.text?.isEmpty == false {
+            let couponCode = couponTextField.text ?? ""
+            ApiService().applyCoupon("WELCOME10") { result in
+                switch result {
+                case .success(let coupon):
+                    print("Coupon applied: \(coupon)")
+                    DispatchQueue.main.async {
+                        self.couponDiscount.text = "\(coupon.discount)"
+                        self.subtotalLabel.text = "\(coupon.newTotal)"
+                    }
+                case .failure(let error):
+                    print("Failed to apply coupon: \(error.localizedDescription)")
+                    // Show alert to user if needed
+                }
+            }
+        }
+    }
 }
 
 extension CheckOutController: UITableViewDelegate, UITableViewDataSource {
@@ -204,6 +238,6 @@ extension CheckOutController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return tableView == methodTableView ? 40 : 50
+        return tableView == methodTableView ? 40 : 35
     }
 }

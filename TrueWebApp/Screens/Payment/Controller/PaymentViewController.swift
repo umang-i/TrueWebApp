@@ -155,6 +155,7 @@ class PaymentViewController: UIViewController, CustomNavBarDelegate {
             navBar.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
+    
     @IBAction func completePaymentAction(_ sender: Any) {
         CartManager.shared.loadCartFromLocalStorage()
 
@@ -174,7 +175,9 @@ class PaymentViewController: UIViewController, CustomNavBarDelegate {
         let order = OrderRequest(
                items: items,
                user_company_address_id: addressId,
-               delivery_method_id: deliveryId
+               delivery_method_id: deliveryId,
+               coupon_discount: 0.0,
+               wallet_discount: 0.0,
            )
         
         ApiService.shared.submitOrder(order: order) { result in

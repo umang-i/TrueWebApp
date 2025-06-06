@@ -8,7 +8,7 @@
 import UIKit
 
 class OrderCell: UITableViewCell {
-
+    
     @IBOutlet weak var reorderButton: UIButton!
     @IBOutlet weak var totalPaidNum: UILabel!
     @IBOutlet weak var totalPaidLabel: UILabel!
@@ -24,6 +24,10 @@ class OrderCell: UITableViewCell {
     @IBOutlet weak var orderedNameLabel: UILabel!
     @IBOutlet weak var orderNumber: UILabel!
     @IBOutlet weak var orderNumberLable: UILabel!
+    
+    var orders : Order?
+    weak var delegate: OrderCellDelegate?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         applyCustomFont()
@@ -34,7 +38,29 @@ class OrderCell: UITableViewCell {
     }
     
     @IBAction func reorderButtonAction(_ sender: Any) {
-     
+        let items = orders?.items.map {
+            OrderItem(mvariant_id: $0.mvariantId, quantity: $0.quantity, unit_price: $0.unitPrice)
+        } ?? []
+
+        let orderRequest = OrderRequest(
+            items: items,
+            user_company_address_id: orders?.delivery.address_id ?? 0,
+            delivery_method_id: orders?.delivery.method_id ?? 0,
+            coupon_discount: orders?.summary.couponDiscount ?? 0.0,
+            wallet_discount: orders?.summary.walletDiscount ?? 0.0
+        )
+        
+        ApiService.shared.submitOrder(order: orderRequest) { result in
+            switch result {
+            case .success(let response):
+                print("Order placed: \(response)")
+                DispatchQueue.main.async {
+                    self.delegate?.didTapReorderButton(on: self)
+                }
+            case .failure(let error):
+                print("Error placing order: \(error.localizedDescription)")
+            }
+        }
     }
     
     func applyCustomFont() {
@@ -55,36 +81,24 @@ class OrderCell: UITableViewCell {
         }
     
     func setCell(order: Order) {
+        self.orders = order
         // Order number
         orderNumber.text = "#\(order.orderId)"
-        
-        let inputFormatter = ISO8601DateFormatter()
-        inputFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
-        if let date = inputFormatter.date(from: order.createdAt) {
-            let outputFormatter = DateFormatter()
-            outputFormatter.dateFormat = "dd-MM-yyyy 'at' h:mm a"
-            orderedOnLabel.text = outputFormatter.string(from: date)
-        } else {
-            orderedOnLabel.text = order.createdAt
-        }
+        orderedOnLabel.text = order.orderDate
         
         // Payment and Fulfillment status
-        paymentStatus.text = order.status.capitalized // Assuming status means payment here
-        fulfilmentStatusLabel.text = "Pending" // You can change this based on your API
+        paymentStatus.text = order.paymentStatus.capitalized
+        fulfilmentStatusLabel.text = order.fulfillmentStatus
 
-        // SKU count (unique mvariant_id count)
-        let uniqueSKUs = Set(order.items.map { $0.mvariantId })
-        skuNumLabel.text = "\(uniqueSKUs.count)"
-
-        // Units (sum of quantities)
-        let totalUnits = order.items.reduce(0) { $0 + $1.quantity }
-        unitsNumberLabel.text = "\(totalUnits)"
+        skuNumLabel.text = "\(order.skus)"
+        unitsNumberLabel.text = "\(order.units)"
 
         // Total paid
-        totalPaidNum.text = "£\(order.totalAmount)"
-
-        // Optional: If you want to show user name
-       // orderedNameLabel.text = order.user.name
+        totalPaidNum.text = "£\(order.summary.paymentTotal)"
     }
+}
+
+
+protocol OrderCellDelegate: AnyObject {
+    func didTapReorderButton(on cell: OrderCell)
 }

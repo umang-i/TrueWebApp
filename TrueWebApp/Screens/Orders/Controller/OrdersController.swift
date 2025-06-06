@@ -7,16 +7,24 @@
 
 import UIKit
 
-class OrdersController: UIViewController, CustomNavBarDelegate {
+class OrdersController: UIViewController, CustomNavBarDelegate , OrderCellDelegate {
     func didTapBackButton() {
         navigationController?.popViewController(animated: true)
+    }
+    func didTapReorderButton(on cell: OrderCell) {
+        self.fetchData()
+        self.ordersTableView.reloadData()
+        let alert = UIAlertController(title: "Order Placed", message: "Your reorder has been successfully placed.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            self.present(alert, animated: true)
     }
     
     @IBOutlet weak var tableViewHeightConstraint: NSLayoutConstraint!
     
     var orders : [Order] = []
-
+    
     @IBOutlet weak var ordersTableView: UITableView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         ordersTableView.dataSource = self
@@ -31,19 +39,19 @@ class OrdersController: UIViewController, CustomNavBarDelegate {
         topBackgroundView.backgroundColor = .white
         topBackgroundView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(topBackgroundView)
-
+        
         let navBar = CustomNavBar(text: "Orders")
         navBar.delegate = self
         navBar.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(navBar)
-
+        
         NSLayoutConstraint.activate([
             // Background View Constraints (covers top of the screen)
             topBackgroundView.topAnchor.constraint(equalTo: view.topAnchor),
             topBackgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topBackgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             topBackgroundView.heightAnchor.constraint(equalToConstant: 100), // Adjust height as needed
-
+            
             // CustomNavBar Constraints
             navBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             navBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -64,7 +72,7 @@ class OrdersController: UIViewController, CustomNavBarDelegate {
                         self.updateTableViewHeight()
                         self.updateEmptyState()
                     }
-
+                    
                 case .failure(let error):
                     print("❌ Failed to fetch orders:", error.localizedDescription)
                     // Show alert
@@ -85,11 +93,11 @@ class OrdersController: UIViewController, CustomNavBarDelegate {
             emptyLabel.textColor = .gray
             emptyLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
             emptyLabel.numberOfLines = 0
-
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.ordersTableView.backgroundView = emptyLabel
             }
-
+            
         } else {
             ordersTableView.backgroundView = nil
         }
@@ -102,14 +110,14 @@ class OrdersController: UIViewController, CustomNavBarDelegate {
         tableViewHeightConstraint.constant = totalHeight
         view.layoutIfNeeded()
     }
-
+    
 }
 extension OrdersController : UITableViewDataSource , UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
         return orders.count
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-       return 1
+        return 1
     }
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return  10
@@ -125,6 +133,7 @@ extension OrdersController : UITableViewDataSource , UITableViewDelegate {
         }
         cell.setCell(order: orders[indexPath.section])
         cell.layer.cornerRadius = 4
+        cell.delegate = self
         cell.layer.masksToBounds = true
         cell.layer.borderColor = UIColor.customBlue.cgColor
         cell.layer.borderWidth = 0.6
@@ -135,8 +144,8 @@ extension OrdersController : UITableViewDataSource , UITableViewDelegate {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let detailOC = DetailOrderController()
-        detailOC.isPaid = orders[indexPath.row].status != "pending"
-        detailOC.orderId = orders[indexPath.row].orderId
+        detailOC.isPaid = orders[indexPath.section].paymentStatus == "paid"
+        detailOC.orderId = orders[indexPath.section].orderId
         navigationController?.pushViewController(detailOC, animated: true)
     }
 }

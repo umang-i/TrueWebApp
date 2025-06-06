@@ -15,9 +15,7 @@ class DashboardController: UIViewController {
     @IBOutlet weak var cartCollectionView: UICollectionView!
     @IBOutlet weak var circleCollectionView: UICollectionView!
     @IBOutlet weak var recentNotifLabel: UILabel!
-//    @IBOutlet weak var shopButton: UIButton!
     @IBOutlet weak var notifHeightConstraint: NSLayoutConstraint!
-   // @IBOutlet weak var favouriteButton: UIButton!
     @IBOutlet weak var notificationsTableView: UITableView!
     @IBOutlet weak var bannerCollectionView: UICollectionView!
     @IBOutlet weak var catCollectionView: UICollectionView!

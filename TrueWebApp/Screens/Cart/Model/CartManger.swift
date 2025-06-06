@@ -70,13 +70,6 @@ class CartManager {
                let quantity = item["quantity"] as? Int,
                let unitPrice = item["unitPrice"] as? Double {
 
-                // 🚫 Skip if unitPrice looks like a total
-//                let likelyUnit = unitPrice / Double(quantity)
-//                if quantity > 1 && abs(unitPrice - likelyUnit) > 0.01 {
-//                    print("⚠️ Skipping item \(productId) with suspicious price \(unitPrice)")
-//                    continue
-//                }
-
                 cartItems[productId] = (quantity, unitPrice)
             }
         }

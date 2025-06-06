@@ -153,7 +153,15 @@ class DetailOrderController: UIViewController, CustomNavBarDelegate {
             case .success(let order):
                 DispatchQueue.main.async {
                     self.order = order
-                    self.paymentTotalPriceLabel.text = "£\(order.totalAmount)"
+                    self.unitquantityLabel.text = "\(order.units)"
+                    self.skuNumberLabel.text = "\(order.skus)"
+                    self.subtotalNumLabel.text = "£\(order.summary.subtotal)"
+                    self.walletDiscNumLabel.text = "- £\(order.summary.walletDiscount)"
+                    self.couponDiscTextLabel.text = "- £\(order.summary.couponDiscount)"
+                    self.deliveryPriceTextLabel.text = "£\(order.summary.deliveryCost)"
+                    self.vatTextLabel.text = " £\(order.summary.vat)"
+                    self.paymentTotalPriceLabel.text = "£\(order.summary.paymentTotal)"
+                    self.addressTextLable.text = "\(order.delivery.method)\n\(order.delivery.address)"
                     self.orderListTableView.reloadData()
                 }
             case .failure(let error):
@@ -164,21 +172,56 @@ class DetailOrderController: UIViewController, CustomNavBarDelegate {
     
     @IBAction func completePaymentButtonAction(_ sender: Any) {
         guard let orderId = orderId else { return }
-            
-            ApiService().updateOrderStatus(orderId: orderId, status: "paid") { result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let message):
-                        print("✅", message)
-                        self.isPaid = true
-                        self.updateUIForPaymentStatus()
-                        self.fetchOrder()
-                    case .failure(let error):
-                        print("❌ Failed to update order: \(error.localizedDescription)")
-                        self.showSimplePopup(title: "Error", message: "Failed to complete payment. Please try again.")
-                    }
-                }
-            }
+           
+           if isPaid == true {
+               let items = order?.items.map {
+                   OrderItem(mvariant_id: $0.mvariantId, quantity: $0.quantity, unit_price: $0.unitPrice)
+               } ?? []
+
+               let orderRequest = OrderRequest(
+                   items: items,
+                   user_company_address_id: order?.delivery.address_id ?? 0,
+                   delivery_method_id: order?.delivery.method_id ?? 0,
+                   coupon_discount: order?.summary.couponDiscount ?? 0.0,
+                   wallet_discount: order?.summary.walletDiscount ?? 0.0
+               )
+
+               ApiService.shared.submitOrder(order: orderRequest) { result in
+                   switch result {
+                   case .success(let response):
+                       print("Order placed: \(response)")
+                       DispatchQueue.main.async {
+                           let alert = UIAlertController(title: "Success", message: "Successfully Reordered", preferredStyle: .alert)
+                           alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                               // Optional: Navigate or dismiss after popup
+                               self.navigationController?.popViewController(animated: true)
+                               // or self.dismiss(animated: true)
+                           })
+                           self.present(alert, animated: true)
+                       }
+                   case .failure(let error):
+                       print("Error placing order: \(error.localizedDescription)")
+                       DispatchQueue.main.async {
+                           self.showSimplePopup(title: "Error", message: "Failed to place reorder. Please try again.")
+                       }
+                   }
+               }
+           } else {
+               ApiService().updateOrderStatus(orderId: orderId, status: "paid") { result in
+                   DispatchQueue.main.async {
+                       switch result {
+                       case .success(let message):
+                           print("✅", message)
+                           self.isPaid = true
+                           self.updateUIForPaymentStatus()
+                           self.fetchOrder()
+                       case .failure(let error):
+                           print("❌ Failed to update order: \(error.localizedDescription)")
+                           self.showSimplePopup(title: "Error", message: "Failed to complete payment. Please try again.")
+                       }
+                   }
+               }
+           }
     }
     
     @IBAction func cancelButtonAction(_ sender: Any) {

@@ -30,6 +30,8 @@ struct OrderRequest: Codable {
     let items: [OrderItem]
     let user_company_address_id: Int
     let delivery_method_id: Int
+    let coupon_discount : Double
+    let wallet_discount : Double
 }
 
 struct OrderResponse: Codable {
@@ -56,4 +58,22 @@ struct Orders: Codable {
     let mvariant_id: Int
     let quantity: Int
     let unit_price: Double
+}
+
+
+struct CouponResponse: Codable {
+    let status: Bool
+    let message: String
+    let originalTotal: Double
+    let discount: Double
+    let newTotal: Double
+    let couponCode: String
+
+    enum CodingKeys: String, CodingKey {
+        case status, message
+        case originalTotal = "original_total"
+        case discount
+        case newTotal = "new_total"
+        case couponCode = "coupon_code"
+    }
 }

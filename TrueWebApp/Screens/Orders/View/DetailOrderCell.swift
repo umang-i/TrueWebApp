@@ -9,6 +9,7 @@ import UIKit
 
 class DetailOrderCell: UITableViewCell {
 
+    @IBOutlet weak var productImageView: UIImageView!
     @IBOutlet weak var priceLabel: UILabel!
     @IBOutlet weak var quantityLabel: UILabel!
     @IBOutlet weak var orderTextLabel: UILabel!
@@ -29,5 +30,16 @@ class DetailOrderCell: UITableViewCell {
     func setCell(order : OrderItems){
         priceLabel.text = "£\(order.unitPrice)"
         quantityLabel.text = "\(order.quantity)"
+        orderTextLabel.text = order.product.mproductTitle
+        
+        let baseUrl = "https://cdn.truewebpro.com/"
+        
+        if let imagePath = order.product.mproductImage,
+           let imageUrl = URL(string: baseUrl + imagePath) {
+            productImageView.load(url: imageUrl)
+        } else {
+            productImageView.image = UIImage(named: "noImage")
+        }
+    
     }
 }

@@ -217,8 +217,21 @@ class CartController: UIViewController, CustomNavBarDelegate {
         ])
     }
     @IBAction func checkoutButtonAction(_ sender: Any) {
-        let vc = CheckOutController()
-        navigationController?.pushViewController(vc, animated: true)
+        if cartItemss.isEmpty == false {
+            let vc = CheckOutController()
+            let totalUnits = cartItemss.count
+            let totalPrice = cartItemss.reduce(into: 0.0) { $0 += ($1.product.price * Double($1.quantity)) }
+            let comparedPrice = cartItemss.reduce(into: 0.0) { $0 += (($1.product.compare_price ?? 0.0) * Double($1.quantity)) }
+            let costPrice = cartItemss.reduce(into: 0.0) { $0 += (($1.product.cost_price ?? 0.0) * Double($1.quantity)) }
+
+            vc.discount = "£\(comparedPrice)"
+            vc.payment = "£\(totalPrice)"
+            vc.vat = "£\(0.0)"
+            vc.subtotal = "£\(totalPrice)"
+            vc.units = "\(totalUnits)"
+            vc.skus = "\(1)"
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }
 

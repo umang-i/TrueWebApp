@@ -11,12 +11,22 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CheckOutController" customModule="TrueWebApp" customModuleProvider="target">
             <connections>
+                <outlet property="addressLabel" destination="NMr-YM-7Ko" id="d2N-r0-KuD"/>
+                <outlet property="applyButton" destination="fBT-42-tvV" id="MeF-9e-yOM"/>
                 <outlet property="continuePaymentButton" destination="r6j-PK-mX2" id="9Vr-cd-iWi"/>
+                <outlet property="couponDiscount" destination="Vrt-0u-UdW" id="R0q-Hr-m7P"/>
                 <outlet property="couponTextField" destination="eWT-e4-RIy" id="zpn-w7-uLv"/>
+                <outlet property="deliveryLabel" destination="GpV-Ng-iWP" id="h05-Tc-osf"/>
                 <outlet property="deliveryTextField" destination="Y5m-9g-ktJ" id="ttb-za-rNL"/>
+                <outlet property="discountLabel" destination="Dym-An-JCN" id="CBw-i7-Tdm"/>
                 <outlet property="locationTableView" destination="ZfF-uh-cLy" id="uoI-eW-2fb"/>
                 <outlet property="methodTableView" destination="KLC-9M-Miw" id="duz-I7-S0D"/>
                 <outlet property="orderSummaryView" destination="WIW-4u-S5v" id="IMS-nm-oLk"/>
+                <outlet property="paymentLabel" destination="38O-FQ-D2V" id="4bR-dY-OGO"/>
+                <outlet property="skuLabel" destination="Gco-2n-UeC" id="eJI-pv-1tL"/>
+                <outlet property="subtotalLabel" destination="DgR-Pc-oay" id="ppZ-bZ-PT0"/>
+                <outlet property="unitLabel" destination="W8g-fi-4xV" id="Y1F-gb-AKc"/>
+                <outlet property="vatLabel" destination="cCl-LY-aCl" id="0CB-So-mY8"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -178,13 +188,13 @@ Immyz Ltd, 78 Stockport Road, Ashton-under-Lyne, Greater Manchester, OL70LH</str
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Delivery" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fmx-Ux-bs4">
-                                            <rect key="frame" x="151" y="238" width="112" height="15.666666666666657"/>
+                                            <rect key="frame" x="151" y="238.33333333333337" width="112" height="15.666666666666657"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vat(20%)" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k6G-0Z-O7L">
-                                            <rect key="frame" x="151" y="258.66666666666663" width="112" height="15.666666666666686"/>
+                                            <rect key="frame" x="151" y="259" width="112" height="15.666666666666686"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="15.666666666666657" id="jwg-7L-v50"/>
                                             </constraints>
@@ -193,7 +203,7 @@ Immyz Ltd, 78 Stockport Road, Ashton-under-Lyne, Greater Manchester, OL70LH</str
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Payment Total" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="enc-h5-emq">
-                                            <rect key="frame" x="151" y="279.33333333333337" width="112" height="32.666666666666686"/>
+                                            <rect key="frame" x="151" y="279.66666666666663" width="112" height="32.333333333333314"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="13"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -211,19 +221,19 @@ Immyz Ltd, 78 Stockport Road, Ashton-under-Lyne, Greater Manchester, OL70LH</str
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="FREE" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GpV-Ng-iWP">
-                                            <rect key="frame" x="269.66666666666669" y="238" width="93.333333333333314" height="15.666666666666657"/>
+                                            <rect key="frame" x="269.66666666666669" y="238.33333333333337" width="93.333333333333314" height="15.666666666666657"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="£56.32" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cCl-LY-aCl">
-                                            <rect key="frame" x="269.66666666666669" y="258.66666666666663" width="93.333333333333314" height="15.666666666666686"/>
+                                            <rect key="frame" x="269.66666666666669" y="259" width="93.333333333333314" height="15.666666666666686"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="£337.92" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="38O-FQ-D2V">
-                                            <rect key="frame" x="269.66666666666669" y="279.33333333333337" width="93.333333333333314" height="32.666666666666686"/>
+                                            <rect key="frame" x="269.66666666666669" y="279.66666666666663" width="93.333333333333314" height="32.333333333333314"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -242,14 +252,14 @@ Immyz Ltd, 78 Stockport Road, Ashton-under-Lyne, Greater Manchester, OL70LH</str
                                                 <constraint firstAttribute="height" constant="0.5" id="jpB-tf-bKc"/>
                                             </constraints>
                                         </view>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="-£2.50" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vrt-0u-UdW">
-                                            <rect key="frame" x="269.66666666666669" y="217.33333333333337" width="93.333333333333314" height="15.666666666666657"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="-£0.0" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vrt-0u-UdW">
+                                            <rect key="frame" x="269.66666666666669" y="217.33333333333337" width="93.333333333333314" height="16"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Coupon Discount" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GrK-un-Ouv">
-                                            <rect key="frame" x="151" y="217.33333333333337" width="112" height="15.666666666666657"/>
+                                            <rect key="frame" x="151" y="217.33333333333337" width="112" height="16"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -339,6 +349,9 @@ Immyz Ltd, 78 Stockport Road, Ashton-under-Lyne, Greater Manchester, OL70LH</str
                                     <buttonConfiguration key="configuration" style="plain" title="APPLY">
                                         <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="16"/>
                                     </buttonConfiguration>
+                                    <connections>
+                                        <action selector="applyButtonAction:" destination="-1" eventType="touchUpInside" id="qDs-q6-hce"/>
+                                    </connections>
                                 </button>
                             </subviews>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
