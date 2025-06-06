@@ -54,17 +54,16 @@ class CustomPasswordField: UIView {
         tf.font = UIFont(name: "Roboto-Regular", size: 14)
         tf.borderStyle = .none
         tf.textColor = .black
-        
-        // Set placeholder attributes (color: gray, font: Roboto-Regular 14)
+
         let attributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.gray,
             .font: UIFont(name: "Roboto-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14)
         ]
         tf.attributedPlaceholder = NSAttributedString(string: "Password", attributes: attributes)
-        
+
         return tf
     }()
-    
+
     private let containerView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 4
@@ -73,26 +72,34 @@ class CustomPasswordField: UIView {
         return view
     }()
 
-//    private let toggleButton: UIButton = {
-//        let button = UIButton(type: .custom)
-//        let eyeImage = UIImage(systemName: "eye.fill")?.withRenderingMode(.alwaysTemplate)
-//        button.setImage(eyeImage, for: .normal)
-//        button.tintColor = .gray
-//        return button
-//    }()
+    private let toggleButton: UIButton = {
+        let button = UIButton(type: .system)
+        let image = UIImage(systemName: "eye.slash") // hidden state
+        button.setImage(image, for: .normal)
+        button.tintColor = .customBlue
+        return button
+    }()
+
+    // External view you want to toggle
+    public weak var abstractViewToToggle: UIView?
+
+    private var isPasswordVisible = false
+
+    public var text: String {
+        return textField.text ?? ""
+    }
 
     init(placeholder: String) {
         super.init(frame: .zero)
-        
-        // Apply the placeholder with styling
+
         let attributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.gray,
             .font: UIFont(name: "Roboto-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14)
         ]
         textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: attributes)
-        
+
         setupUI()
-      //  setupActions()
+        setupActions()
     }
 
     required init?(coder: NSCoder) {
@@ -102,27 +109,47 @@ class CustomPasswordField: UIView {
     private func setupUI() {
         addSubview(containerView)
         containerView.addSubview(textField)
-        //containerView.addSubview(toggleButton)
-        
+        containerView.addSubview(toggleButton)
+
         containerView.translatesAutoresizingMaskIntoConstraints = false
         textField.translatesAutoresizingMaskIntoConstraints = false
-        // toggleButton.translatesAutoresizingMaskIntoConstraints = false
-        
+        toggleButton.translatesAutoresizingMaskIntoConstraints = false
+
         NSLayoutConstraint.activate([
             containerView.topAnchor.constraint(equalTo: topAnchor),
             containerView.leadingAnchor.constraint(equalTo: leadingAnchor),
             containerView.trailingAnchor.constraint(equalTo: trailingAnchor),
             containerView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            
+
             textField.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 10),
             textField.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
-            textField.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10),
+            textField.trailingAnchor.constraint(equalTo: toggleButton.leadingAnchor, constant: -10),
             textField.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -10),
             textField.heightAnchor.constraint(equalToConstant: 50),
-            
+
+            toggleButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+            toggleButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10),
+            toggleButton.widthAnchor.constraint(equalToConstant: 24),
+            toggleButton.heightAnchor.constraint(equalToConstant: 24)
         ])
     }
+
+    private func setupActions() {
+        toggleButton.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
+    }
+
+    @objc private func togglePasswordVisibility() {
+        isPasswordVisible.toggle()
+        textField.isSecureTextEntry = !isPasswordVisible
+
+        let imageName = isPasswordVisible ? "eye" : "eye.slash"
+        toggleButton.setImage(UIImage(systemName: imageName), for: .normal)
+
+        // Toggle the abstractView's visibility (if assigned)
+        abstractViewToToggle?.isHidden = !isPasswordVisible
+    }
 }
+
 
 class CustomTextField: UITextField {
 

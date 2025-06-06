@@ -14,64 +14,80 @@ class ServiceController: UIViewController, CustomNavBarDelegate {
     
     var headings = ["Basic POS ", "Advance POS","Premium POS"]
     var subheadings = ["Free with min app spend £2000 + VAT pcm", "Free with min app spend £3000 + VAT pcm","Free with min app spend £5000 + VAT pcm"]
-    let posItems: [POSModel] = [
-            POSModel(
-                title: "Basic POS",
-                subtitle: "Free with min app spend £2000 + VAT pcm",
-                imageName: "img", // Make sure you add this image in your Assets
-                features: [
-                    "Compare and get real time business analytics",
-                    "Fast & Easy Billing",
-                    "Discount & Promotions Management",
-                    "Price management from Head office",
-                    "Rack Management",
-                    "Retail Customer Relationship Management"
-                ]
-            ),POSModel(
-                title: "Advance POS",
-                subtitle: "Free with min app spend £2000 + VAT pcm",
-                imageName: "img", // Make sure you add this image in your Assets
-                features: [
-                    "Compare and get real time business analytics",
-                    "Fast & Easy Billing",
-                    "Discount & Promotions Management",
-                    "Price management from Head office",
-                    "Rack Management",
-                    "Retail Customer Relationship Management"
-                ]
-            ),POSModel(
-                title: "Premium POS",
-                subtitle: "Free with min app spend £2000 + VAT pcm",
-                imageName: "img", // Make sure you add this image in your Assets
-                features: [
-                    "Compare and get real time business analytics",
-                    "Fast & Easy Billing",
-                    "Discount & Promotions Management",
-                    "Price management from Head office",
-                    "Rack Management",
-                    "Retail Customer Relationship Management"
-                ]
-            )
-        ]
+//    let posItems: [POSModel] = [
+//            POSModel(
+//                title: "Basic POS",
+//                subtitle: "Free with min app spend £2000 + VAT pcm",
+//                imageName: "img", // Make sure you add this image in your Assets
+//                features: [
+//                    "Compare and get real time business analytics",
+//                    "Fast & Easy Billing",
+//                    "Discount & Promotions Management",
+//                    "Price management from Head office",
+//                    "Rack Management",
+//                    "Retail Customer Relationship Management"
+//                ]
+//            ),POSModel(
+//                title: "Advance POS",
+//                subtitle: "Free with min app spend £2000 + VAT pcm",
+//                imageName: "img", // Make sure you add this image in your Assets
+//                features: [
+//                    "Compare and get real time business analytics",
+//                    "Fast & Easy Billing",
+//                    "Discount & Promotions Management",
+//                    "Price management from Head office",
+//                    "Rack Management",
+//                    "Retail Customer Relationship Management"
+//                ]
+//            ),POSModel(
+//                title: "Premium POS",
+//                subtitle: "Free with min app spend £2000 + VAT pcm",
+//                imageName: "img", // Make sure you add this image in your Assets
+//                features: [
+//                    "Compare and get real time business analytics",
+//                    "Fast & Easy Billing",
+//                    "Discount & Promotions Management",
+//                    "Price management from Head office",
+//                    "Rack Management",
+//                    "Retail Customer Relationship Management"
+//                ]
+//            )
+//        ]
     
+    var serviceSolutions: [ServiceSolution] = []
+
     @IBOutlet weak var itemScrollView: UIScrollView!
     @IBOutlet weak var tableViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var servicesTableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        fetchServices()
+        setuptableView()
+        setnavBar()
+    }
+    
+    func fetchServices() {
+        ApiService.shared.fetchServiceSolutions { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let solutions):
+                    self.serviceSolutions = solutions
+                    self.servicesTableView.reloadData()
+                    self.updateTableViewHeight()
+                case .failure(let error):
+                    print("❌ Error fetching solutions:", error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    func setuptableView(){
         servicesTableView.delegate = self
         servicesTableView.dataSource = self
         servicesTableView.separatorStyle = .none
-        setnavBar()
         servicesTableView.isScrollEnabled = false
-        
-        // Register ServiceCell properly
-//        servicesTableView.register(UINib(nibName: "ServiceCell", bundle: nil), forCellReuseIdentifier: "ServiceCell")
         servicesTableView.register(ServiceCell.self, forCellReuseIdentifier: "ServiceCell")
-        
-        // Adjust height after layout updates
         DispatchQueue.main.async {
             self.updateTableViewHeight()
         }
@@ -119,14 +135,15 @@ class ServiceController: UIViewController, CustomNavBarDelegate {
 
     extension ServiceController: UITableViewDelegate, UITableViewDataSource {
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return posItems.count
+            return serviceSolutions.count
         }
         
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "ServiceCell", for: indexPath) as? ServiceCell else {
                 return UITableViewCell()
             }
-            cell.configure(with: posItems[indexPath.row])
+            let item = serviceSolutions[indexPath.row]
+            cell.configure(with: item)
             return cell
         }
         
