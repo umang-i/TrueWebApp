@@ -191,22 +191,33 @@ class CheckOutController: UIViewController, CustomNavBarDelegate, MethodDelivery
     }
     
     @IBAction func applyButtonAction(_ sender: Any) {
-        if couponTextField.text?.isEmpty == false {
-            let couponCode = couponTextField.text ?? ""
-            ApiService().applyCoupon("WELCOME10") { result in
+        if let couponCode = couponTextField.text, !couponCode.isEmpty {
+            ApiService().applyCoupon(couponCode) { result in
                 switch result {
                 case .success(let coupon):
-                    print("Coupon applied: \(coupon)")
                     DispatchQueue.main.async {
-                        self.couponDiscount.text = "\(coupon.discount)"
-                        self.subtotalLabel.text = "\(coupon.newTotal)"
+                        if coupon.status {
+                            self.couponDiscount.text = "\(coupon.discount ?? 0)"
+                            self.subtotalLabel.text = "\(coupon.newTotal ?? 0)"
+                            self.showAlert(title: "Success", message: coupon.message)
+                        } else {
+                            self.showAlert(title: "Error", message: coupon.message)
+                        }
                     }
+                    
                 case .failure(let error):
-                    print("Failed to apply coupon: \(error.localizedDescription)")
-                    // Show alert to user if needed
+                    DispatchQueue.main.async {
+                        self.showAlert(title: "Failed", message: "The Coupon Code is not valid")
+                    }
                 }
             }
         }
+    }
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
 }
 

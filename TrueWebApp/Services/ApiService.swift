@@ -999,7 +999,7 @@ class ApiService {
             return
         }
         
-        guard let url = URL(string: "https://goappadmin.zapto.org/api/apply-coupon") else {
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/cart/apply-coupon") else {
             completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
             return
         }

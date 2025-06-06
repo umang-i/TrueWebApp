@@ -61,16 +61,17 @@ struct Orders: Codable {
 }
 
 
-struct CouponResponse: Codable {
+struct CouponResponse: Decodable {
     let status: Bool
     let message: String
-    let originalTotal: Double
-    let discount: Double
-    let newTotal: Double
-    let couponCode: String
+    let originalTotal: Double?
+    let discount: Double?
+    let newTotal: Double?
+    let couponCode: String?
 
     enum CodingKeys: String, CodingKey {
-        case status, message
+        case status
+        case message
         case originalTotal = "original_total"
         case discount
         case newTotal = "new_total"
