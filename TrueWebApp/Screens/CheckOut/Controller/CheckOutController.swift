@@ -11,7 +11,6 @@ class CheckOutController: UIViewController, CustomNavBarDelegate, MethodDelivery
     
     @IBOutlet weak var couponTextField: UITextField!
     @IBOutlet weak var deliveryTextField: UITextField!
-    
     @IBOutlet weak var paymentLabel: UILabel!
     @IBOutlet weak var vatLabel: UILabel!
     @IBOutlet weak var deliveryLabel: UILabel!
@@ -207,7 +206,7 @@ class CheckOutController: UIViewController, CustomNavBarDelegate, MethodDelivery
                     
                 case .failure(let error):
                     DispatchQueue.main.async {
-                        self.showAlert(title: "Failed", message: "The Coupon Code is not valid")
+                        self.showAlert(title: "Failed", message: "The Coupon Code is not valid \(error)")
                     }
                 }
             }
