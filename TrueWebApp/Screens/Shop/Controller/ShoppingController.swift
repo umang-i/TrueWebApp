@@ -159,14 +159,14 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
         isLoading = true
         isLoadingBanners = true
 
+        bannerCollectionView.reloadData()
         tableView.reloadData()
-        bannerCollectionView.reloadData() // Show shimmer in bannerCollectionView
 
         // Simulate fetching categories
         fetchCategories() { [weak self] in
             guard let self = self else { return }
             self.isLoading = false
-            hideLoader()
+            self.hideLoader()
             self.tableView.reloadData()
             
             // Now load banner data after categories
@@ -174,9 +174,9 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 self.isLoadingBanners = false
                 self.bannerCollectionView.reloadData()
                 self.refreshControl.endRefreshing()
+                self.isRefreshing = false
             })
         }
-        
         fetchCart()
     }
     

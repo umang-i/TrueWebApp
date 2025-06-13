@@ -235,52 +235,94 @@ class LoginController: UIViewController, UITextViewDelegate {
         updateUIForSegment()
     }
 
+//    private func updateUIForSegment() {
+//        let isLogin = segmentedControl.selectedSegmentIndex == AuthSegment.login.rawValue
+//        setupTermsText(isLogin: isLogin)
+//
+//        // Adjust stack view spacing for login segment
+//        stackView.spacing = isLogin ? 7 : 10 // Reduced space for login
+//
+//        // Show/hide fields for registration
+//        hstack.isHidden = isLogin
+//        hstack2.isHidden = isLogin
+//        companyNameField.isHidden = isLogin
+//        invoiceAddressLine1Field.isHidden = isLogin
+//        invoiceAddressLine2Field.isHidden = isLogin
+//        invoiceAddressCityField.isHidden = isLogin
+//        invoiceAddressCountyField.isHidden = isLogin
+//        invoiceAddressPostcodeField.isHidden = isLogin
+//        mobileNumberField.isHidden = isLogin
+//        repCodeField.isHidden = isLogin
+//        firstNameErrorLabel.isHidden = isLogin
+//        lastNameErrorLabel.isHidden = isLogin
+//        mobileErrorLabel.isHidden = isLogin
+//        companyErrorLabel.isHidden = isLogin
+//        address1ErrorLabel.isHidden = isLogin
+//        cityErrorLabel.isHidden = isLogin
+//        countryErrorLabel.isHidden = isLogin
+//        postcodeErrorLabel.isHidden = isLogin
+//
+//        // Only show the email and password error labels in the login segment
+//        emailErrorLabel.isHidden = !isLogin
+//        passwordErrorLabel.isHidden = !isLogin
+//
+//        // Reset text fields when switching segments (relevant to login)
+//        if !isLogin {
+//            passwordField.text = ""
+//            emailField.text = ""
+//        }
+//        
+//        if isLogin {
+//            passwordField.text = ""
+//            emailField.text = ""
+//        }
+//
+//        // Change button text
+//        authButton.setTitle(isLogin ? "LOGIN" : "REGISTER", for: .normal)
+//        // Update the layout
+//        view.layoutIfNeeded() // Ensure layout changes are applied immediately
+//    }
+    
     private func updateUIForSegment() {
         let isLogin = segmentedControl.selectedSegmentIndex == AuthSegment.login.rawValue
         setupTermsText(isLogin: isLogin)
 
-        // Adjust stack view spacing for login segment
-        stackView.spacing = isLogin ? 7 : 10 // Reduced space for login
+        // Adjust spacing
+        stackView.spacing = isLogin ? 16 : 8  // Example: 16 for login, 8 for register
 
-        // Show/hide fields for registration
-        hstack.isHidden = isLogin
-        hstack2.isHidden = isLogin
-        companyNameField.isHidden = isLogin
-        invoiceAddressLine1Field.isHidden = isLogin
-        invoiceAddressLine2Field.isHidden = isLogin
-        invoiceAddressCityField.isHidden = isLogin
-        invoiceAddressCountyField.isHidden = isLogin
-        invoiceAddressPostcodeField.isHidden = isLogin
-        mobileNumberField.isHidden = isLogin
-        repCodeField.isHidden = isLogin
-        firstNameErrorLabel.isHidden = isLogin
-        lastNameErrorLabel.isHidden = isLogin
-        mobileErrorLabel.isHidden = isLogin
-        companyErrorLabel.isHidden = isLogin
-        address1ErrorLabel.isHidden = isLogin
-        cityErrorLabel.isHidden = isLogin
-        countryErrorLabel.isHidden = isLogin
-        postcodeErrorLabel.isHidden = isLogin
+        UIView.performWithoutAnimation {
+            stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
-        // Only show the email and password error labels in the login segment
-        emailErrorLabel.isHidden = !isLogin
-        passwordErrorLabel.isHidden = !isLogin
+            if isLogin {
+                stackView.addArrangedSubview(emailField)
+                stackView.addArrangedSubview(emailErrorLabel)
+                stackView.addArrangedSubview(passwordField)
+                stackView.addArrangedSubview(passwordErrorLabel)
+            } else {
+                stackView.addArrangedSubview(hstack)
+                stackView.addArrangedSubview(estack)
+                stackView.addArrangedSubview(mobileNumberField)
+                stackView.addArrangedSubview(mobileErrorLabel)
+                stackView.addArrangedSubview(emailField)
+                stackView.addArrangedSubview(emailErrorLabel)
+                stackView.addArrangedSubview(passwordField)
+                stackView.addArrangedSubview(passwordErrorLabel)
+                stackView.addArrangedSubview(repCodeField)
+                stackView.addArrangedSubview(companyNameField)
+                stackView.addArrangedSubview(companyErrorLabel)
+                stackView.addArrangedSubview(invoiceAddressLine1Field)
+                stackView.addArrangedSubview(address1ErrorLabel)
+                stackView.addArrangedSubview(invoiceAddressLine2Field)
+                stackView.addArrangedSubview(hstack2)
+                stackView.addArrangedSubview(estack2)
+                stackView.addArrangedSubview(invoiceAddressCountyField)
+                stackView.addArrangedSubview(countryErrorLabel)
+            }
 
-        // Reset text fields when switching segments (relevant to login)
-        if !isLogin {
-            passwordField.text = ""
-            emailField.text = ""
+            stackView.addArrangedSubview(authButton)
+            stackView.addArrangedSubview(termsTextView)
+            stackView.layoutIfNeeded()
         }
-        
-        if isLogin {
-            passwordField.text = ""
-            emailField.text = ""
-        }
-
-        // Change button text
-        authButton.setTitle(isLogin ? "LOGIN" : "REGISTER", for: .normal)
-        // Update the layout
-        view.layoutIfNeeded() // Ensure layout changes are applied immediately
     }
 
     // MARK: - Button Action

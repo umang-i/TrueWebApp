@@ -85,6 +85,7 @@ class DashboardController: UIViewController {
                 DispatchQueue.main.async {
                     self.cartItems = cartResponse.cartItems
                     self.cartCollectionView.reloadData()
+                    self.cartCollectionView.collectionViewLayout.invalidateLayout()
                     for item in cartResponse.cartItems {
                         let price = Double(item.product.price)
                         CartManager.shared.updateCartItem(mVariantId: item.product.mvariant_id, quantity: item.quantity, price: price)
@@ -309,6 +310,10 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
             let allProducts = categories[section].subcategories.flatMap { $0.products }
             return allProducts.count
 
+        }else if collectionView == cartCollectionView{
+            guard section < categories.count else { return 0 }
+               let products = categories[section].subcategories.flatMap { $0.products }
+               return products.count
         }
         return 5
     }
