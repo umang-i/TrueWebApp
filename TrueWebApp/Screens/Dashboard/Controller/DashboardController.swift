@@ -21,20 +21,23 @@ class DashboardController: UIViewController {
     @IBOutlet weak var catCollectionView: UICollectionView!
     @IBOutlet weak var imgPageController: UIPageControl!
     @IBOutlet weak var itemsCollectionView: UICollectionView!
-    var bannerImages = ["b1" , "b2","b3" , "b4","b5" , "b6","b7" ,"b8"]
-    var items = [
-        "bnr1", "s6" ,"s3" , "s2" , "s1","s4","s5"
-    ]
+    
+    var browsebanners: [BrowseBanner] = []
+    var bigBanner : [BigSlider] = []
+    var fruitImage : [FruitSlider] = []
+    var dealsImages : [DealSlider] = []
+    var cdnUrl = ""
+    
     var img = ["d1" , "d2" , "d3","d4","d5","d6"]
-    var imgs = ["im1","im2","im3","im4","im5","im6"]
-    var imgs1 = ["f1","f2","f3","f4","f5","f6"]
-    var home = ["h1","h2","h3","h4","h5","h6","h7","h8","h9","h10","h11","h12"]
-    var text = ["Hyaat","Oxva","Oreo","Fanta","Lost Mary","Coca Cola"]
+    
     var timer : Timer?
     var currentIndex = 0
     var item: [Products] = []
     var categories: [Categoryy] = []
     var cartItems : [CartItem] = []
+    
+    var isLoadingCart : Bool = true
+    var isLoadingBanner : Bool = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,7 +47,16 @@ class DashboardController: UIViewController {
         setupTapGesture()
         setCollectionView()
         gradientView.applyGradientBackground()
+        fetchSlider()
+        fetchBanners()
+        fetchCat()
+        loadDealsSliders()
+        loadFruitSliders()
         
+        
+    }
+    
+    func fetchCat(){
         ApiService().fetchCategories(keyword: "") { result in
             switch result {
             case .success(let response):
@@ -61,19 +73,20 @@ class DashboardController: UIViewController {
                 print("Error fetching categories: \(error.localizedDescription)")
             }
         }
-        
-        ApiService().fetchBrowseBanners { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let response):
-                    // Map full image URLs using cdnURL + image path
-//                    self?.items = response.browseBanners.map {
-//                        response.cdnURL + $0.browsebannerImage
-//                    }
-                    print("Fetched \(response.browseBanners.count) banners.")
-                case .failure(let error):
-                    print("Failed to fetch banners:", error.localizedDescription)
+    }
+    
+    func fetchSlider(){
+        ApiService.shared.fetchBigSliders{
+            result in
+            switch result {
+            case .success(let response):
+                DispatchQueue.main.async {
+                    self.bigBanner = response.bigSliders
+                    print(self.bigBanner.count)
+                    self.bannerCollectionView.reloadData()
                 }
+            case .failure(let error):
+                print("Error fetching categories: \(error.localizedDescription)")
             }
         }
     }
@@ -84,6 +97,7 @@ class DashboardController: UIViewController {
             case .success(let cartResponse):
                 DispatchQueue.main.async {
                     self.cartItems = cartResponse.cartItems
+                    self.isLoadingCart = false
                     self.cartCollectionView.reloadData()
                     self.cartCollectionView.collectionViewLayout.invalidateLayout()
                     for item in cartResponse.cartItems {
@@ -93,6 +107,49 @@ class DashboardController: UIViewController {
                 }
             case .failure(let error):
                 print("Error fetching cart items:", error.localizedDescription)
+            }
+        }
+    }
+    
+    func fetchBanners() {
+        ApiService.shared.fetchBrowseBanners { result in
+            switch result {
+            case .success(let bannerResponse):
+                DispatchQueue.main.async {
+                    self.browsebanners = bannerResponse.browseBanners
+                    self.isLoadingBanner = false
+                    self.itemsCollectionView.reloadData()
+                    self.imgPageController.numberOfPages = self.browsebanners.count
+                }
+            case .failure(let error):
+                print("Error fetching browse banners:", error.localizedDescription)
+            }
+        }
+    }
+    
+    func loadFruitSliders() {
+        ApiService.shared.fetchFruitSliders { result in
+            switch result {
+            case .success(let response):
+                print("Sliders:", response.fruitSliders)
+                print("CDN URL:", response.cdnURL)
+                self.fruitImage = response.fruitSliders
+                self.cdnUrl = response.cdnURL
+                self.banner2CollectionView.reloadData()
+            case .failure(let error):
+                print("Error loading fruit sliders:", error.localizedDescription)
+            }
+        }
+    }
+    
+    func loadDealsSliders() {
+        ApiService.shared.fetchDealsSliders { result in
+            switch result {
+            case .success(let response):
+                self.dealsImages = response.dealsSliders
+                self.catCollectionView.reloadData()
+            case .failure(let error):
+                print("Failed to fetch deals sliders:", error.localizedDescription)
             }
         }
     }
@@ -112,15 +169,18 @@ class DashboardController: UIViewController {
         bannerCollectionView.delegate = self
         bannerCollectionView.dataSource = self
         bannerCollectionView.register(UINib(nibName: "BannerImageCell", bundle: nil), forCellWithReuseIdentifier: "bannerCell")
+        bannerCollectionView.register(ShimmerBannerCell.self, forCellWithReuseIdentifier: "ShimmerBannerCell")
         
         itemsCollectionView.delegate = self
         itemsCollectionView.dataSource = self
         itemsCollectionView.register(UINib(nibName: "BannerImageCell", bundle: nil), forCellWithReuseIdentifier: "bannerCell")
+        itemsCollectionView.register(ShimmerBannerCell.self, forCellWithReuseIdentifier: "ShimmerBannerCell")
         itemsCollectionView.isPagingEnabled = true
-        imgPageController.numberOfPages = items.count
+        imgPageController.numberOfPages = browsebanners.count
         imgPageController.currentPage = 0
         
         circleCollectionView.register(UINib(nibName: "CircleCategoryCell", bundle: nil), forCellWithReuseIdentifier: "circleCell")
+        bannerCollectionView.register(ShimmerBannerCell.self, forCellWithReuseIdentifier: "ShimmerBannerCell")
         circleCollectionView.delegate = self
         circleCollectionView.dataSource = self
         
@@ -130,6 +190,7 @@ class DashboardController: UIViewController {
         catCollectionView.isPagingEnabled = false
         
         cartCollectionView.register(GridCell.self, forCellWithReuseIdentifier: "gridCell")
+        cartCollectionView.register(ShimmerBannerCell.self, forCellWithReuseIdentifier: "ShimmerBannerCell")
         cartCollectionView.delegate = self
         cartCollectionView.dataSource = self
         cartCollectionView.isPagingEnabled = false
@@ -140,6 +201,7 @@ class DashboardController: UIViewController {
         banner2CollectionView.isPagingEnabled = false
         
         banner3CollectionView.register(GridCell.self, forCellWithReuseIdentifier: "gridCell");
+        banner3CollectionView.register(ShimmerBannerCell.self, forCellWithReuseIdentifier: "ShimmerBannerCell")
         banner3CollectionView.delegate = self
         banner3CollectionView.dataSource = self
         banner3CollectionView.isPagingEnabled = false
@@ -186,7 +248,7 @@ class DashboardController: UIViewController {
         bannerCollectionView.showsVerticalScrollIndicator = false
     
         timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(slideToNext), userInfo: nil, repeats: true)
-        imgPageController.numberOfPages = items.count
+        imgPageController.numberOfPages = browsebanners.count
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -197,13 +259,18 @@ class DashboardController: UIViewController {
     }
     
     @objc func slideToNext() {
-        if currentIndex < bannerImages.count - 1 {
+        guard bigBanner.count > 0 else { return }
+
+        if currentIndex < bigBanner.count - 1 {
             currentIndex += 1
         } else {
             currentIndex = 0
         }
+
         let indexPath = IndexPath(item: currentIndex, section: 0)
-        bannerCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        if bannerCollectionView.numberOfItems(inSection: 0) > currentIndex {
+            bannerCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        }
     }
     
     func setupTapGesture() {
@@ -229,11 +296,6 @@ class DashboardController: UIViewController {
             tabBarController.selectedIndex = 1
         }
     }
-//    func presentModalShopViewController() {
-//        let modalShopVC = ModalShopViewController()
-//        modalShopVC.modalPresentationStyle = .pageSheet
-//        present(modalShopVC, animated: true, completion: nil)
-//    }
 }
 
 extension DashboardController: UITableViewDelegate, UITableViewDataSource {
@@ -298,12 +360,14 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
        if collectionView == circleCollectionView {
            return img.count
         } else if collectionView == bannerCollectionView {
-            return bannerImages.count
+            return bigBanner.count
 
         } else if collectionView == itemsCollectionView {
-            return items.count
+            return browsebanners.count
         }else if collectionView == catCollectionView {
-            return imgs.count
+            return dealsImages.count
+        }else if collectionView == banner2CollectionView {
+            return fruitImage.count
         }
         else if collectionView == banner3CollectionView {
             guard section < categories.count else { return 0 }
@@ -324,30 +388,42 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "circleCell", for: indexPath) as? CircleCategoryCell else {
                 return UICollectionViewCell()
             }
-            cell.setCell(categoryName: text[indexPath.row], image: home[indexPath.row]) // Set category cell
+           // cell.setCell(categoryName: text[indexPath.row], image: home[indexPath.row]) // Set category cell
             return cell
 
         } else if collectionView == bannerCollectionView {
+            if isLoadingBanner {
+                guard let shimmerCell = bannerCollectionView.dequeueReusableCell(withReuseIdentifier: "ShimmerBannerCell", for: indexPath) as? ShimmerBannerCell else {
+                    return UICollectionViewCell()
+                }
+                return shimmerCell
+            }
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
                 return UICollectionViewCell()
             }
-            cell.setImages(imgName: bannerImages[indexPath.row], callerId: 0)
+            cell.setImages(imgName: bigBanner[indexPath.row].image , callerId: 0)
             return cell
 
         } else if collectionView == itemsCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
                 return UICollectionViewCell()
             }
-            cell.setImages(imgName: items[indexPath.row], callerId: 1) // Set item image
+            cell.setImages(imgName: browsebanners[indexPath.row].browsebannerImage, callerId: 1) // Set item image
             return cell
         }else if collectionView == catCollectionView {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
                 return UICollectionViewCell()
             }
-            cell.setImages(imgName: imgs[indexPath.row], callerId: 1) // Set item image
+            cell.setImages(imgName: dealsImages[indexPath.row].imagePath, callerId: 1) // Set item image
             return cell
         
         }else if collectionView == cartCollectionView {
+            if isLoadingCart {
+                guard let shimmerCell = cartCollectionView.dequeueReusableCell(withReuseIdentifier: "ShimmerBannerCell", for: indexPath) as? ShimmerBannerCell else {
+                    return UICollectionViewCell()
+                }
+                return shimmerCell
+            }
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? GridCell else {
                 return UICollectionViewCell()
             }
@@ -370,10 +446,16 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
                 return UICollectionViewCell()
             }
-            cell.setImages(imgName: imgs1[indexPath.row], callerId: 1) // Set item image
+            cell.setImages(imgName: fruitImage[indexPath.row].imagePath, callerId: 1) // Set item image
             return cell
 
         }else if collectionView == banner3CollectionView {
+            if isLoadingCart {
+                guard let shimmerCell = cartCollectionView.dequeueReusableCell(withReuseIdentifier: "ShimmerBannerCell", for: indexPath) as? ShimmerBannerCell else {
+                    return UICollectionViewCell()
+                }
+                return shimmerCell
+            }
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? GridCell else {
                 return UICollectionViewCell()
             }

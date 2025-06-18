@@ -21,7 +21,6 @@ class HTMLPageViewController: UIViewController, CustomNavBarDelegate, WKNavigati
     private var webView: WKWebView!
     private var topBackgroundView: UIView!
     private var navBar: CustomNavBar!
-  //  private var activityIndicator: UIActivityIndicatorView!
     private var whiteOverlayView: UIView!
     private var shimmerView: ShimmerVieww!
 

@@ -286,6 +286,7 @@ class LoginController: UIViewController, UITextViewDelegate {
     private func updateUIForSegment() {
         let isLogin = segmentedControl.selectedSegmentIndex == AuthSegment.login.rawValue
         setupTermsText(isLogin: isLogin)
+        authButton.setTitle(isLogin ? "LOGIN" : "REGISTER", for: .normal)
 
         // Adjust spacing
         stackView.spacing = isLogin ? 16 : 8  // Example: 16 for login, 8 for register

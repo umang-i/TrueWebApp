@@ -23,9 +23,11 @@ class BannerImageCell: UICollectionViewCell {
     }
 
     
-    func setImages(imgName : String , callerId : Int){
-        bannerImageView.image = UIImage(named: imgName)
-        
+    func setImages(imgName: String, callerId: Int){
+        print(imgName)
+        if let url = URL(string: "https://cdn.truewebpro.com/\(imgName)") {
+            bannerImageView.load(url: url)
+        }
     }
     
     override func prepareForReuse() {

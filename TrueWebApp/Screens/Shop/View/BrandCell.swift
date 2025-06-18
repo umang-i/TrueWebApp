@@ -79,18 +79,6 @@ class BrandCell: UICollectionViewCell {
         }
     }
     
-//    private func loadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
-//        URLSession.shared.dataTask(with: url) { data, _, error in
-//            guard let data = data, error == nil else {
-//                print("Error loading image from \(url): \(error?.localizedDescription ?? "Unknown error")")
-//                completion(nil)
-//                return
-//            }
-//            let fetchedImage = UIImage(data: data)
-//            completion(fetchedImage)
-//        }.resume()
-//    }
-    
     @objc private func cellTapped() {
         guard let brandId = brandId else { return }
 

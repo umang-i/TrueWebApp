@@ -375,7 +375,7 @@ class ApiService {
                 return completion(.failure(NSError(domain: "", code: 500, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
             }
             if let jsonString = String(data: data, encoding: .utf8) {
-                // print("Response JSON:\n\(jsonString)")
+                 print("Response browse banners JSON:\n\(jsonString)")
             }
             
             do {
@@ -1132,4 +1132,140 @@ class ApiService {
 
         task.resume()
     }
+    
+    func fetchBigSliders(completion: @escaping (Result<BigSlidersResponse, Error>) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken") else {
+            completion(.failure(NSError(domain: "No auth token", code: 401)))
+            return
+        }
+
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/big-banner") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 400)))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+                return
+            }
+
+            guard let data = data else {
+                DispatchQueue.main.async {
+                    completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data returned"])))
+                }
+                return
+            }
+
+            do {
+                let decoded = try JSONDecoder().decode(BigSlidersResponse.self, from: data)
+                DispatchQueue.main.async {
+                    completion(.success(decoded))
+                }
+            } catch let decodingError {
+                DispatchQueue.main.async {
+                    completion(.failure(decodingError))
+                }
+            }
+        }
+
+        task.resume()
+    }
+    
+    func fetchFruitSliders(completion: @escaping (Result<FruitSlidersResponse, Error>) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken") else {
+            completion(.failure(NSError(domain: "Missing auth token", code: 401)))
+            return
+        }
+
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/fruit-banner") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 400)))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+                return
+            }
+
+            guard let data = data else {
+                DispatchQueue.main.async {
+                    completion(.failure(NSError(domain: "No data returned", code: -1)))
+                }
+                return
+            }
+
+            do {
+                let decoded = try JSONDecoder().decode(FruitSlidersResponse.self, from: data)
+                DispatchQueue.main.async {
+                    completion(.success(decoded))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }
+
+        task.resume()
+    }
+    
+    func fetchDealsSliders(completion: @escaping (Result<DealsSlidersResponse, Error>) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken") else {
+            completion(.failure(NSError(domain: "Missing auth token", code: 401)))
+            return
+        }
+
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/deals-banner") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: 400)))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+                return
+            }
+
+            guard let data = data else {
+                DispatchQueue.main.async {
+                    completion(.failure(NSError(domain: "No data returned", code: -1)))
+                }
+                return
+            }
+
+            do {
+                let decoded = try JSONDecoder().decode(DealsSlidersResponse.self, from: data)
+                DispatchQueue.main.async {
+                    completion(.success(decoded))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }
+
+        task.resume()
+    }
+
 }

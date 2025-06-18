@@ -48,17 +48,6 @@ class ExpandableCell: UITableViewCell {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(titleLabel)
         
-        //  offrLabel.backgroundColor = .customRed
-//        offrLabel.textColor = .systemGray5
-//        offrLabel.font = UIFont(name: "Roboto-Bold", size: 12)
-//        offrLabel.textAlignment = .center
-//        offrLabel.layer.cornerRadius = 10
-//        offrLabel.clipsToBounds = true
-//        offrLabel.translatesAutoresizingMaskIntoConstraints = false
-//        offrLabel.isHidden = true
-//        offrLabel.setContentHuggingPriority(.required, for: .horizontal)
-//        contentView.addSubview(offrLabel)
-        
         for label in [offerLabelRed, offerLabelGreen] {
             label.textColor = .white
             label.font = UIFont(name: "Roboto-Bold", size: 12)
@@ -70,7 +59,6 @@ class ExpandableCell: UITableViewCell {
             contentView.addSubview(label)
             label.isHidden = true
         }
-
         
         arrowImageView.image = UIImage(systemName: "chevron.down")
         arrowImageView.tintColor = .white

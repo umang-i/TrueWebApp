@@ -7,9 +7,12 @@
 
 import UIKit
 
-class CartController: UIViewController, CustomNavBarDelegate {
+class CartController: UIViewController, CustomNavBarDelegate , UIGestureRecognizerDelegate{
     func didTapBackButton() {
         navigationController?.popViewController(animated: true)
+    }
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
     }
     
     @IBOutlet weak var bottomSpendLabel: UILabel!
@@ -26,6 +29,10 @@ class CartController: UIViewController, CustomNavBarDelegate {
     
     var cartItemss : [CartItem] = []
     var cartNeedsUpdate = false
+    
+    var isLoading : Bool = true
+    var isRefreshing = true
+    let loaderView = CustomLoaderView()
     
     private let emptyCartLabel: UILabel = {
         let label = UILabel()
@@ -50,6 +57,11 @@ class CartController: UIViewController, CustomNavBarDelegate {
         setTableView()
         setnavBar()
         CartManager.shared.loadCartFromLocalStorage()
+        setupLoaderView()
+        
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleBannerPan(_:)))
+        panGesture.delegate = self
+        cartScrollView.addGestureRecognizer(panGesture)
         
         view.addSubview(emptyCartLabel)
             NSLayoutConstraint.activate([
@@ -62,6 +74,58 @@ class CartController: UIViewController, CustomNavBarDelegate {
         super.viewWillAppear(animated)
         updateCartOnServer()
         updateCartSummary()
+    }
+    
+    private func setupLoaderView() {
+            loaderView.translatesAutoresizingMaskIntoConstraints = false
+            loaderView.isHidden = true
+            loaderView.isUserInteractionEnabled = false
+
+        view.addSubview(loaderView)
+
+        NSLayoutConstraint.activate([
+            loaderView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loaderView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            loaderView.widthAnchor.constraint(equalToConstant: 50),
+            loaderView.heightAnchor.constraint(equalToConstant: 50)
+        ])
+        }
+    
+    @objc func handleBannerPan(_ gesture: UIPanGestureRecognizer) {
+        print("Refreshing")
+        let translation = gesture.translation(in: cartScrollView)
+
+        // Ensure it's a downward pull from the top of the scrollView
+        if translation.y > 30 && cartScrollView.contentOffset.y <= 1 {
+            if gesture.state == .ended && !isRefreshing {
+                isRefreshing = true
+                print("Pull down detected on scrollView - trigger refresh")
+                handleRefresh()
+            }
+        }
+    }
+
+    func showLoader() {
+        DispatchQueue.main.async {
+            print("loader is showing")
+            self.loaderView.isHidden = false
+            self.loaderView.startAnimating()
+        }
+    }
+
+    func hideLoader() {
+        loaderView.stopAnimating()
+        loaderView.isHidden = true
+    }
+    
+    func handleRefresh() {
+        isLoading = true
+        DispatchQueue.main.async {
+                self.showLoader()
+            }
+
+        cartTableView.reloadData()
+        fetchCartItems()
     }
     
     @objc func updateCartOnServer() {
@@ -165,6 +229,7 @@ class CartController: UIViewController, CustomNavBarDelegate {
     
     func setTableView() {
             cartTableView.register(UINib(nibName: "CartCell", bundle: nil), forCellReuseIdentifier: "CartCell")
+            cartTableView.register(UINib(nibName: "ShimmerCell", bundle: nil), forCellReuseIdentifier: "ShimmerCell")
             cartTableView.delegate = self
             cartTableView.dataSource = self
             cartTableView.separatorStyle = .none
@@ -247,6 +312,12 @@ extension CartController: UITableViewDelegate, UITableViewDataSource {
     
     // Cell Configuration
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if isLoading{
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "ShimmerCell") as? ShimmerCell else {
+                return UITableViewCell()
+            }
+            return cell
+        }
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CartCell") as? CartCell else {
             return UITableViewCell()
         }
@@ -360,9 +431,11 @@ extension CartController {
                 print("Fetched Cart Items ")
                 DispatchQueue.main.async {
                     self?.cartItemss = cartResponse.cartItems
+                    self?.isLoading = false
                     self?.cartTableView.reloadData()
                     self?.updateTableViewHeight()
                     self?.updateCartSummary()
+                    self?.hideLoader()
                 }
             case .failure(let error):
                 print("Error fetching cart items:", error.localizedDescription)
