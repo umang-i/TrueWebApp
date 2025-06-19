@@ -7,8 +7,14 @@
 
 import UIKit
 
-class DashboardController: UIViewController {
+class DashboardController: UIViewController, UIGestureRecognizerDelegate {
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
 
+    @IBOutlet weak var dashView: UIView!
+    @IBOutlet weak var dashScrollView: UIScrollView!
     @IBOutlet weak var gradientView: UIView!
     @IBOutlet weak var banner3CollectionView: UICollectionView!
     @IBOutlet weak var banner2CollectionView: UICollectionView!
@@ -26,9 +32,8 @@ class DashboardController: UIViewController {
     var bigBanner : [BigSlider] = []
     var fruitImage : [FruitSlider] = []
     var dealsImages : [DealSlider] = []
+    var roundImage : [RoundSlider] = []
     var cdnUrl = ""
-    
-    var img = ["d1" , "d2" , "d3","d4","d5","d6"]
     
     var timer : Timer?
     var currentIndex = 0
@@ -38,24 +43,49 @@ class DashboardController: UIViewController {
     
     var isLoadingCart : Bool = true
     var isLoadingBanner : Bool = true
+    var isLoadingBigBanner : Bool = true
     
+    private let refreshControl = UIRefreshControl()
+    let loaderView = CustomLoaderView()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationController?.setNavigationBarHidden(true, animated: true)
         setupUI()
+        setupLoaderView()
         setupTableViews()
         setupTapGesture()
         setCollectionView()
         gradientView.applyGradientBackground()
         fetchSlider()
+        fetchRoundSlider()
         fetchBanners()
         fetchCat()
         loadDealsSliders()
         loadFruitSliders()
-        
-        
+        setupPanGesture()
     }
     
+    func setupPanGesture() {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
+        panGesture.delegate = self // So we can allow simultaneous gestures
+        view.addGestureRecognizer(panGesture)
+    }
+    
+    @objc func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: dashScrollView)
+
+        if dashScrollView.contentOffset.y <= 0 && translation.y > 100 && loaderView.isHidden {
+            print("🔄 Triggering custom refresh")
+            beginCustomRefresh()
+        }
+    }
+
+    
+    override func viewDidLayoutSubviews() {
+        print("📏 dashScrollView.contentSize:", dashScrollView.contentSize)
+    }
+
     func fetchCat(){
         ApiService().fetchCategories(keyword: "") { result in
             switch result {
@@ -83,6 +113,7 @@ class DashboardController: UIViewController {
                 DispatchQueue.main.async {
                     self.bigBanner = response.bigSliders
                     print(self.bigBanner.count)
+                    self.isLoadingBigBanner = false
                     self.bannerCollectionView.reloadData()
                 }
             case .failure(let error):
@@ -154,8 +185,42 @@ class DashboardController: UIViewController {
         }
     }
     
+    func fetchRoundSlider(){
+        ApiService.shared.fetchRoundSliders{ result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let sliders):
+                    print("Loaded sliders:", sliders.count)
+                    DispatchQueue.main.async {
+                        self.roundImage = sliders
+                        self.circleCollectionView.reloadData()
+                    }
+                case .failure(let error):
+                    print("Error fetching sliders:", error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    private func setupLoaderView() {
+        loaderView.translatesAutoresizingMaskIntoConstraints = false
+        loaderView.isHidden = true // hidden initially
+        view.addSubview(loaderView) // ✅ not scrollView!
+
+        NSLayoutConstraint.activate([
+            loaderView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loaderView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 70),
+            loaderView.widthAnchor.constraint(equalToConstant: 60),
+            loaderView.heightAnchor.constraint(equalToConstant: 60)
+        ])
+
+        print("✅ loaderView added with frame: \(loaderView.frame)")
+    }
+
     func setupUI(){
         recentNotifLabel.font = UIFont(name: "Roboto-Regular", size: 15)
+        dashScrollView.delegate = self
+        dashScrollView.isScrollEnabled = true
     }
     
     func setupTableViews(){
@@ -256,8 +321,36 @@ class DashboardController: UIViewController {
             let page = Int(scrollView.contentOffset.x / scrollView.frame.width)
             imgPageController.currentPage = page
         }
+        
+        if scrollView.contentOffset.y < -120 && !isRefreshing && loaderView.isHidden {
+               print("🔄 Triggering refresh")
+               beginCustomRefresh()
+           }
     }
     
+    var isRefreshing = false
+
+    func beginCustomRefresh() {
+        loaderView.isHidden = false
+        view.bringSubviewToFront(loaderView)
+        loaderView.startAnimating() // ✅ START animation
+
+        fetchSlider()
+        fetchBanners()
+        fetchCat()
+        loadDealsSliders()
+        loadFruitSliders()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.endCustomRefresh()
+        }
+    }
+
+    func endCustomRefresh() {
+        loaderView.stopAnimating() // ✅ STOP animation
+        loaderView.isHidden = true
+    }
+
     @objc func slideToNext() {
         guard bigBanner.count > 0 else { return }
 
@@ -358,10 +451,9 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
        if collectionView == circleCollectionView {
-           return img.count
+           return roundImage.count
         } else if collectionView == bannerCollectionView {
             return bigBanner.count
-
         } else if collectionView == itemsCollectionView {
             return browsebanners.count
         }else if collectionView == catCollectionView {
@@ -388,11 +480,12 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "circleCell", for: indexPath) as? CircleCategoryCell else {
                 return UICollectionViewCell()
             }
-           // cell.setCell(categoryName: text[indexPath.row], image: home[indexPath.row]) // Set category cell
+            let image = roundImage[indexPath.row]
+            cell.setCell(categoryName: image.name, image: image.imagePath) // Set category cell
             return cell
 
         } else if collectionView == bannerCollectionView {
-            if isLoadingBanner {
+            if isLoadingBigBanner {
                 guard let shimmerCell = bannerCollectionView.dequeueReusableCell(withReuseIdentifier: "ShimmerBannerCell", for: indexPath) as? ShimmerBannerCell else {
                     return UICollectionViewCell()
                 }
@@ -405,6 +498,12 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
             return cell
 
         } else if collectionView == itemsCollectionView {
+            if isLoadingBanner {
+                guard let shimmerCell = bannerCollectionView.dequeueReusableCell(withReuseIdentifier: "ShimmerBannerCell", for: indexPath) as? ShimmerBannerCell else {
+                    return UICollectionViewCell()
+                }
+                return shimmerCell
+            }
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "bannerCell", for: indexPath) as? BannerImageCell else {
                 return UICollectionViewCell()
             }

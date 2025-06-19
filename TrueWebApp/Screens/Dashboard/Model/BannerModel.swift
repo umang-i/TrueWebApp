@@ -100,3 +100,35 @@ struct DealSlider: Codable {
         case position = "home_explore_deal_banner_position"
     }
 }
+
+// MARK: - ROUND SLIDER
+struct RoundSliderResponse: Codable {
+    let status: Bool
+    let message: String
+    let cdnURL: String
+    let roundSliders: [RoundSlider]
+
+    enum CodingKeys: String, CodingKey {
+        case status, message
+        case cdnURL = "cdnURL"
+        case roundSliders = "roundSliders"
+    }
+}
+
+struct RoundSlider: Codable {
+    let id: Int
+    let name: String
+    let imagePath: String
+    let position: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id = "home_round_banner_id"
+        case name = "home_round_banner_name"
+        case imagePath = "home_round_banner_image"
+        case position = "home_round_banner_position"
+    }
+
+    var fullImageURL: String {
+        return "https://cdn.truewebpro.com/\(imagePath)"
+    }
+}

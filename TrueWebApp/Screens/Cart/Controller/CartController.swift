@@ -31,7 +31,7 @@ class CartController: UIViewController, CustomNavBarDelegate , UIGestureRecogniz
     var cartNeedsUpdate = false
     
     var isLoading : Bool = true
-    var isRefreshing = true
+    var isRefreshing = false
     let loaderView = CustomLoaderView()
     
     private let emptyCartLabel: UILabel = {
@@ -62,6 +62,7 @@ class CartController: UIViewController, CustomNavBarDelegate , UIGestureRecogniz
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleBannerPan(_:)))
         panGesture.delegate = self
         cartScrollView.addGestureRecognizer(panGesture)
+        view.bringSubviewToFront(loaderView)
         
         view.addSubview(emptyCartLabel)
             NSLayoutConstraint.activate([
@@ -77,11 +78,12 @@ class CartController: UIViewController, CustomNavBarDelegate , UIGestureRecogniz
     }
     
     private func setupLoaderView() {
-            loaderView.translatesAutoresizingMaskIntoConstraints = false
-            loaderView.isHidden = true
-            loaderView.isUserInteractionEnabled = false
+        loaderView.translatesAutoresizingMaskIntoConstraints = false
+        loaderView.isHidden = true
+        loaderView.isUserInteractionEnabled = false
 
-        view.addSubview(loaderView)
+        view.addSubview(loaderView)  // ✅ make sure this comes before bringSubviewToFront
+        view.bringSubviewToFront(loaderView)  // ✅ move here
 
         NSLayoutConstraint.activate([
             loaderView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -89,7 +91,7 @@ class CartController: UIViewController, CustomNavBarDelegate , UIGestureRecogniz
             loaderView.widthAnchor.constraint(equalToConstant: 50),
             loaderView.heightAnchor.constraint(equalToConstant: 50)
         ])
-        }
+    }
     
     @objc func handleBannerPan(_ gesture: UIPanGestureRecognizer) {
         print("Refreshing")
@@ -119,11 +121,9 @@ class CartController: UIViewController, CustomNavBarDelegate , UIGestureRecogniz
     }
     
     func handleRefresh() {
+        print("✅ handleRefresh triggered")
         isLoading = true
-        DispatchQueue.main.async {
-                self.showLoader()
-            }
-
+        self.showLoader()
         cartTableView.reloadData()
         fetchCartItems()
     }
@@ -229,7 +229,7 @@ class CartController: UIViewController, CustomNavBarDelegate , UIGestureRecogniz
     
     func setTableView() {
             cartTableView.register(UINib(nibName: "CartCell", bundle: nil), forCellReuseIdentifier: "CartCell")
-            cartTableView.register(UINib(nibName: "ShimmerCell", bundle: nil), forCellReuseIdentifier: "ShimmerCell")
+            cartTableView.register(ShimmerCell.self, forCellReuseIdentifier: "ShimmerCell")
             cartTableView.delegate = self
             cartTableView.dataSource = self
             cartTableView.separatorStyle = .none
@@ -425,20 +425,22 @@ extension CartController: CartCellDelegate {
 // CartController.swift
 extension CartController {
     func fetchCartItems() {
-        ApiService().fetchCartItems { [weak self] result in
-            switch result {
-            case .success(let cartResponse):
-                print("Fetched Cart Items ")
-                DispatchQueue.main.async {
-                    self?.cartItemss = cartResponse.cartItems
-                    self?.isLoading = false
-                    self?.cartTableView.reloadData()
-                    self?.updateTableViewHeight()
-                    self?.updateCartSummary()
-                    self?.hideLoader()
+        ApiService().fetchCartItems { result in
+            DispatchQueue.main.async {
+                self.hideLoader()
+                self.isLoading = false
+                self.isRefreshing = false
+
+                switch result {
+                case .success(let cartResponse):
+                    self.cartItemss = cartResponse.cartItems
+                    self.cartTableView.reloadData()
+                    self.updateCartSummary()
+                    self.updateTableViewHeight()
+
+                case .failure(let error):
+                    print("Fetch failed:", error)
                 }
-            case .failure(let error):
-                print("Error fetching cart items:", error.localizedDescription)
             }
         }
     }

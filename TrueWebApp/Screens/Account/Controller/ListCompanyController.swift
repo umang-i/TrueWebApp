@@ -7,15 +7,27 @@
 
 import UIKit
 
-
-
-class ListCompanyController: UIViewController, CustomNavBarDelegate {
+class ListCompanyController: UIViewController, CustomNavBarDelegate, UIGestureRecognizerDelegate {
+    @IBOutlet weak var companyScrollView: UIScrollView!
+    
     func didTapBackButton() {
         navigationController?.popViewController(animated: true)
     }
 
     @IBOutlet weak var newBranchButton: UIButton!
     @IBOutlet weak var listTableView: UITableView!
+    let loaderView = CustomLoaderView()
+    
+    private let emptyLabel: UILabel = {
+        let label = UILabel()
+        label.text = "No Company Addresses"
+        label.textAlignment = .center
+        label.textColor = .darkGray
+        label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = true
+        return label
+    }()
     
     var companyAddresses: [CompanyAddress] = []
     
@@ -30,6 +42,12 @@ class ListCompanyController: UIViewController, CustomNavBarDelegate {
         newBranchButton.titleLabel?.font = UIFont(name: "Roboto-Bold", size: 17)!
         setnavBar()
     
+        view.addSubview(emptyLabel)
+        NSLayoutConstraint.activate([
+            emptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
         }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -47,6 +65,7 @@ class ListCompanyController: UIViewController, CustomNavBarDelegate {
                 switch result {
                 case .success(let addresses):
                     self.companyAddresses = addresses
+                    self.emptyLabel.isHidden = !addresses.isEmpty
                     self.listTableView.reloadData()
                 case .failure(let error):
                     print("Failed to fetch addresses:", error.localizedDescription)
@@ -94,6 +113,38 @@ class ListCompanyController: UIViewController, CustomNavBarDelegate {
             companyAddresses: self.companyAddresses // Pass existing addresses
         )
         self.navigationController?.pushViewController(companyController, animated: true)
+    }
+    
+    func setupPanGesture() {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
+        panGesture.delegate = self // So we can allow simultaneous gestures
+        view.addGestureRecognizer(panGesture)
+    }
+    
+    @objc func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: companyScrollView)
+
+        if companyScrollView.contentOffset.y <= 0 && translation.y > 100 && loaderView.isHidden {
+            print("🔄 Triggering custom refresh")
+            beginCustomRefresh()
+        }
+    }
+    var isRefreshing = false
+
+    func beginCustomRefresh() {
+        loaderView.isHidden = false
+        view.bringSubviewToFront(loaderView)
+        loaderView.startAnimating() // ✅ START animation
+        self.loadCompanyAddresses()
+        self.listTableView.reloadData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.endCustomRefresh()
+        }
+    }
+
+    func endCustomRefresh() {
+        loaderView.stopAnimating() // ✅ STOP animation
+        loaderView.isHidden = true
     }
 }
 

@@ -8,6 +8,12 @@
 import UIKit
 
 class OrdersController: UIViewController, CustomNavBarDelegate , OrderCellDelegate {
+    
+    @IBOutlet weak var bannerImageView: UIImageView!
+    @IBOutlet weak var orderScrollView: UIScrollView!
+    var isLoading = true
+    let loaderView = CustomLoaderView()
+
     func didTapBackButton() {
         navigationController?.popViewController(animated: true)
     }
@@ -29,10 +35,56 @@ class OrdersController: UIViewController, CustomNavBarDelegate , OrderCellDelega
         super.viewDidLoad()
         ordersTableView.dataSource = self
         ordersTableView.delegate = self
+        
         ordersTableView.register(UINib(nibName: "OrderCell", bundle: nil), forCellReuseIdentifier: "OrderCell")
+        ordersTableView.register(ShimmerCell.self, forCellReuseIdentifier: "ShimmerCell")
+        
         setnavBar()
+        setupLoaderView()
+        addPanGestureLoader()
         fetchData()
     }
+    
+    func setupLoaderView() {
+        loaderView.translatesAutoresizingMaskIntoConstraints = false
+        loaderView.isHidden = true
+        view.addSubview(loaderView)
+        view.bringSubviewToFront(loaderView) // ✅ Ensures it's above all other views
+
+        NSLayoutConstraint.activate([
+            loaderView.topAnchor.constraint(equalTo: view.topAnchor),
+            loaderView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            loaderView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            loaderView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+    
+    func addPanGestureLoader() {
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
+        panGesture.cancelsTouchesInView = false
+        orderScrollView.addGestureRecognizer(panGesture)
+    }
+
+    @objc func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        let velocity = gesture.velocity(in: ordersTableView)
+        
+        if velocity.y > 0 && gesture.state == .began && !isLoading {
+            showLoaderAndFetch()
+        }
+    }
+    
+    func showLoaderAndFetch() {
+        isLoading = true
+        loaderView.isHidden = false
+        fetchData()
+    }
+
+    func showShimmer() {
+        isLoading = true
+        orders = []
+        ordersTableView.reloadData()
+    }
+
     
     func setnavBar() {
         let topBackgroundView = UIView()
@@ -61,21 +113,26 @@ class OrdersController: UIViewController, CustomNavBarDelegate , OrderCellDelega
     }
     
     func fetchData(){
+        isLoading = true
+        ordersTableView.reloadData()
+        
         ApiService.shared.fetchOrders { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let orders):
                     print("✅ Orders fetched:", orders)
-                    DispatchQueue.main.async {
-                        self.orders = orders
-                        self.ordersTableView.reloadData()
-                        self.updateTableViewHeight()
-                        self.updateEmptyState()
-                    }
+                    self.isLoading = false
+                    self.loaderView.isHidden = true // ✅ Hide the loader here
+                    self.orders = orders
+                    self.ordersTableView.reloadData()
+                    self.updateTableViewHeight()
+                    self.updateEmptyState()
                     
                 case .failure(let error):
                     print("❌ Failed to fetch orders:", error.localizedDescription)
-                    // Show alert
+                    self.isLoading = false
+                    self.loaderView.isHidden = true // ✅ Also hide loader on failure
+                    // Optional: show alert
                 }
             }
         }
@@ -114,7 +171,7 @@ class OrdersController: UIViewController, CustomNavBarDelegate , OrderCellDelega
 }
 extension OrdersController : UITableViewDataSource , UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return orders.count
+        return isLoading ? 3 :  orders.count
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1
@@ -128,6 +185,12 @@ extension OrdersController : UITableViewDataSource , UITableViewDelegate {
         return footerView
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if isLoading {
+            guard let shimmerCell = tableView.dequeueReusableCell(withIdentifier: "ShimmerCell") as? ShimmerCell else {
+                return UITableViewCell()
+            }
+            return shimmerCell
+        }
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "OrderCell") as? OrderCell else {
             return UITableViewCell()
         }

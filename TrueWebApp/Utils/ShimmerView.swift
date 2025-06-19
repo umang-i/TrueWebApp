@@ -148,15 +148,17 @@ class CustomLoaderView: UIView {
     }
     
     func startAnimating() {
-        if layer.animation(forKey: rotationAnimationKey) == nil {
+        isHidden = false
+
+        if circleLayer.animation(forKey: rotationAnimationKey) == nil {
             let rotation = CABasicAnimation(keyPath: "transform.rotation")
             rotation.fromValue = 0
             rotation.toValue = 2 * Double.pi
             rotation.duration = 1
             rotation.repeatCount = .infinity
-            layer.add(rotation, forKey: rotationAnimationKey)
+            circleLayer.add(rotation, forKey: rotationAnimationKey) // ✅ FIXED
         }
-        
+
         if circleLayer.animation(forKey: strokeAnimationKey) == nil {
             let strokeStart = CABasicAnimation(keyPath: "strokeStart")
             strokeStart.fromValue = 0
@@ -165,7 +167,7 @@ class CustomLoaderView: UIView {
             strokeStart.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
             strokeStart.autoreverses = true
             strokeStart.repeatCount = .infinity
-            
+
             let strokeEnd = CABasicAnimation(keyPath: "strokeEnd")
             strokeEnd.fromValue = 0
             strokeEnd.toValue = 1
@@ -173,17 +175,17 @@ class CustomLoaderView: UIView {
             strokeEnd.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
             strokeEnd.autoreverses = true
             strokeEnd.repeatCount = .infinity
-            
+
             circleLayer.add(strokeStart, forKey: "strokeStartAnimation")
             circleLayer.add(strokeEnd, forKey: strokeAnimationKey)
         }
     }
     
     func stopAnimating() {
-        layer.removeAnimation(forKey: rotationAnimationKey)
-        circleLayer.removeAnimation(forKey: strokeAnimationKey)
-        circleLayer.removeAnimation(forKey: "strokeStartAnimation")
+        circleLayer.removeAllAnimations()
+        isHidden = true
     }
+
 }
 
 import UIKit

@@ -284,7 +284,7 @@ class MyCompanyController: UIViewController, CustomNavBarDelegate {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):
-                    print("Deleted address ID: \(self.user_company_address_id)")
+                    print("Deleted address ID: \(self.user_company_address_id) \(response)")
                     self.navigationController?.popViewController(animated: true)
                 case .failure(let error):
                     print("Error:", error.localizedDescription)

@@ -14,47 +14,21 @@ class ServiceController: UIViewController, CustomNavBarDelegate {
     
     var headings = ["Basic POS ", "Advance POS","Premium POS"]
     var subheadings = ["Free with min app spend £2000 + VAT pcm", "Free with min app spend £3000 + VAT pcm","Free with min app spend £5000 + VAT pcm"]
-//    let posItems: [POSModel] = [
-//            POSModel(
-//                title: "Basic POS",
-//                subtitle: "Free with min app spend £2000 + VAT pcm",
-//                imageName: "img", // Make sure you add this image in your Assets
-//                features: [
-//                    "Compare and get real time business analytics",
-//                    "Fast & Easy Billing",
-//                    "Discount & Promotions Management",
-//                    "Price management from Head office",
-//                    "Rack Management",
-//                    "Retail Customer Relationship Management"
-//                ]
-//            ),POSModel(
-//                title: "Advance POS",
-//                subtitle: "Free with min app spend £2000 + VAT pcm",
-//                imageName: "img", // Make sure you add this image in your Assets
-//                features: [
-//                    "Compare and get real time business analytics",
-//                    "Fast & Easy Billing",
-//                    "Discount & Promotions Management",
-//                    "Price management from Head office",
-//                    "Rack Management",
-//                    "Retail Customer Relationship Management"
-//                ]
-//            ),POSModel(
-//                title: "Premium POS",
-//                subtitle: "Free with min app spend £2000 + VAT pcm",
-//                imageName: "img", // Make sure you add this image in your Assets
-//                features: [
-//                    "Compare and get real time business analytics",
-//                    "Fast & Easy Billing",
-//                    "Discount & Promotions Management",
-//                    "Price management from Head office",
-//                    "Rack Management",
-//                    "Retail Customer Relationship Management"
-//                ]
-//            )
-//        ]
     
     var serviceSolutions: [ServiceSolution] = []
+    var isLoading = true
+    let shimmerCount = 3
+    
+    private let emptyLabel: UILabel = {
+        let label = UILabel()
+        label.text = "No services"
+        label.textAlignment = .center
+        label.textColor = .darkGray
+        label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = true
+        return label
+    }()
 
     @IBOutlet weak var itemScrollView: UIScrollView!
     @IBOutlet weak var tableViewHeightConstraint: NSLayoutConstraint!
@@ -65,6 +39,12 @@ class ServiceController: UIViewController, CustomNavBarDelegate {
         fetchServices()
         setuptableView()
         setnavBar()
+        
+        view.addSubview(emptyLabel)
+        NSLayoutConstraint.activate([
+            emptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
     
     func fetchServices() {
@@ -73,6 +53,8 @@ class ServiceController: UIViewController, CustomNavBarDelegate {
                 switch result {
                 case .success(let solutions):
                     self.serviceSolutions = solutions
+                    self.isLoading = false
+                    self.emptyLabel.isHidden = !solutions.isEmpty
                     self.servicesTableView.reloadData()
                     self.updateTableViewHeight()
                 case .failure(let error):
@@ -82,12 +64,17 @@ class ServiceController: UIViewController, CustomNavBarDelegate {
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        fetchServices()
+    }
+    
     func setuptableView(){
         servicesTableView.delegate = self
         servicesTableView.dataSource = self
         servicesTableView.separatorStyle = .none
         servicesTableView.isScrollEnabled = false
         servicesTableView.register(ServiceCell.self, forCellReuseIdentifier: "ServiceCell")
+        servicesTableView.register(ShimmerCell.self, forCellReuseIdentifier: "ShimmerCell")
         DispatchQueue.main.async {
             self.updateTableViewHeight()
         }
@@ -135,16 +122,22 @@ class ServiceController: UIViewController, CustomNavBarDelegate {
 
     extension ServiceController: UITableViewDelegate, UITableViewDataSource {
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return serviceSolutions.count
+            return isLoading ? shimmerCount : serviceSolutions.count
         }
         
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "ServiceCell", for: indexPath) as? ServiceCell else {
-                return UITableViewCell()
+            if isLoading {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "ShimmerCell", for: indexPath) as! ShimmerCell
+                cell.selectionStyle = .none
+                return cell
+            } else {
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: "ServiceCell", for: indexPath) as? ServiceCell else {
+                    return UITableViewCell()
+                }
+                let item = serviceSolutions[indexPath.row]
+                cell.configure(with: item)
+                return cell
             }
-            let item = serviceSolutions[indexPath.row]
-            cell.configure(with: item)
-            return cell
         }
         
         func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

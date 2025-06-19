@@ -17,6 +17,8 @@
                 <outlet property="cartCollectionView" destination="1uF-yk-tJ7" id="mVS-4w-No7"/>
                 <outlet property="catCollectionView" destination="Dls-RR-gqi" id="f01-Dq-TLz"/>
                 <outlet property="circleCollectionView" destination="mOp-op-28F" id="MSw-b3-Flt"/>
+                <outlet property="dashScrollView" destination="ZId-2l-Atd" id="rRW-Ef-Rir"/>
+                <outlet property="dashView" destination="jXy-EF-nbE" id="BEg-zM-1gN"/>
                 <outlet property="gradientView" destination="asK-7c-yqD" id="1bP-wT-VsG"/>
                 <outlet property="imgPageController" destination="XSD-Kf-fxV" id="HNs-rQ-kmD"/>
                 <outlet property="itemsCollectionView" destination="YjL-Kl-bV5" id="xgJ-Cn-4vP"/>
@@ -31,7 +33,7 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZId-2l-Atd">
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZId-2l-Atd">
                     <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jXy-EF-nbE">

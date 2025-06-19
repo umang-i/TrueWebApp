@@ -11,6 +11,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OrdersController" customModule="TrueWebApp" customModuleProvider="target">
             <connections>
+                <outlet property="bannerImageView" destination="ocE-yt-rg0" id="eDG-MC-Ovu"/>
+                <outlet property="orderScrollView" destination="412-gZ-cuR" id="GFD-D4-CLA"/>
                 <outlet property="ordersTableView" destination="FoX-jg-iY2" id="Q5G-OP-aSw"/>
                 <outlet property="tableViewHeightConstraint" destination="ZDh-8N-4EO" id="WbN-uc-i3U"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
@@ -21,7 +23,7 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="412-gZ-cuR">
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" translatesAutoresizingMaskIntoConstraints="NO" id="412-gZ-cuR">
                     <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="483-7R-W3k">

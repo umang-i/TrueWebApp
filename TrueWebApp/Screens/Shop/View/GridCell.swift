@@ -7,6 +7,7 @@
 
 import UIKit
 import Lottie
+import SDWebImage
 
 class GridCell: UICollectionViewCell {
     
@@ -397,11 +398,14 @@ class GridCell: UICollectionViewCell {
         updateFavouriteUI()
         
         // Load Image
-        let imageUrlString = "https://cdn.truewebpro.com/\(item.mproduct_image ?? "https://cdn.truewebpro.com/goapp/images/mbrands/mbrand_681a021e19710.png")"
+        let fallbackImageURL = "https://cdn.truewebpro.com/goapp/images/mbrands/mbrand_681a021e19710.png"
+        let imagePath = item.mproduct_image ?? fallbackImageURL
+        let imageUrlString = "https://cdn.truewebpro.com/\(imagePath)"
+
         if let url = URL(string: imageUrlString) {
-            gridImageView.load(url: url)
+            gridImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "noImage"))
         } else {
-            gridImageView.image = UIImage(named: "noImage") // Default placeholder
+            gridImageView.image = UIImage(named: "noImage")
         }
     }
     

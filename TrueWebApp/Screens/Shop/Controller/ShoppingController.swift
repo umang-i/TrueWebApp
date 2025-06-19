@@ -310,15 +310,19 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     
     @objc func scrollBanner() {
-        if bannerImages.isEmpty {
-            return // Don't try to scroll if there are no images
-        }
-        
+        guard !bannerImages.isEmpty else { return }
+
         var nextIndex = currentBannerIndex + 1
         if nextIndex >= bannerImages.count {
             nextIndex = 0
         }
-        
+
+        let totalItems = bannerCollectionView.numberOfItems(inSection: 0)
+        guard nextIndex < totalItems else {
+            print("⚠️ Attempted to scroll to index \(nextIndex), but collection view only has \(totalItems) items.")
+            return
+        }
+
         let indexPath = IndexPath(item: nextIndex, section: 0)
         bannerCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
         currentBannerIndex = nextIndex

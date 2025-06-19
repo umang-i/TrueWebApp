@@ -11,10 +11,8 @@ class AccountController: UIViewController {
 
     @IBOutlet weak var detailScrollView: UIScrollView!
     @IBOutlet weak var accDetailsTableView: UITableView!
+    var shimmerCount = 10
     
-    var refreshControl = UIRefreshControl()
-        private let activityIndicator = UIActivityIndicatorView(style: .large)
-
         let accountItems: [AccountItem] = [
             AccountItem(title: "My Rep Details", iconName: "rep"),
             AccountItem(title: "My Orders", iconName: "bag1"),
@@ -35,7 +33,6 @@ class AccountController: UIViewController {
         override func viewDidLoad() {
             super.viewDidLoad()
             setupTableView()
-            setupRefreshControl()
             self.navigationController?.setNavigationBarHidden(true, animated: true)
         }
 
@@ -43,31 +40,9 @@ class AccountController: UIViewController {
             accDetailsTableView.delegate = self
             accDetailsTableView.dataSource = self
             accDetailsTableView.register(UINib(nibName: "AccountCell", bundle: nil), forCellReuseIdentifier: "AccountCell")
+            accDetailsTableView.register(ShimmerCell.self, forCellReuseIdentifier: "ShimmerCell")
             accDetailsTableView.separatorStyle = .none
         }
-    
-    private func setupRefreshControl() {
-        refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-        refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
-        
-        if #available(iOS 10.0, *) {
-            detailScrollView.refreshControl = refreshControl
-        } else {
-            detailScrollView.addSubview(refreshControl)
-        }
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        detailScrollView.contentSize = CGSize(width: view.frame.width, height: accDetailsTableView.frame.maxY + 20)
-    }
-    
-    @objc private func refreshData() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            self.accDetailsTableView.reloadData()
-            self.refreshControl.endRefreshing()
-        }
-    }
 }
 
 extension AccountController: UITableViewDelegate, UITableViewDataSource {
@@ -78,7 +53,7 @@ extension AccountController: UITableViewDelegate, UITableViewDataSource {
     
     // Number of rows in each section
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return accountItems.count
+        return  accountItems.count
     }
     
     // Configure the cell
@@ -90,7 +65,7 @@ extension AccountController: UITableViewDelegate, UITableViewDataSource {
         cell.iconImageView.tintColor = .customBlue
         cell.textLabelView.text = data.title
         
-        // Apply spacing effect with shadow
+        // Style
         cell.containerView.layer.cornerRadius = 4
         cell.containerView.layer.borderWidth = 1
         cell.containerView.layer.borderColor = UIColor.customBlue.cgColor

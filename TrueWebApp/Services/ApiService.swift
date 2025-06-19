@@ -374,9 +374,9 @@ class ApiService {
             guard let data = data else {
                 return completion(.failure(NSError(domain: "", code: 500, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
             }
-            if let jsonString = String(data: data, encoding: .utf8) {
-                 print("Response browse banners JSON:\n\(jsonString)")
-            }
+//            if let jsonString = String(data: data, encoding: .utf8) {
+//                // print("Response browse banners JSON:\n\(jsonString)")
+//            }
             
             do {
                 let decoder = JSONDecoder()
@@ -1267,5 +1267,39 @@ class ApiService {
 
         task.resume()
     }
-
+    
+    func fetchRoundSliders(completion: @escaping (Result<[RoundSlider], Error>) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken") else {
+            completion(.failure(NSError(domain: "Missing auth token", code: 401)))
+            return
+        }
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/round-banner") else {
+            completion(.failure(NSError(domain: "InvalidURL", code: 0)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "NoData", code: 0)))
+                return
+            }
+            
+            do {
+                let decoded = try JSONDecoder().decode(RoundSliderResponse.self, from: data)
+                completion(.success(decoded.roundSliders))
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
 }
