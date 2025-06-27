@@ -200,44 +200,14 @@ class MyCompanyController: UIViewController, CustomNavBarDelegate {
         county = countyField.text ?? ""
         postcode = postcodeField.text ?? ""
 
-        let updatedAddress: [String: Any] = [
-            "user_company_address_id": user_company_address_id,
+        let requestBody: [String: Any] = [
+           // "user_company_address_id": user_company_address_id,
             "user_company_name": companyName,
             "company_address1": addressLine1,
             "company_address2": addressLine2,
             "company_city": city,
             "company_country": county,
             "company_postcode": postcode
-        ]
-
-        // Check if we're updating an existing address
-        var updatedAddresses: [[String: Any]] = []
-        var found = false
-
-        for address in companyAddresses {
-            if address.user_company_address_id == user_company_address_id {
-                updatedAddresses.append(updatedAddress)
-                found = true
-            } else {
-                updatedAddresses.append([
-                    "user_company_address_id": address.user_company_address_id,
-                    "user_company_name": address.user_company_name,
-                    "company_address1": address.company_address1,
-                    "company_address2": address.company_address2 ?? "",
-                    "company_city": address.company_city,
-                    "company_country": address.company_country,
-                    "company_postcode": address.company_postcode
-                ])
-            }
-        }
-
-        // If not found, we're adding a new one
-        if !found {
-            updatedAddresses.append(updatedAddress)
-        }
-
-        let requestBody: [String: Any] = [
-            "addresses": updatedAddresses
         ]
 
         ApiService().postCompanyAddresses(requestBody: requestBody) { result in
@@ -262,33 +232,17 @@ class MyCompanyController: UIViewController, CustomNavBarDelegate {
     }
 
     @objc func deleteCompanyTapped() {
-        // Filter out the address to delete
-        let updatedAddresses = companyAddresses.filter { $0.user_company_address_id != user_company_address_id }
-            .map { address in
-                return [
-                    "user_company_address_id": address.user_company_address_id,
-                    "user_company_name": address.user_company_name,
-                    "company_address1": address.company_address1,
-                    "company_address2": address.company_address2 ?? "",
-                    "company_city": address.company_city,
-                    "company_country": address.company_country,
-                    "company_postcode": address.company_postcode
-                ]
-            }
-        
-        let requestBody: [String: Any] = [
-            "addresses": updatedAddresses
-        ]
-        
-        ApiService().postCompanyAddresses(requestBody: requestBody) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let response):
-                    print("Deleted address ID: \(self.user_company_address_id) \(response)")
-                    self.navigationController?.popViewController(animated: true)
-                case .failure(let error):
-                    print("Error:", error.localizedDescription)
-                    self.showAlert(message: "Failed to delete address: \(error.localizedDescription)")
+        for address in companyAddresses {
+            ApiService.shared.deleteCompanyAddress(id: address.user_company_address_id) { success, message in
+                DispatchQueue.main.async {
+                    if success {
+                        print("✅ Success:", message ?? "")
+                        DispatchQueue.main.async {
+                            self.navigationController?.popViewController(animated: true)
+                        }
+                    } else {
+                        print("❌ Error:", message ?? "")
+                    }
                 }
             }
         }

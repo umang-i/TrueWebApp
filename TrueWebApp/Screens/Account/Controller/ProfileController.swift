@@ -22,12 +22,15 @@ class ProfileController: UIViewController, CustomNavBarDelegate {
     @IBOutlet weak var companyNameLAbel: UILabel!
     
     private var loadingIndicator: UIActivityIndicatorView!
+    
+    private var shimmerContainer: UIView?
         
         override func viewDidLoad() {
             super.viewDidLoad()
             setupNavBar()
             setupFonts()
             fetchUserData()
+            showShimmerPlaceholders()
         }
 
         // MARK: - NavBar
@@ -54,6 +57,60 @@ class ProfileController: UIViewController, CustomNavBarDelegate {
                 navBar.heightAnchor.constraint(equalToConstant: 50)
             ])
         }
+    
+    private func showShimmerPlaceholders() {
+        shimmerContainer = UIView()
+        shimmerContainer?.translatesAutoresizingMaskIntoConstraints = false
+        shimmerContainer?.isUserInteractionEnabled = false // ✅ Allow touches to pass through
+
+        guard let shimmerContainer = shimmerContainer else { return }
+
+        view.addSubview(shimmerContainer)
+        view.bringSubviewToFront(shimmerContainer)
+
+        NSLayoutConstraint.activate([
+            shimmerContainer.topAnchor.constraint(equalTo: view.topAnchor),
+            shimmerContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            shimmerContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            shimmerContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        // Hide real labels
+        [usernameLabel, repcodeTextLabel, repCodeLabel, emailTextLabel, emailLabelText,
+         phoneNumberTextLabel, phoneNumberLabel, companyLAbelTextLAbel,
+         companyAddressLAbel, companyNameText, companyNameLAbel].forEach { $0?.isHidden = true }
+
+        let targetLabels = [usernameLabel, repcodeTextLabel, emailTextLabel,
+                            phoneNumberTextLabel, companyNameText, companyLAbelTextLAbel]
+
+        for label in targetLabels {
+            guard let label = label else { continue }
+            let shimmer = ShimmerView()
+            shimmer.translatesAutoresizingMaskIntoConstraints = false
+            shimmer.layer.cornerRadius = 6
+            shimmer.clipsToBounds = true
+            shimmerContainer.addSubview(shimmer)
+
+            NSLayoutConstraint.activate([
+                shimmer.leadingAnchor.constraint(equalTo: label.leadingAnchor),
+                shimmer.trailingAnchor.constraint(equalTo: label.trailingAnchor),
+                shimmer.topAnchor.constraint(equalTo: label.topAnchor),
+                shimmer.bottomAnchor.constraint(equalTo: label.bottomAnchor)
+            ])
+        }
+    }
+
+    private func hideShimmerPlaceholders() {
+        shimmerContainer?.removeFromSuperview()
+        shimmerContainer = nil
+
+        // Show real content
+        [usernameLabel, repcodeTextLabel, repCodeLabel, emailTextLabel, emailLabelText,
+         phoneNumberTextLabel, phoneNumberLabel, companyLAbelTextLAbel,
+         companyAddressLAbel, companyNameText, companyNameLAbel].forEach { $0?.isHidden = false }
+    }
+
+
 
         // MARK: - Font Styling
         func setupFonts() {
@@ -72,20 +129,23 @@ class ProfileController: UIViewController, CustomNavBarDelegate {
 
         // MARK: - Fetch User Data
     func fetchUserData() {
-        showLoadingIndicator()
-
-        if let savedUser = loadUserFromDefaults() {
-            self.updateUI(with: savedUser)
-            self.hideLoadingIndicator()
-        } else {
-print("no data")
+        ApiService.shared.fetchUserProfile { profile in
+            DispatchQueue.main.async {
+                if let profile = profile {
+                    print("✅ User name: \(profile.user_detail.name)")
+                    self.hideShimmerPlaceholders()
+                    self.updateUI(with: profile.user_detail)
+                } else {
+                    print("❌ Failed to load user profile.")
+                }
+            }
         }
     }
 
         // MARK: - Update UI
-        func updateUI(with user: User1) {
+        func updateUI(with user: UserDetail) {
             usernameLabel.text = user.name
-            repcodeTextLabel.text = user.rep_code ?? "N/A" // Handle nil case for rep_code
+            repcodeTextLabel.text = "\(user.rep_id ?? 0 )"
             emailTextLabel.text = user.email
             phoneNumberTextLabel.text = user.mobile
             companyNameText.text = user.company_name
@@ -95,25 +155,6 @@ print("no data")
                 .compactMap { $0 } // Filter out nil values
                 .joined(separator: ", ")
             companyLAbelTextLAbel.text = fullAddress
-        }
-
-        // MARK: - Loading Indicator
-        func showLoadingIndicator() {
-            loadingIndicator = UIActivityIndicatorView(style: .large)
-            loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview(loadingIndicator)
-
-            NSLayoutConstraint.activate([
-                loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-            ])
-
-            loadingIndicator.startAnimating()
-        }
-
-        func hideLoadingIndicator() {
-            loadingIndicator.stopAnimating()
-            loadingIndicator.removeFromSuperview()
         }
 
         // MARK: - CustomNavBarDelegate

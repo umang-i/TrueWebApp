@@ -199,7 +199,8 @@ class ShimmerBannerCell: UICollectionViewCell {
         shimmerView.translatesAutoresizingMaskIntoConstraints = false
         shimmerView.layer.cornerRadius = 10
         shimmerView.clipsToBounds = true
-        
+        shimmerView.isAccessibilityElement = false
+
         contentView.addSubview(shimmerView)
 
         NSLayoutConstraint.activate([
@@ -216,7 +217,7 @@ class ShimmerBannerCell: UICollectionViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        shimmerView.startAnimating()
+        shimmerView.stopAnimating()
     }
 
     override func didMoveToWindow() {

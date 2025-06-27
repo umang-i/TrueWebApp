@@ -4,6 +4,7 @@
 //
 //  Created by Umang Kedan on 07/03/25.
 //
+
 import UIKit
 
 class FilterView: UIView {
@@ -41,7 +42,7 @@ class FilterView: UIView {
         ApiService().fetchBrands { result in
             switch result {
             case .success(let brandResponse):
-                print("Brands fetched successfully: \(brandResponse.mbrands)")
+              //  print("Brands fetched successfully: \(brandResponse.mbrands)")
                 DispatchQueue.main.async {
                     self.brands = brandResponse.mbrands
                     self.wishlistBrands = brandResponse.wishlistbrand

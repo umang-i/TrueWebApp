@@ -171,7 +171,7 @@ class OrdersController: UIViewController, CustomNavBarDelegate , OrderCellDelega
 }
 extension OrdersController : UITableViewDataSource , UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return isLoading ? 3 :  orders.count
+        return isLoading ? 5 :  orders.count
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 1

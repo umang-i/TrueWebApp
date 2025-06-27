@@ -161,17 +161,17 @@ class ApiService {
                     print("✅ Parsed Login Response: \(loginResponse)")
                     
                     // Check for admin approval flag
-                    if loginResponse.user.admin_approval == "Approved" {
+                    if loginResponse.user_detail.admin_approval == "Approved" {
                         // If admin_approval is true, navigate to DashboardController
                         print("⚡ Admin approval granted, navigating to DashboardController")
                         
                         // Save token and user info
                         UserDefaults.standard.set(loginResponse.token, forKey: "authToken")
-                        UserDefaults.standard.set(loginResponse.user.id, forKey: "userId")
+                        UserDefaults.standard.set(loginResponse.user_detail.id, forKey: "userId")
                         UserDefaults.standard.set(Date().addingTimeInterval(TimeInterval(loginResponse.expires_in)), forKey: "tokenExpiry")
                         
                         do {
-                            let userData = try JSONEncoder().encode(loginResponse.user)
+                            let userData = try JSONEncoder().encode(loginResponse.user_detail)
                             UserDefaults.standard.set(userData, forKey: "userData")
                             
                             if let jsonString = String(data: userData, encoding: .utf8) {
@@ -237,46 +237,44 @@ class ApiService {
         }
     }
     
-    func fetchUserProfile(completion: @escaping (Result<User, Error>) -> Void) {
-        guard let token = UserDefaults.standard.string(forKey: "authToken") else {
-            completion(.failure(NSError(domain: "No token found", code: 401)))
-            return
-        }
-        
+    func fetchUserProfile(completion: @escaping (UserProfileResponse?) -> Void) {
         guard let url = URL(string: "https://goappadmin.zapto.org/api/user-profile") else {
-            completion(.failure(NSError(domain: "Invalid URL", code: -1)))
+            print("❌ Invalid URL")
+            completion(nil)
             return
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        // Optional Authorization header if needed
+        if let token = UserDefaults.standard.string(forKey: "authToken") {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
+            guard let data = data, error == nil else {
+                print("❌ Request error: \(error?.localizedDescription ?? "Unknown error")")
+                completion(nil)
                 return
             }
-            
-            guard let data = data else {
-                completion(.failure(NSError(domain: "No data", code: -2)))
-                return
-            }
-            
-            // Debugging: Print the raw response
-            print("Raw response data:", String(data: data, encoding: .utf8) ?? "No data")
-            
+
             do {
                 let profile = try JSONDecoder().decode(UserProfileResponse.self, from: data)
-                completion(.success(profile.user))
+                completion(profile)
             } catch {
-                print("Decoding error:", error)
-                completion(.failure(error))
+                print("❌ JSON decoding error: \(error.localizedDescription)")
+                if let str = String(data: data, encoding: .utf8) {
+                    print("🔍 Raw response: \(str)")
+                }
+                completion(nil)
             }
         }
+
         task.resume()
     }
-    
+
     func fetchPageContent(completion: @escaping (Result<PageContentResponse, Error>) -> Void) {
         guard let url = URL(string: "https://truewebapp.com/api/page") else {
             completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
@@ -375,12 +373,12 @@ class ApiService {
                 return completion(.failure(NSError(domain: "", code: 500, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
             }
 //            if let jsonString = String(data: data, encoding: .utf8) {
-//                // print("Response browse banners JSON:\n\(jsonString)")
+//                 print("Response browse banners JSON:\n\(jsonString)")
 //            }
             
             do {
                 let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
+//                decoder.keyDecodingStrategy = .convertFromSnakeCase
                 let decoded = try decoder.decode(BrowseBannerResponse.self, from: data)
                 completion(.success(decoded))
             } catch {
@@ -482,9 +480,9 @@ class ApiService {
                 return
             }
             
-            if let rawString = String(data: data, encoding: .utf8) {
-                print("Raw Response brands: \(rawString)")
-            }
+//            if let rawString = String(data: data, encoding: .utf8) {
+//                print("Raw Response brands: \(rawString)")
+//            }
             
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
                 // Return an error based on the HTTP status code
@@ -680,11 +678,10 @@ class ApiService {
             return
         }
         
-        guard let url = URL(string: "https://goappadmin.zapto.org/api/company-address/update") else {
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/company-address/upsert") else {
             completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
             return
         }
-        print("token \(authToken)")
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -721,6 +718,59 @@ class ApiService {
             }
         }.resume()
     }
+    
+    func deleteCompanyAddress(id: Int, completion: @escaping (Bool, String?) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
+            completion(false , "invalid token")
+            return
+        }
+        
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/company-address/delete") else {
+            completion(false, "Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let body: [String: Any] = ["user_company_address_id": id]
+
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        } catch {
+            completion(false, "Failed to encode request body")
+            return
+        }
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                completion(false, error?.localizedDescription ?? "Unknown error")
+                return
+            }
+            
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Raw response: \(responseString)")
+            }
+
+
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let status = json["status"] as? Bool,
+                   let message = json["message"] as? String {
+                    completion(status, message)
+                } else {
+                    completion(false, "Invalid response format")
+                }
+            } catch {
+                completion(false, "Failed to parse response")
+            }
+        }
+
+        task.resume()
+    }
+
     
     func fetchDeliveryMethods(completion: @escaping (Result<[MethodDelivery], Error>) -> Void) {
         guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
@@ -1299,6 +1349,176 @@ class ApiService {
                 completion(.success(decoded.roundSliders))
             } catch {
                 completion(.failure(error))
+            }
+        }.resume()
+    }
+    
+    func fetchNewProductBanners(completion: @escaping (Result<NewProductBannerResponse, Error>) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken") else {
+            completion(.failure(NSError(domain: "Missing auth token", code: 401)))
+            return
+        }
+        
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/new-product-banner") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: -1001)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            guard let data = data else {
+                DispatchQueue.main.async {
+                    completion(.failure(NSError(domain: "No data", code: -1002)))
+                }
+                return
+            }
+            
+//            if let jsonString = String(data: data, encoding: .utf8) {
+//                print("Response browse banners JSON:\n\(jsonString)")
+//            }
+            
+            do {
+                let decodedResponse = try JSONDecoder().decode(NewProductBannerResponse.self, from: data)
+                DispatchQueue.main.async {
+                    completion(.success(decodedResponse))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }.resume()
+    }
+    
+    func fetchTopSeller(completion: @escaping (Result<TopSellerBannerResponse, Error>) -> Void) {
+        guard let authToken = UserDefaults.standard.string(forKey: "authToken") else {
+            completion(.failure(NSError(domain: "Missing auth token", code: 401)))
+            return
+        }
+        
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/top-seller-banner") else {
+            completion(.failure(NSError(domain: "Invalid URL", code: -1001)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+                return
+            }
+            
+            guard let data = data else {
+                DispatchQueue.main.async {
+                    completion(.failure(NSError(domain: "No data", code: -1002)))
+                }
+                return
+            }
+            
+            do {
+                let decodedResponse = try JSONDecoder().decode(TopSellerBannerResponse.self, from: data)
+                DispatchQueue.main.async {
+                    completion(.success(decodedResponse))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }.resume()
+    }
+    
+    func deleteUserAccount(completion: @escaping (Bool, String?) -> Void) {
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/user-account/delete") else {
+            completion(false, "Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        // Optional: Add auth token if needed
+        if let authToken = UserDefaults.standard.string(forKey: "authToken") {
+            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        }
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                completion(false, error?.localizedDescription ?? "Unknown error")
+                return
+            }
+
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("Raw response: \(responseString)")
+            }
+
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    let statusValue = json["status"]
+                    let status = (statusValue as? Bool) ?? ((statusValue as? Int) == 1)
+                    let message = json["message"] as? String
+                    completion(status, message)
+                } else {
+                    completion(false, "Invalid response format")
+                }
+            } catch {
+                completion(false, "Failed to parse response")
+            }
+        }
+
+        task.resume()
+    }
+
+    func checkRep(repName: String, completion: @escaping (RepData?) -> Void) {
+        let encodedName = repName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? repName
+        let urlString = "https://goappadmin.zapto.org/api/reps/check/\(encodedName)"
+        
+        guard let url = URL(string: urlString) else {
+            print("❌ Invalid URL")
+            completion(nil)
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("❌ Network error: \(error?.localizedDescription ?? "Unknown error")")
+                completion(nil)
+                return
+            }
+
+            do {
+                let decoded = try JSONDecoder().decode(RepCheckResponse.self, from: data)
+                if decoded.status {
+                    completion(decoded.data)
+                } else {
+                    completion(nil)
+                }
+            } catch {
+                print("❌ JSON decoding error: \(error.localizedDescription)")
+                if let raw = String(data: data, encoding: .utf8) {
+                    print("🔍 Raw response: \(raw)")
+                }
+                completion(nil)
             }
         }.resume()
     }

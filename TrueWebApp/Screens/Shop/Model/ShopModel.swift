@@ -133,13 +133,13 @@ struct Products: Codable, Hashable {
     let barcode: String?
     let options: [String]?
     let option_value: [String : String]?
-   // let quantity: Int
+    let quantity: Int?
     let mlocation_id: Int
     var user_info_wishlist: Bool
     
     enum CodingKeys: String, CodingKey {
         case mproduct_id, mproduct_title, mproduct_image, mproduct_slug, mproduct_desc, status
-        case saleschannel, product_type, product_deal_tag, product_offer, brand_name
+        case saleschannel, product_type, product_deal_tag, product_offer, brand_name,quantity
         case mvariant_id, sku, image, price, compare_price, cost_price, taxable, barcode
         case options, option_value, mlocation_id, user_info_wishlist
     }
@@ -178,30 +178,52 @@ struct Products: Codable, Hashable {
         barcode = try? container.decodeIfPresent(String.self, forKey: .barcode)
         options = try? container.decodeIfPresent([String].self, forKey: .options)
         option_value = try? container.decodeIfPresent([String: String].self, forKey: .option_value)
-       // quantity = try container.decode(Int.self, forKey: .quantity)
+        quantity = try? container.decode(Int.self, forKey: .quantity)
         mlocation_id = try container.decode(Int.self, forKey: .mlocation_id)
         user_info_wishlist = try container.decode(Bool.self, forKey: .user_info_wishlist)
     }
 }
 
+// MARK: - Response
 struct BrowseBannerResponse: Codable {
     let status: Bool
     let message: String
     let cdnURL: String
     let browseBanners: [BrowseBanner]
+
+    enum CodingKeys: String, CodingKey {
+        case status, message
+        case cdnURL
+        case browseBanners
+    }
 }
 
 struct BrowseBanner: Codable {
-    let browsebannerId: Int
-    let browsebannerName: String
-    let browsebannerImage: String
-    let browsebannerPosition: Int
+    let browsebannerId: Int?
+    let browsebannerName: String?
+    let browsebannerImage: String?
+    let browsebannerPosition: Int?
+    let mainMcatId: Int?
     let mcatId: Int?
     let msubcatId: Int?
     let mproductId: Int?
     let createdAt: String?
-    let updatedAt: String
+    let updatedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case browsebannerId       = "browsebanner_id"
+        case browsebannerName     = "browsebanner_name"
+        case browsebannerImage    = "browsebanner_image"
+        case browsebannerPosition = "browsebanner_position"
+        case mainMcatId           = "main_mcat_id"
+        case mcatId               = "mcat_id"
+        case msubcatId            = "msubcat_id"
+        case mproductId           = "mproduct_id"
+        case createdAt            = "created_at"
+        case updatedAt            = "updated_at"
+    }
 }
+
 
 import Foundation
 
@@ -262,7 +284,7 @@ extension Products {
         self.barcode = nil
         self.options = nil
         self.option_value = nil
-      //  self.quantity = 0
+        self.quantity = 0
         self.mlocation_id = 0
         self.user_info_wishlist = false
     }

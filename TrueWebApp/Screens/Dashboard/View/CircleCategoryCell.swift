@@ -20,9 +20,8 @@ class CircleCategoryCell: UICollectionViewCell {
     }
     
     func setCell(categoryName : String , image : String){
-        print(image)
         if let url = URL(string: "https://cdn.truewebpro.com/\(image)") {
-            circleImageView.load(url: url)
+            circleImageView.sd_setImage(with: url , placeholderImage:  UIImage(named: "noImage"))
         }
     }
 }

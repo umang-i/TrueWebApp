@@ -162,7 +162,8 @@ class ExpandableCell: UITableViewCell {
             titleWithoutIconConstraint.isActive = false
             
             if let urlString = imageUrl, let url = URL(string: urlString) {
-                iconImageView.load(url: url)
+                let url = URL(string: imageUrl ?? "")
+                iconImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "noImage"))
             } else {
                 iconImageView.image = UIImage(named: "noImage")
             }

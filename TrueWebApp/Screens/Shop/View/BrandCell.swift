@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class BrandCell: UICollectionViewCell {
     
@@ -14,6 +15,8 @@ class BrandCell: UICollectionViewCell {
         func didDeselectBrand(withId brandId: String)
       //  func didToggleFavoriteState(forBrandWithId brandId: String)
     }
+    
+    private var shimmerView: ShimmerView?
     
     @IBOutlet weak var checkmarkImageView: UIImageView!
     @IBOutlet weak var brandView: UIView!
@@ -58,6 +61,7 @@ class BrandCell: UICollectionViewCell {
         setImage(brand: brand)
         setSelectedState(isSelected: isSelected)
         
+        
         // Favorite checkmark logic
         if isFavorite {
             // Show a green checkmark for favorite brands
@@ -71,11 +75,17 @@ class BrandCell: UICollectionViewCell {
     }
     
     private func setImage(brand: Brand) {
-         let imageUrlString = "https://cdn.truewebpro.com/\(brand.mbrandImage)"
-           if let url = URL(string: imageUrlString) {
-            brandImageView.load(url: url) // Use your custom image loading method
-        } else {
-            brandImageView.image = UIImage(named: "noImage") // Default placeholder
+        showShimmer()
+
+        let imageUrlString = "https://cdn.truewebpro.com/\(brand.mbrandImage)"
+        guard let url = URL(string: imageUrlString) else {
+            brandImageView.image = UIImage(named: "noImage")
+            hideShimmer()
+            return
+        }
+
+        brandImageView.sd_setImage(with: url, placeholderImage: nil, options: [.continueInBackground, .highPriority]) { [weak self] _, _, _, _ in
+            self?.hideShimmer()
         }
     }
     
@@ -100,5 +110,18 @@ class BrandCell: UICollectionViewCell {
             checkmarkImageView.tintColor = .systemGreen
             checkmarkImageView.isHidden = false
         }
+    }
+    
+    private func showShimmer() {
+        shimmerView = ShimmerView(frame: brandImageView.bounds)
+        if let shimmerView = shimmerView {
+            brandImageView.addSubview(shimmerView)
+            shimmerView.startAnimating()
+        }
+    }
+
+    private func hideShimmer() {
+        shimmerView?.stopAnimating()
+        shimmerView?.removeFromSuperview()
     }
 }

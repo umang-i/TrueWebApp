@@ -146,7 +146,7 @@ class ServiceCell: UITableViewCell {
         
         // Load image
         if let url = URL(string: "https://cdn.truewebpro.com/\(solution.service_solution_image)") {
-            posImageView.load(url: url)
+            posImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "placeholder"))
         }
         
         // Remove previous feature labels before adding new ones

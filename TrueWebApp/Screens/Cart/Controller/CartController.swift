@@ -195,12 +195,12 @@ class CartController: UIViewController, CustomNavBarDelegate , UIGestureRecogniz
         let requestBody: [String: Any] = ["cart": cartItemsDict]
         print("Updating Cart on Server:", requestBody)
         
-        if let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) {
-            UserDefaults.standard.set(cartItemsDict, forKey: "cart")
-                print("✅ Saved requestBody to local storage")
-            } else {
-                print("❌ Failed to serialize requestBody for local storage")
-            }
+//        if let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) {
+//            UserDefaults.standard.set(cartItemsDict, forKey: "cart")
+//                print("✅ Saved requestBody to local storage")
+//            } else {
+//                print("❌ Failed to serialize requestBody for local storage")
+//            }
         
         request.httpBody = try? JSONSerialization.data(withJSONObject: requestBody)
 
@@ -256,6 +256,7 @@ class CartController: UIViewController, CustomNavBarDelegate , UIGestureRecogniz
             }
             tableViewHeightConstraint?.constant = totalHeight + 200
         }
+    
     func setnavBar() {
         let topBackgroundView = UIView()
         topBackgroundView.backgroundColor = .white
@@ -281,6 +282,7 @@ class CartController: UIViewController, CustomNavBarDelegate , UIGestureRecogniz
             navBar.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
+    
     @IBAction func checkoutButtonAction(_ sender: Any) {
         if cartItemss.isEmpty == false {
             let vc = CheckOutController()
@@ -302,7 +304,7 @@ class CartController: UIViewController, CustomNavBarDelegate , UIGestureRecogniz
 
 extension CartController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return cartItemss.count
+        return isLoading ? 2 : cartItemss.count
     }
     
     // Number of rows should be equal to the number of cart items

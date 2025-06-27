@@ -34,12 +34,7 @@ class DetailOrderCell: UITableViewCell {
         
         let baseUrl = "https://cdn.truewebpro.com/"
         
-        if let imagePath = order.product.mproductImage,
-           let imageUrl = URL(string: baseUrl + imagePath) {
-            productImageView.load(url: imageUrl)
-        } else {
-            productImageView.image = UIImage(named: "noImage")
-        }
-    
+        let imageUrl = URL(string: baseUrl + (order.product.mproductImage ?? ""))
+        productImageView.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "noImage"))
     }
 }

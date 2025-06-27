@@ -458,6 +458,7 @@ class GridCell: UICollectionViewCell {
                 DispatchQueue.main.async {
                     self.isFavourite.toggle()
                     self.updateFavouriteUI()
+                    print(productId)
                     print("Error adding to wishlist:", error ?? "Unknown error")
                 }
             }

@@ -226,8 +226,26 @@ func logoutAndRedirectToLogin(from viewController: UIViewController) {
 }
 
 func handleLogout() {
-    // Implement your logout logic here
-    print("User logged out")
+    ApiService.shared.deleteUserAccount { success, message in
+        if success {
+            print("✅ Account deleted: \(message ?? "")")
+            let defaults = UserDefaults.standard
+            defaults.removeObject(forKey: "authToken")
+            defaults.synchronize()
+
+            // Navigate to login screen
+            let loginVC = LoginController()
+            let navController = UINavigationController(rootViewController: loginVC)
+
+            // Set as root view controller
+            if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                sceneDelegate.window?.rootViewController = navController
+                sceneDelegate.window?.makeKeyAndVisible()
+            }
+        } else {
+            print("❌ Failed to delete account: \(message ?? "Unknown error")")
+        }
+    }
 }
 
 func showDeleteAlert(on viewController: UIViewController) {

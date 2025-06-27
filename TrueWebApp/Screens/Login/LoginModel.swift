@@ -37,24 +37,35 @@ struct LoginResponse: Codable {
     let message: String
     let token: String
     let token_type: String
-    let user: User1
-    let expires_in: Double // Changed to Double for large value
+    let user_detail: User1
+    let rep_details: RepDetail? // Nullable
+    let expires_in: Double
 }
 
 struct User1: Codable {
     let id: Int
+    let rep_id: Int? // Add this field based on JSON
     let name: String
     let email: String
     let email_verified_at: String?
     let mobile: String
     let company_name: String
     let address1: String
-    let address2: String? // Optional as it may be null
+    let address2: String?
     let city: String
     let country: String
     let postcode: String
-    let rep_code: String?
-    let admin_approval: String // Changed to String because JSON returns "Approved"
+    let rep_code: String? // Optional — present only in some cases
+    let admin_approval: String
+    let created_at: String
+    let updated_at: String
+}
+
+struct RepDetail: Codable {
+    let rep_id: Int
+    let user_id: Int
+    let rep_code: String
+    let commission_percent: String
     let created_at: String
     let updated_at: String
 }

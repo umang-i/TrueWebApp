@@ -61,6 +61,8 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
 
     let refreshControl = UIRefreshControl()
     let loaderView = CustomLoaderView()
+    
+    var pendingProductPath: (mainMcatId: Int, mcatId: Int, msubcatId: Int, mproductId: Int)?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,10 +88,16 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
         super.viewWillAppear(animated)
 
         fetchCategories()
-
+        tableView.reloadData()
+//
         isLoading = true
         tableView.reloadData() // Show shimmer rows
         fetchCart()
+        
+        if let path = pendingProductPath {
+               expandToProduct(mainMcatId: path.mainMcatId, mcatId: path.mcatId, msubcatId: path.msubcatId, mproductId: path.mproductId)
+               pendingProductPath = nil
+           }
     }
     
     func fetchCart(){
@@ -224,7 +232,8 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 self.isRefreshing = false
                 switch result {
                 case .success(let response):
-                    self.bannerImages = response.browseBanners.map { response.cdnURL + $0.browsebannerImage }
+                    print(response)
+                    self.bannerImages = response.browseBanners.map { response.cdnURL + ($0.browsebannerImage ?? "goapp/images/browsebanner/browsebanner_68185bf0436f1.png") }
                     self.banners = response.browseBanners
                     print("loadBannerData - Success: bannerImages count - \(self.bannerImages.count)")
                     self.bannerCollectionView.reloadData()
@@ -403,7 +412,7 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
         
         // Set constraints for the container view
         NSLayoutConstraint.activate([
-            searchSortView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 80),
+            searchSortView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 70),
             searchSortView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 10),
             searchSortView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -10),
             searchSortView.heightAnchor.constraint(equalToConstant: 50)
@@ -446,27 +455,40 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     func didApplyFilter(selectedBrandIds: Set<String>, endchar: String) {
         self.selectedBrandIds = selectedBrandIds
-        overlayView.isHidden = true // Hide the filter overlay
+        overlayView.isHidden = true
+        tableView.isHidden = false
         
-        // Fetch filtered categories
         ApiService().fetchFilteredCategories(selectedBrandIds: selectedBrandIds, endChar: searchTextField.text ?? "") { [weak self] result in
             guard let self = self else { return }
-            
+
             DispatchQueue.main.async {
                 switch result {
                 case .success(let response):
                     let allCategories = response.mainCategories.flatMap { $0.categories ?? [] }
                     print("Fetched \(allCategories.count) categories")
+                    
+                    self.mainCategory = response.mainCategories
                     self.category = allCategories
-                    self.tableView.reloadData()
-                    self.tableView.isHidden = self.category.isEmpty
+
+                    // Reset expanded states
+                    self.expandedMainCategories.removeAll()
+                    self.expandedCategories.removeAll()
+                    self.expandedSubcategories.removeAll()
+
+                    self.isLoading = false
+
                     self.noDataLabel.isHidden = !self.category.isEmpty
-                    self.scrollView.layoutIfNeeded()
+
+                    self.tableView.reloadData()
+                    self.tableView.performBatchUpdates(nil, completion: nil)
+                    self.tableView.setNeedsLayout()
+                    self.tableView.layoutIfNeeded()
                     
                 case .failure(let error):
                     print("Error:", error.localizedDescription)
+                    self.mainCategory = []
+                    self.category = []
                     self.noDataLabel.isHidden = false
-                    self.category = [] // Clear the categories on failure
                     self.tableView.reloadData()
                 }
             }
@@ -534,51 +556,181 @@ class ShopController: UIViewController, UICollectionViewDelegate, UICollectionVi
         }
     }
     
-    func expandToProduct(mcatId: Int, msubcatId: Int, mproductId: Int) {
-        print("msubcat id \(msubcatId)")
-        
-        // Find category index
-        guard let categoryIndex = category.firstIndex(where: { $0.mcat_id == mcatId }) else { return }
-        let cat = category[categoryIndex]
-        
-        // Expand the category
-        let categoryIndexPath = IndexPath(row: 0, section: categoryIndex)
-        expandedCategories.insert(categoryIndexPath)
-        
-        // Find subcategory index
-        guard let subcatIndex = cat.subcategories.firstIndex(where: { $0.msubcat_id == msubcatId }) else {
-            tableView.reloadData()
+    
+    func getIndexPathForSubcategoryGrid(mainMcatId: Int, mcatId: Int, msubcatIndex: Int) -> IndexPath? {
+        for (sectionIndex, mainCat) in mainCategory.enumerated() {
+            guard mainCat.mainMcatID == mainMcatId else { continue }
+
+            var row = 1 // main category title
+
+            for (catIndex, cat) in (mainCat.categories ?? []).enumerated() {
+                row += 1 // category title
+
+                let catIndexPath = IndexPath(row: catIndex, section: sectionIndex)
+                guard expandedCategories.contains(catIndexPath) else { continue }
+
+                for (subIndex, _) in cat.subcategories.enumerated() {
+                    let subcatIndexPath = IndexPath(row: subIndex, section: sectionIndex)
+                    row += 1 // subcategory title
+
+                    if expandedSubcategories[subcatIndexPath] == true {
+                        if subIndex == msubcatIndex {
+                            return IndexPath(row: row, section: sectionIndex)
+                        }
+                        row += 1 // grid row
+                    }
+                }
+            }
+        }
+        return nil
+    }
+    
+    func expandToProduct(mainMcatId: Int, mcatId: Int, msubcatId: Int, mproductId: Int) {
+        guard let path = findProductPath(mainMcatId: mainMcatId, mcatId: mcatId, msubcatId: msubcatId, mproductId: mproductId) else {
+            print("Product not found.")
             return
         }
-        print("subcat id \(subcatIndex)")
+
+        let sectionIndex = path.sectionIndex
+        let categoryIndex = path.categoryIndex
+        let subcategoryIndex = path.subcategoryIndex
         
-        // Calculate subcategory title row index
-        let subcatTitleRow = subcatIndex / 2 + 2
-        let subcatIndexPath = IndexPath(row: subcatTitleRow, section: categoryIndex)
-        
-        // Mark subcategory as expanded
+        expandedMainCategories.insert(sectionIndex)
+        let catIndexPath = IndexPath(row: categoryIndex, section: sectionIndex)
+        expandedCategories.insert(catIndexPath)
+        let subcatIndexPath = IndexPath(row: subcategoryIndex, section: sectionIndex)
         expandedSubcategories[subcatIndexPath] = true
-        print(subcatIndexPath)
-        
-        // Reload table
+
         tableView.reloadData()
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.tableView.layoutIfNeeded()
-            
-            let sectionRect = self.tableView.rect(forSection: categoryIndex)
-            print("Calculated Section Rect: \(sectionRect)")
-            
-            if let cell = self.tableView.cellForRow(at: IndexPath(row: subcatIndex * 2 + 2, section: categoryIndex)) {
-                let cellRect = cell.convert(cell.bounds, to: self.scrollView)
-                print("Calculated Cell Rect: \(cellRect)")
-                self.scrollView.scrollRectToVisible(cellRect, animated: true)
-            } else {
-                print("Subcategory cell not found. Forcing a general section scroll.")
-                self.scrollView.scrollRectToVisible(sectionRect, animated: true)
+            if let targetIndexPath = self.getIndexPathForSubcategoryGrid(mainMcatId: mainMcatId, mcatId: mcatId, msubcatIndex: subcategoryIndex) {
+                if let cell = self.tableView.cellForRow(at: targetIndexPath) {
+                    let cellRect = cell.convert(cell.bounds, to: self.scrollView)
+                    self.scrollView.scrollRectToVisible(cellRect, animated: true)
+                }
             }
         }
     }
+    
+    func findProductPath(mainMcatId: Int, mcatId: Int, msubcatId: Int, mproductId: Int) -> ProductPath? {
+        for (sectionIndex, mainCat) in mainCategory.enumerated() {
+            guard mainCat.mainMcatID == mainMcatId else { continue }
+            
+            for (catIndex, cat) in (mainCat.categories ?? []).enumerated() {
+                guard cat.mcat_id == mcatId else { continue }
+                
+                for (subcatIndex, subcat) in cat.subcategories.enumerated() {
+                    guard subcat.msubcat_id == msubcatId else { continue }
+                    let found = subcat.products.contains(where: { $0.mproduct_id == mproductId })
+                    if found {
+                        return ProductPath(
+                            sectionIndex: sectionIndex,
+                            categoryIndex: catIndex,
+                            subcategoryIndex: subcatIndex
+                        )
+                    }
+                }
+            }
+        }
+        return nil
+    }
+    
+    struct ProductPath {
+        let sectionIndex: Int
+        let categoryIndex: Int
+        let subcategoryIndex: Int
+    }
+
+    func findProductPath(mainMcatId: Int, mcatId: Int, mproductId: Int) -> ProductPath? {
+        for (sectionIndex, mainCat) in mainCategory.enumerated() {
+            guard mainCat.mainMcatID == mainMcatId else { continue }
+            
+            for (catIndex, cat) in (mainCat.categories ?? []).enumerated() {
+                guard cat.mcat_id == mcatId else { continue }
+                
+                for (subcatIndex, subcat) in cat.subcategories.enumerated() {
+                    let found = subcat.products.contains(where: { $0.mproduct_id == mproductId })
+                    if found {
+                        return ProductPath(
+                            sectionIndex: sectionIndex,
+                            categoryIndex: catIndex,
+                            subcategoryIndex: subcatIndex
+                        )
+                    }
+                }
+            }
+        }
+        return nil
+    }
+
+//    func expandToProduct(mainMcatId: Int, mcatId: Int, mproductId: Int) {
+//        guard let path = findProductPath(mainMcatId: mainMcatId, mcatId: mcatId, mproductId: mproductId) else {
+//            print("Product not found.")
+//            return
+//        }
+//
+//        let sectionIndex = path.sectionIndex
+//        let categoryIndex = path.categoryIndex
+//        let subcategoryIndex = path.subcategoryIndex
+//        
+//        // Expand all levels
+//        expandedMainCategories.insert(sectionIndex)
+//        
+//        let catIndexPath = IndexPath(row: categoryIndex, section: sectionIndex)
+//        expandedCategories.insert(catIndexPath)
+//        
+//        let subcatIndexPath = IndexPath(row: subcategoryIndex, section: sectionIndex)
+//        expandedSubcategories[subcatIndexPath] = true
+//
+//        tableView.reloadData()
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//            self.tableView.layoutIfNeeded()
+//            
+//            // Dynamically calculate the product grid row
+//            if let targetIndexPath = self.getIndexPathForSubcategoryGrid(mainMcatId: mainMcatId, mcatId: mcatId, msubcatIndex: subcategoryIndex) {
+//                if let cell = self.tableView.cellForRow(at: targetIndexPath) {
+//                    let cellRect = cell.convert(cell.bounds, to: self.scrollView)
+//                    self.scrollView.scrollRectToVisible(cellRect, animated: true)
+//                }
+//            }
+//        }
+//    }
+
+
+//    func getIndexPathForSubcategoryTitle(mainCatId: Int, msubcatId: Int) -> IndexPath? {
+//        for (sectionIndex, mainCat) in mainCategory.enumerated() {
+//            guard mainCat.mainMcatID == mainCatId else { continue }
+//            
+//            var row = 0
+//            row += 1 // main category title
+//            
+//            let categories = mainCat.categories ?? []
+//            for (catIndex, cat) in categories.enumerated() {
+//                row += 1 // category row
+//                let catIndexPath = IndexPath(row: catIndex, section: sectionIndex)
+//                if !expandedCategories.contains(catIndexPath) {
+//                    continue
+//                }
+//                
+//                for (subIndex, subcat) in cat.subcategories.enumerated() {
+//                    let subcatIndexPath = IndexPath(row: subIndex, section: sectionIndex)
+//                    if subcat.msubcat_id == msubcatId {
+//                        return IndexPath(row: row, section: sectionIndex)
+//                    }
+//                    row += 1 // subcategory title
+//                    
+//                    if expandedSubcategories[subcatIndexPath] == true {
+//                        row += 1 // grid row
+//                    }
+//                }
+//            }
+//        }
+//        
+//        return nil
+//    }
 }
 
 extension ShopController : UITableViewDelegate , UITableViewDataSource{
@@ -882,23 +1034,31 @@ extension ShopController : UITableViewDelegate , UITableViewDataSource{
         if isLoadingBanners {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ShimmerBannerCell", for: indexPath) as! ShimmerBannerCell
             return cell
-        }
-        else {  let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BannerImageCelll", for: indexPath) as! BannerImageCelll
-        let imageUrlString = bannerImages[indexPath.row]
-        
-        if let url = URL(string: imageUrlString) {
-            cell.imageView.load(url: url) // Use your custom image loading method
         } else {
-            cell.imageView.image = UIImage(named: "noImage") // Default placeholder
+            // ✅ Prevent out-of-bounds access
+            guard indexPath.row < bannerImages.count else {
+                // Return a fallback cell or crash gracefully (log issue)
+                print("⚠️ Index out of range: \(indexPath.row), bannerImages.count: \(bannerImages.count)")
+                return UICollectionViewCell()
+            }
+
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BannerImageCelll", for: indexPath) as! BannerImageCelll
+            let imageUrlString = bannerImages[indexPath.row]
+
+            if let url = URL(string: imageUrlString) {
+                cell.imageView.sd_setImage(with: url , placeholderImage: UIImage(named: "noImage"))
+            } else {
+                cell.imageView.image = UIImage(named: "noImage")
+            }
+            return cell
         }
-        return cell
     }
-}
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.row < banners.count {
-            print("Tapped cat id \(String(describing: banners[indexPath.row].mcatId)) \(String(describing: banners[indexPath.row].msubcatId)) \(String(describing: banners[indexPath.row].mproductId)) ")
-            expandToProduct(mcatId: banners[indexPath.row].mcatId ?? 0, msubcatId: banners[indexPath.row].msubcatId ?? 0 , mproductId: banners[indexPath.row].mproductId ?? 0);
-            
+            print("Tapped cat id \(String(describing: banners[indexPath.row].mcatId)) ROW \(String(describing: banners[indexPath.row].msubcatId)) , MPRODUCTID \(String(describing: banners[indexPath.row].mproductId)) ")
+            let banners = banners[indexPath.row]
+            expandToProduct(mainMcatId: banners.mainMcatId ?? 0, mcatId: banners.mcatId ?? 0, msubcatId: banners.msubcatId ?? 0, mproductId: banners.mproductId ?? 0)
         } else {
             print("Error: Tapped banner index out of bounds.")
         }
