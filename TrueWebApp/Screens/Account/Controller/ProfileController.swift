@@ -162,15 +162,15 @@ class ProfileController: UIViewController, CustomNavBarDelegate {
             navigationController?.popViewController(animated: true)
         }
     
-    private func loadUserFromDefaults() -> User1? {
-        guard let userData = UserDefaults.standard.data(forKey: "userData") else {
-            return nil
-        }
-        do {
-            return try JSONDecoder().decode(User1.self, from: userData)
-        } catch {
-            print("❌ Failed to decode user from UserDefaults:", error.localizedDescription)
-            return nil
-        }
-    }
+//    private func loadUserFromDefaults() -> UserDetails? {
+//        guard let userData = UserDefaults.standard.data(forKey: "userData") else {
+//            return nil
+//        }
+//        do {
+//            return try JSONDecoder().decode(UserDetails.self, from: userData)
+//        } catch {
+//            print("❌ Failed to decode user from UserDefaults:", error.localizedDescription)
+//            return nil
+//        }
+//    }
     }

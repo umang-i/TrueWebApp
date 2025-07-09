@@ -172,22 +172,19 @@ class ApiService {
                         
                         do {
                             let userData = try JSONEncoder().encode(loginResponse.user_detail)
+                            let repDetail = try JSONEncoder().encode(loginResponse.rep_details)
+                            UserDefaults.standard.set(repDetail, forKey: "repDetail")
                             UserDefaults.standard.set(userData, forKey: "userData")
                             
                             if let jsonString = String(data: userData, encoding: .utf8) {
                                 print("📦 Encoded user JSON to save:", jsonString)
                             }
+                            if let jsonString1 = String(data: repDetail, encoding: .utf8) {
+                                print("📦 Encoded user JSON to save:", jsonString1)
+                            }
                         } catch {
                             print("❌ Failed to encode user for UserDefaults:", error.localizedDescription)
                         }
-                        
-                        
-                        //                        // Navigate to the DashboardController
-                        //                        DispatchQueue.main.async {
-                        //                            let mainTabBarController = TabBarController(nibName: "TabBarController", bundle: nil)
-                        //                            viewController.navigationController?.pushViewController(mainTabBarController, animated: true)
-                        //                            viewController.navigationController?.setNavigationBarHidden(true, animated: true)
-                        //                        }
                         
                         // Return success
                         completion(.success(loginResponse))
@@ -237,29 +234,74 @@ class ApiService {
         }
     }
     
+    func forgotPassword(email: String, completion: @escaping (Bool, String) -> Void) {
+        guard let url = URL(string: "https://goappadmin.zapto.org/api/forgot-password") else {
+            completion(false, "Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let parameters: [String: Any] = ["email": email]
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
+        } catch {
+            completion(false, "Failed to serialize JSON")
+            return
+        }
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(false, "Request failed: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let data = data else {
+                completion(false, "No data received")
+                return
+            }
+            
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let status = json["status"] as? Bool,
+                   let message = json["message"] as? String {
+                    completion(status, message)
+                } else {
+                    completion(false, "Invalid response format")
+                }
+            } catch {
+                completion(false, "JSON parsing error")
+            }
+        }.resume()
+    }
+    
+    
     func fetchUserProfile(completion: @escaping (UserProfileResponse?) -> Void) {
         guard let url = URL(string: "https://goappadmin.zapto.org/api/user-profile") else {
             print("❌ Invalid URL")
             completion(nil)
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        
         // Optional Authorization header if needed
         if let token = UserDefaults.standard.string(forKey: "authToken") {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
-
+        
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
                 print("❌ Request error: \(error?.localizedDescription ?? "Unknown error")")
                 completion(nil)
                 return
             }
-
+            
             do {
                 let profile = try JSONDecoder().decode(UserProfileResponse.self, from: data)
                 completion(profile)
@@ -271,10 +313,10 @@ class ApiService {
                 completion(nil)
             }
         }
-
+        
         task.resume()
     }
-
+    
     func fetchPageContent(completion: @escaping (Result<PageContentResponse, Error>) -> Void) {
         guard let url = URL(string: "https://truewebapp.com/api/page") else {
             completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
@@ -372,13 +414,13 @@ class ApiService {
             guard let data = data else {
                 return completion(.failure(NSError(domain: "", code: 500, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
             }
-//            if let jsonString = String(data: data, encoding: .utf8) {
-//                 print("Response browse banners JSON:\n\(jsonString)")
-//            }
+            //            if let jsonString = String(data: data, encoding: .utf8) {
+            //                 print("Response browse banners JSON:\n\(jsonString)")
+            //            }
             
             do {
                 let decoder = JSONDecoder()
-//                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                //                decoder.keyDecodingStrategy = .convertFromSnakeCase
                 let decoded = try decoder.decode(BrowseBannerResponse.self, from: data)
                 completion(.success(decoded))
             } catch {
@@ -480,9 +522,9 @@ class ApiService {
                 return
             }
             
-//            if let rawString = String(data: data, encoding: .utf8) {
-//                print("Raw Response brands: \(rawString)")
-//            }
+            //            if let rawString = String(data: data, encoding: .utf8) {
+            //                print("Raw Response brands: \(rawString)")
+            //            }
             
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
                 // Return an error based on the HTTP status code
@@ -589,7 +631,9 @@ class ApiService {
         }
         
         let existingCartItems = UserDefaults.standard.array(forKey: "cart") as? [[String: Any]] ?? []
+        print(existingCartItems)
         
+        let requestBodyi = CartManager.shared.getCartRequestBody()
         
         let url = URL(string: "https://goappadmin.zapto.org/api/cart-item/update")!
         var request = URLRequest(url: url)
@@ -597,7 +641,7 @@ class ApiService {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         
-        let requestBody: [String: Any] = ["cart": existingCartItems]
+        let requestBody: [String: Any] =  requestBodyi
         print("Updating Cart on Server with:", requestBody)
         
         do {
@@ -729,21 +773,21 @@ class ApiService {
             completion(false, "Invalid URL")
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        
         let body: [String: Any] = ["user_company_address_id": id]
-
+        
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: body)
         } catch {
             completion(false, "Failed to encode request body")
             return
         }
-
+        
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
                 completion(false, error?.localizedDescription ?? "Unknown error")
@@ -753,8 +797,8 @@ class ApiService {
             if let responseString = String(data: data, encoding: .utf8) {
                 print("Raw response: \(responseString)")
             }
-
-
+            
+            
             do {
                 if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                    let status = json["status"] as? Bool,
@@ -767,10 +811,10 @@ class ApiService {
                 completion(false, "Failed to parse response")
             }
         }
-
+        
         task.resume()
     }
-
+    
     
     func fetchDeliveryMethods(completion: @escaping (Result<[MethodDelivery], Error>) -> Void) {
         guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
@@ -817,17 +861,17 @@ class ApiService {
             completion(.failure(NSError(domain: "AuthError", code: 401, userInfo: [NSLocalizedDescriptionKey: "User not logged in."])))
             return
         }
-
+        
         guard let url = URL(string: "https://goappadmin.zapto.org/api/orders") else {
             completion(.failure(NSError(domain: "URLError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL."])))
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        
         do {
             let jsonData = try JSONEncoder().encode(order)
             request.httpBody = jsonData
@@ -835,29 +879,29 @@ class ApiService {
             completion(.failure(NSError(domain: "EncodingError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to encode order."])))
             return
         }
-
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
-
+            
             guard let httpResponse = response as? HTTPURLResponse else {
                 completion(.failure(NSError(domain: "NoResponse", code: 0, userInfo: [NSLocalizedDescriptionKey: "No HTTP response received."])))
                 return
             }
-
+            
             guard (200...299).contains(httpResponse.statusCode) else {
                 let message = HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode)
                 completion(.failure(NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: message])))
                 return
             }
-
+            
             guard let data = data else {
                 completion(.failure(NSError(domain: "NoData", code: 0, userInfo: [NSLocalizedDescriptionKey: "No data received from server."])))
                 return
             }
-
+            
             do {
                 if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
                     completion(.success(json))
@@ -875,27 +919,27 @@ class ApiService {
             completion(.failure(NSError(domain: "User not logged in.", code: 401)))
             return
         }
-
+        
         guard let url = URL(string: "https://goappadmin.zapto.org/api/orders") else {
             completion(.failure(NSError(domain: "Invalid URL", code: 0)))
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
-
+            
             guard let data = data else {
                 completion(.failure(NSError(domain: "No data", code: 0)))
                 return
             }
-
+            
             do {
                 let decoder = JSONDecoder()
                 let response = try decoder.decode(FetchOrdersResponse.self, from: data)
@@ -909,36 +953,36 @@ class ApiService {
             }
         }.resume()
     }
-
-
+    
+    
     func deleteOrder(orderId: String, completion: @escaping (Result<String, Error>) -> Void) {
         guard let authToken = UserDefaults.standard.string(forKey: "authToken"), !authToken.isEmpty else {
             completion(.failure(NSError(domain: "User not logged in.", code: 401)))
             return
         }
-
+        
         guard let url = URL(string: "https://goappadmin.zapto.org/api/orders/\(orderId)") else {
             completion(.failure(NSError(domain: "Invalid URL", code: 0)))
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
-
+            
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode == 204 {
                     // No content, but successful deletion
                     completion(.success("Order deleted successfully."))
                     return
                 }
-
+                
                 // If it's another success code with content
                 if let data = data {
                     do {
@@ -962,27 +1006,27 @@ class ApiService {
             completion(.failure(NSError(domain: "No auth token", code: 401)))
             return
         }
-
+        
         guard let url = URL(string: "https://goappadmin.zapto.org/api/orders/\(orderId)") else {
             completion(.failure(NSError(domain: "Invalid URL", code: 0)))
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
-
+            
             guard let data = data else {
                 completion(.failure(NSError(domain: "No data", code: 0)))
                 return
             }
-
+            
             do {
                 let decoder = JSONDecoder()
                 let response = try decoder.decode(SingleOrderResponse.self, from: data)
@@ -992,7 +1036,7 @@ class ApiService {
             }
         }.resume()
     }
-
+    
     func updateOrderStatus(orderId: Int, status: String, completion: @escaping (Result<String, Error>) -> Void) {
         guard let authToken = UserDefaults.standard.string(forKey: "authToken") else {
             completion(.failure(NSError(domain: "No auth token", code: 401)))
@@ -1004,34 +1048,34 @@ class ApiService {
             completion(.failure(NSError(domain: "Invalid URL", code: -1)))
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        
         // Include this if API requires auth
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-
+        
         let body: [String: String] = ["status": status]
-
+        
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
         } catch {
             completion(.failure(error))
             return
         }
-
+        
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
-
+            
             guard let httpResponse = response as? HTTPURLResponse else {
                 completion(.failure(NSError(domain: "No HTTP response", code: -1)))
                 return
             }
-
+            
             if (200...299).contains(httpResponse.statusCode) {
                 completion(.success("Order updated to '\(status)' successfully."))
             } else {
@@ -1039,10 +1083,10 @@ class ApiService {
                 completion(.failure(NSError(domain: message, code: httpResponse.statusCode)))
             }
         }
-
+        
         task.resume()
     }
-
+    
     func applyCoupon(_ code: String, completion: @escaping (Result<CouponResponse, Error>) -> Void) {
         guard let authToken = UserDefaults.standard.string(forKey: "authToken") else {
             completion(.failure(NSError(domain: "No auth token", code: 401)))
@@ -1053,12 +1097,12 @@ class ApiService {
             completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        
         let body: [String: String] = ["code": code]
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
@@ -1066,18 +1110,18 @@ class ApiService {
             completion(.failure(error))
             return
         }
-
+        
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
-
+            
             guard let data = data else {
                 completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
                 return
             }
-
+            
             do {
                 let decoded = try JSONDecoder().decode(CouponResponse.self, from: data)
                 completion(.success(decoded))
@@ -1087,7 +1131,7 @@ class ApiService {
                 completion(.failure(error))
             }
         }
-
+        
         task.resume()
     }
     
@@ -1101,12 +1145,12 @@ class ApiService {
             completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        
         do {
             let jsonData = try JSONEncoder().encode(passwords)
             request.httpBody = jsonData
@@ -1114,18 +1158,18 @@ class ApiService {
             completion(.failure(error))
             return
         }
-
+        
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
-
+            
             guard let data = data else {
                 completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
                 return
             }
-
+            
             do {
                 // Assuming API returns a message in JSON like: { "message": "Password changed successfully" }
                 let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
@@ -1140,7 +1184,7 @@ class ApiService {
                 completion(.failure(error))
             }
         }
-
+        
         task.resume()
     }
     
@@ -1154,22 +1198,22 @@ class ApiService {
             completion(.failure(NSError(domain: "Invalid URL", code: 400)))
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-
+        
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))
                 return
             }
-
+            
             guard let data = data else {
                 completion(.failure(NSError(domain: "No data", code: 204)))
                 return
             }
-
+            
             do {
                 let decoded = try JSONDecoder().decode(ServiceSolutionsResponse.self, from: data)
                 completion(.success(decoded.service_solutions))
@@ -1179,7 +1223,7 @@ class ApiService {
                 completion(.failure(error))
             }
         }
-
+        
         task.resume()
     }
     
@@ -1188,16 +1232,16 @@ class ApiService {
             completion(.failure(NSError(domain: "No auth token", code: 401)))
             return
         }
-
+        
         guard let url = URL(string: "https://goappadmin.zapto.org/api/big-banner") else {
             completion(.failure(NSError(domain: "Invalid URL", code: 400)))
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-
+        
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 DispatchQueue.main.async {
@@ -1205,14 +1249,14 @@ class ApiService {
                 }
                 return
             }
-
+            
             guard let data = data else {
                 DispatchQueue.main.async {
                     completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data returned"])))
                 }
                 return
             }
-
+            
             do {
                 let decoded = try JSONDecoder().decode(BigSlidersResponse.self, from: data)
                 DispatchQueue.main.async {
@@ -1224,7 +1268,7 @@ class ApiService {
                 }
             }
         }
-
+        
         task.resume()
     }
     
@@ -1233,16 +1277,16 @@ class ApiService {
             completion(.failure(NSError(domain: "Missing auth token", code: 401)))
             return
         }
-
+        
         guard let url = URL(string: "https://goappadmin.zapto.org/api/fruit-banner") else {
             completion(.failure(NSError(domain: "Invalid URL", code: 400)))
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-
+        
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 DispatchQueue.main.async {
@@ -1250,14 +1294,14 @@ class ApiService {
                 }
                 return
             }
-
+            
             guard let data = data else {
                 DispatchQueue.main.async {
                     completion(.failure(NSError(domain: "No data returned", code: -1)))
                 }
                 return
             }
-
+            
             do {
                 let decoded = try JSONDecoder().decode(FruitSlidersResponse.self, from: data)
                 DispatchQueue.main.async {
@@ -1269,7 +1313,7 @@ class ApiService {
                 }
             }
         }
-
+        
         task.resume()
     }
     
@@ -1278,16 +1322,16 @@ class ApiService {
             completion(.failure(NSError(domain: "Missing auth token", code: 401)))
             return
         }
-
+        
         guard let url = URL(string: "https://goappadmin.zapto.org/api/deals-banner") else {
             completion(.failure(NSError(domain: "Invalid URL", code: 400)))
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-
+        
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 DispatchQueue.main.async {
@@ -1295,14 +1339,14 @@ class ApiService {
                 }
                 return
             }
-
+            
             guard let data = data else {
                 DispatchQueue.main.async {
                     completion(.failure(NSError(domain: "No data returned", code: -1)))
                 }
                 return
             }
-
+            
             do {
                 let decoded = try JSONDecoder().decode(DealsSlidersResponse.self, from: data)
                 DispatchQueue.main.async {
@@ -1314,7 +1358,7 @@ class ApiService {
                 }
             }
         }
-
+        
         task.resume()
     }
     
@@ -1383,9 +1427,9 @@ class ApiService {
                 return
             }
             
-//            if let jsonString = String(data: data, encoding: .utf8) {
-//                print("Response browse banners JSON:\n\(jsonString)")
-//            }
+            //            if let jsonString = String(data: data, encoding: .utf8) {
+            //                print("Response browse banners JSON:\n\(jsonString)")
+            //            }
             
             do {
                 let decodedResponse = try JSONDecoder().decode(NewProductBannerResponse.self, from: data)
@@ -1448,26 +1492,26 @@ class ApiService {
             completion(false, "Invalid URL")
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "DELETE"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        
         // Optional: Add auth token if needed
         if let authToken = UserDefaults.standard.string(forKey: "authToken") {
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
-
+        
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
                 completion(false, error?.localizedDescription ?? "Unknown error")
                 return
             }
-
+            
             if let responseString = String(data: data, encoding: .utf8) {
                 print("Raw response: \(responseString)")
             }
-
+            
             do {
                 if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
                     let statusValue = json["status"]
@@ -1481,45 +1525,53 @@ class ApiService {
                 completion(false, "Failed to parse response")
             }
         }
-
+        
         task.resume()
     }
-
-    func checkRep(repName: String, completion: @escaping (RepData?) -> Void) {
-        let encodedName = repName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? repName
-        let urlString = "https://goappadmin.zapto.org/api/reps/check/\(encodedName)"
-        
+    
+    func checkRep(
+        code: String,
+        completion: @escaping (Result<RepData, Error>) -> Void
+    ) {
+        let urlString = "https://goappadmin.zapto.org/api/reps/check/\(code)"
         guard let url = URL(string: urlString) else {
-            print("❌ Invalid URL")
-            completion(nil)
+            completion(.failure(NSError(domain: "Invalid URL", code: 0)))
             return
         }
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        if let authToken = UserDefaults.standard.string(forKey: "authToken") {
+            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+        }
 
         URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                print("❌ Network error: \(error?.localizedDescription ?? "Unknown error")")
-                completion(nil)
+            if let error = error {
+                completion(.failure(error))
                 return
             }
 
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data", code: 0)))
+                return
+            }
+
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("📄 Raw JSON: \(jsonString)")
+            }
+
             do {
-                let decoded = try JSONDecoder().decode(RepCheckResponse.self, from: data)
+                let decoded = try JSONDecoder().decode(RepResponse.self, from: data)
                 if decoded.status {
-                    completion(decoded.data)
+                    completion(.success(decoded.data))
                 } else {
-                    completion(nil)
+                    completion(.failure(NSError(domain: "Invalid status", code: 0)))
                 }
             } catch {
-                print("❌ JSON decoding error: \(error.localizedDescription)")
-                if let raw = String(data: data, encoding: .utf8) {
-                    print("🔍 Raw response: \(raw)")
-                }
-                completion(nil)
+                completion(.failure(error))
             }
+
         }.resume()
     }
 }

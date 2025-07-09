@@ -388,10 +388,13 @@ extension CartController: CartCellDelegate {
     
     private func saveCartLocally() {
         print("Cart Items before saving:", cartItemss)
+
         if cartItemss.isEmpty {
             print("Cart is empty. Removing from UserDefaults.")
             UserDefaults.standard.removeObject(forKey: "cart")
+            CartManager.shared.clearCart()
         } else {
+            // Prepare data for UserDefaults
             let cartData = cartItemss.map { cartItem in
                 [
                     "mvariant_id": cartItem.mvariantID,
@@ -400,14 +403,23 @@ extension CartController: CartCellDelegate {
             }
             print("Saving Cart Locally:", cartData)
             UserDefaults.standard.set(cartData, forKey: "cart")
+            
+            // 🔄 Also update CartManager
+            CartManager.shared.clearCart()
+            for item in cartItemss {
+                CartManager.shared.updateCartItem(
+                    mVariantId: item.mvariantID,
+                    quantity: item.quantity, price: item.product.price,
+                )
+            }
         }
     }
-
   //  var cartNeedsUpdate = false
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+        CartManager.shared.saveCartToLocalStorage()
+
         let requestBody = CartManager.shared.getCartRequestBody()
         print("🧪 Final cart payload:", requestBody)
 

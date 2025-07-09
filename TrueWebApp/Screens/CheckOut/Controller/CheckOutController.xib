@@ -41,15 +41,8 @@
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mwp-Tz-NXg">
                             <rect key="frame" x="0.0" y="0.0" width="393" height="1107.6666666666667"/>
                             <subviews>
-                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bnr1" translatesAutoresizingMaskIntoConstraints="NO" id="hTQ-w3-mKB">
-                                    <rect key="frame" x="0.0" y="60" width="393" height="120"/>
-                                    <constraints>
-                                        <constraint firstAttribute="width" constant="393" id="DPU-AZ-8AB"/>
-                                        <constraint firstAttribute="height" constant="120" id="nou-ph-3Jb"/>
-                                    </constraints>
-                                </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Delivery Method" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zbc-EJ-8p0">
-                                    <rect key="frame" x="10" y="200" width="124" height="19.333333333333343"/>
+                                    <rect key="frame" x="10" y="100" width="124" height="19.333333333333329"/>
                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
@@ -94,7 +87,7 @@
                                     <textInputTraits key="textInputTraits"/>
                                 </textField>
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="KLC-9M-Miw">
-                                    <rect key="frame" x="10" y="229.33333333333334" width="373" height="90.333333333333343"/>
+                                    <rect key="frame" x="10" y="129.33333333333331" width="373" height="190.33333333333331"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 </tableView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Dispatch To" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JDt-gC-eaH">
@@ -356,25 +349,22 @@ Immyz Ltd, 78 Stockport Road, Ashton-under-Lyne, Greater Manchester, OL70LH</str
                             </subviews>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <constraints>
-                                <constraint firstItem="Zbc-EJ-8p0" firstAttribute="top" secondItem="hTQ-w3-mKB" secondAttribute="bottom" constant="20" id="0pD-nn-ng2"/>
                                 <constraint firstAttribute="trailing" secondItem="KLC-9M-Miw" secondAttribute="trailing" constant="10" id="2j8-sD-BUw"/>
                                 <constraint firstItem="ZfF-uh-cLy" firstAttribute="trailing" secondItem="KLC-9M-Miw" secondAttribute="trailing" id="399-dn-33a"/>
                                 <constraint firstItem="b8i-nF-cBb" firstAttribute="leading" secondItem="Y5m-9g-ktJ" secondAttribute="leading" id="4vC-Zw-rJl"/>
-                                <constraint firstAttribute="trailing" secondItem="hTQ-w3-mKB" secondAttribute="trailing" id="5su-Dp-aNd"/>
                                 <constraint firstItem="eWT-e4-RIy" firstAttribute="trailing" secondItem="WIW-4u-S5v" secondAttribute="trailing" id="8Av-9M-h2H"/>
                                 <constraint firstItem="KLC-9M-Miw" firstAttribute="leading" secondItem="mwp-Tz-NXg" secondAttribute="leading" constant="10" id="AbF-yK-Nux"/>
                                 <constraint firstItem="ZfF-uh-cLy" firstAttribute="top" secondItem="JDt-gC-eaH" secondAttribute="bottom" constant="10" id="BbG-Nx-lHF"/>
                                 <constraint firstItem="r6j-PK-mX2" firstAttribute="leading" secondItem="eWT-e4-RIy" secondAttribute="leading" id="Cjj-3f-JSE"/>
                                 <constraint firstItem="eWT-e4-RIy" firstAttribute="top" secondItem="WIW-4u-S5v" secondAttribute="bottom" constant="20" id="Dp8-i4-TnR"/>
-                                <constraint firstItem="hTQ-w3-mKB" firstAttribute="top" secondItem="mwp-Tz-NXg" secondAttribute="top" constant="60" id="FeK-k6-scx"/>
                                 <constraint firstItem="WIW-4u-S5v" firstAttribute="trailing" secondItem="ZfF-uh-cLy" secondAttribute="trailing" id="QEv-Lf-ku4"/>
                                 <constraint firstItem="Y5m-9g-ktJ" firstAttribute="leading" secondItem="ZfF-uh-cLy" secondAttribute="leading" id="T8G-uT-6QV"/>
                                 <constraint firstItem="ZfF-uh-cLy" firstAttribute="leading" secondItem="JDt-gC-eaH" secondAttribute="leading" id="U7x-wP-O5A"/>
                                 <constraint firstItem="Zbc-EJ-8p0" firstAttribute="leading" secondItem="mwp-Tz-NXg" secondAttribute="leading" constant="10" id="Vg0-UB-Mc2"/>
                                 <constraint firstItem="Y5m-9g-ktJ" firstAttribute="trailing" secondItem="ZfF-uh-cLy" secondAttribute="trailing" id="Vzo-Gi-HeO"/>
                                 <constraint firstItem="eWT-e4-RIy" firstAttribute="leading" secondItem="WIW-4u-S5v" secondAttribute="leading" id="WVr-TW-Uy1"/>
-                                <constraint firstItem="hTQ-w3-mKB" firstAttribute="leading" secondItem="mwp-Tz-NXg" secondAttribute="leading" id="c5i-vb-Gy7"/>
                                 <constraint firstItem="Y5m-9g-ktJ" firstAttribute="top" secondItem="ZfF-uh-cLy" secondAttribute="bottom" constant="20" id="cd0-tb-2IY"/>
+                                <constraint firstItem="Zbc-EJ-8p0" firstAttribute="top" secondItem="mwp-Tz-NXg" secondAttribute="top" constant="100" id="eUQ-Y4-J8X"/>
                                 <constraint firstItem="WIW-4u-S5v" firstAttribute="top" secondItem="b8i-nF-cBb" secondAttribute="bottom" constant="20" id="fvt-fI-ivV"/>
                                 <constraint firstItem="fBT-42-tvV" firstAttribute="top" secondItem="WIW-4u-S5v" secondAttribute="bottom" constant="28" id="j0h-TG-idd"/>
                                 <constraint firstItem="WIW-4u-S5v" firstAttribute="leading" secondItem="ZfF-uh-cLy" secondAttribute="leading" id="kQV-4h-SMV"/>
@@ -411,7 +401,6 @@ Immyz Ltd, 78 Stockport Road, Ashton-under-Lyne, Greater Manchester, OL70LH</str
         </view>
     </objects>
     <resources>
-        <image name="bnr1" width="1080" height="360"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

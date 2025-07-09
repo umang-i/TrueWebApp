@@ -719,7 +719,7 @@ extension DashboardController: UICollectionViewDelegate, UICollectionViewDataSou
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             if let shoppingVC = tabBarController.viewControllers?[1] as? ShopController {
-                print("Calling expandToProduct")
+                print("Calling expandToProduct with mainId \(mainMcatId) cat id : \(catId) , subcatId : \(subcatId) , productId : \(mProductId)")
                 shoppingVC.expandToProduct(mainMcatId: mainMcatId, mcatId: catId, msubcatId: subcatId, mproductId: mProductId)
             } else {
                 print("viewController at index 1 is not ShopController")

@@ -41,7 +41,7 @@ class TabBarController: UITabBarController, UITabBarControllerDelegate {
         let totalPrice = CartManager.shared.getTotalPrice()
         
         // Hide badge and balance if on the first tab
-        let shouldHide = (selectedIndex == 0 || totalCartCount == 0)
+        let shouldHide = (selectedIndex != 1 )
         badgeLabel.isHidden = shouldHide
         balanceLabel.isHidden = shouldHide
         

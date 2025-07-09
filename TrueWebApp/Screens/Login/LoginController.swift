@@ -57,6 +57,16 @@ class LoginController: UIViewController, UITextViewDelegate {
         return view
     }()
     
+    private let forgotLabel : UILabel = {
+        let label = UILabel()
+        label.text = "Forgot Passoword?"
+        label.textColor = .customBlue
+        label.font = UIFont(name: "Roboto-Regular", size: 14)
+        label.textAlignment = .right
+        label.text = "Forgot Password?"
+        return label
+    }()
+    
     private let emailErrorLabel = HelperFunct.createErrorLabel()
     private let passwordErrorLabel = HelperFunct.createErrorLabel()
     private let firstNameErrorLabel = HelperFunct.createErrorLabel()
@@ -119,6 +129,12 @@ class LoginController: UIViewController, UITextViewDelegate {
         updateUIForSegment()
         setupTermsText(isLogin: isLogin)
         authButton.addTarget(self, action: #selector(authButtonTapped), for: .touchUpInside)
+        
+        forgotLabel.isUserInteractionEnabled = true
+        
+        // Add tap gesture recognizer
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(forgotLabelTapped))
+        forgotLabel.addGestureRecognizer(tapGesture)
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -181,7 +197,7 @@ class LoginController: UIViewController, UITextViewDelegate {
         hstack2.distribution = .fillEqually
 
         stackView = UIStackView(arrangedSubviews: [
-            hstack, estack, mobileNumberField, mobileErrorLabel, emailField, emailErrorLabel, passwordField, passwordErrorLabel,
+            hstack, estack, mobileNumberField, mobileErrorLabel, emailField, emailErrorLabel, passwordField, passwordErrorLabel,forgotLabel,
             repCodeField, companyNameField, companyErrorLabel, invoiceAddressLine1Field, address1ErrorLabel,
             invoiceAddressLine2Field, hstack2, estack2, invoiceAddressCountyField, countryErrorLabel, authButton, termsTextView
         ])
@@ -229,59 +245,17 @@ class LoginController: UIViewController, UITextViewDelegate {
             stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
         ])
     }
+    
+    @objc private func forgotLabelTapped() {
+        let forgetVC = ForgetPasswordViewController()
+        navigationController?.setNavigationBarHidden(false, animated: false)
+        navigationController?.pushViewController(forgetVC, animated: true)
+    }
 
     // MARK: - Segmented Control Action
     @objc private func segmentChanged() {
         updateUIForSegment()
     }
-
-//    private func updateUIForSegment() {
-//        let isLogin = segmentedControl.selectedSegmentIndex == AuthSegment.login.rawValue
-//        setupTermsText(isLogin: isLogin)
-//
-//        // Adjust stack view spacing for login segment
-//        stackView.spacing = isLogin ? 7 : 10 // Reduced space for login
-//
-//        // Show/hide fields for registration
-//        hstack.isHidden = isLogin
-//        hstack2.isHidden = isLogin
-//        companyNameField.isHidden = isLogin
-//        invoiceAddressLine1Field.isHidden = isLogin
-//        invoiceAddressLine2Field.isHidden = isLogin
-//        invoiceAddressCityField.isHidden = isLogin
-//        invoiceAddressCountyField.isHidden = isLogin
-//        invoiceAddressPostcodeField.isHidden = isLogin
-//        mobileNumberField.isHidden = isLogin
-//        repCodeField.isHidden = isLogin
-//        firstNameErrorLabel.isHidden = isLogin
-//        lastNameErrorLabel.isHidden = isLogin
-//        mobileErrorLabel.isHidden = isLogin
-//        companyErrorLabel.isHidden = isLogin
-//        address1ErrorLabel.isHidden = isLogin
-//        cityErrorLabel.isHidden = isLogin
-//        countryErrorLabel.isHidden = isLogin
-//        postcodeErrorLabel.isHidden = isLogin
-//
-//        // Only show the email and password error labels in the login segment
-//        emailErrorLabel.isHidden = !isLogin
-//        passwordErrorLabel.isHidden = !isLogin
-//
-//        // Reset text fields when switching segments (relevant to login)
-//        if !isLogin {
-//            passwordField.text = ""
-//            emailField.text = ""
-//        }
-//        
-//        if isLogin {
-//            passwordField.text = ""
-//            emailField.text = ""
-//        }
-//
-//        // Change button text
-//        authButton.setTitle(isLogin ? "LOGIN" : "REGISTER", for: .normal)
-//        // Update the layout
-//        view.layoutIfNeeded() // Ensure layout changes are applied immediately
-//    }
     
     private func updateUIForSegment() {
         let isLogin = segmentedControl.selectedSegmentIndex == AuthSegment.login.rawValue
@@ -299,6 +273,7 @@ class LoginController: UIViewController, UITextViewDelegate {
                 stackView.addArrangedSubview(emailErrorLabel)
                 stackView.addArrangedSubview(passwordField)
                 stackView.addArrangedSubview(passwordErrorLabel)
+                stackView.addArrangedSubview(forgotLabel)
             } else {
                 stackView.addArrangedSubview(hstack)
                 stackView.addArrangedSubview(estack)

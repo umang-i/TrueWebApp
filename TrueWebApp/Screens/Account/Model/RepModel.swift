@@ -7,14 +7,16 @@
 
 import Foundation
 
-struct RepCheckResponse: Codable {
+struct RepResponse: Codable {
     let status: Bool
-    let data: RepData?
+    let data: RepData
 }
 
 struct RepData: Codable {
     let repID: Int
-    let userID: Int
+    let name: String
+    let email: String
+    let mobile: String
     let repCode: String
     let commissionPercent: String
     let createdAt: String
@@ -22,7 +24,9 @@ struct RepData: Codable {
 
     enum CodingKeys: String, CodingKey {
         case repID = "rep_id"
-        case userID = "user_id"
+        case name
+        case email
+        case mobile
         case repCode = "rep_code"
         case commissionPercent = "commission_percent"
         case createdAt = "created_at"
